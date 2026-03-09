@@ -1,0 +1,147 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String            @id @default(uuid())
+  username         String            @unique
+  email            String            @unique
+  password         String?
+  firstName        String
+  lastName         String
+  role             Role              @default(STUDENT)
+  adminProfile     AdminProfile?
+  professorProfile ProfessorProfile?
+  studentProfile   StudentProfile?
+}
+
+model StudentProfile {
+  userId      String           @id
+  entryYear   Int
+  year        Int
+  department  String           
+  faculty     String           
+  gpax        Float            @default(0.00)
+  records     AcademicRecord[]
+  enrollments Enrollment[]
+  user        User             @relation(fields: [userId], references: [id])
+}
+
+model ProfessorProfile {
+  userId          String           @id
+  department      String
+  user            User             @relation(fields: [userId], references: [id])
+  sections        Section[]
+  gradedRecords   AcademicRecord[] 
+}
+
+model AdminProfile {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+model Course {
+  id                String           @id
+  nameTh            String
+  nameEn            String
+  credits           Int
+  category          CourseCategory   @default(CORE_COURSE)
+  maxEntryYear      Int              @default(99)
+  labHours          Int
+  lectureHours      Int
+  selfStudyHours    Int
+  academicRecords   AcademicRecord[]
+  prerequisites     Prerequisite[]   @relation("MainCourse")
+  isPrerequisiteFor Prerequisite[]   @relation("SubCourse")
+  sections          Section[]
+}
+
+model Prerequisite {
+  courseId    String
+  preCourseId String
+  course      Course @relation("MainCourse", fields: [courseId], references: [id])
+  preCourse   Course @relation("SubCourse", fields: [preCourseId], references: [id])
+
+  @@id([courseId, preCourseId])
+}
+
+model Section {
+  id            String            @id @default(uuid())
+  courseId      String
+  sectionNo     Int
+  capacity      Int
+  enrolledCount Int               @default(0)
+  professorId   String?           
+  semester      Int
+  academicYear  Int
+  enrollments   Enrollment[]
+  schedules     Schedule[]
+  course        Course            @relation(fields: [courseId], references: [id])
+  professor     ProfessorProfile? @relation(fields: [professorId], references: [userId])
+}
+
+model Schedule {
+  id        String  @id @default(uuid())
+  sectionId String
+  day       String
+  startTime String
+  endTime   String
+  section   Section @relation(fields: [sectionId], references: [id])
+}
+
+model Enrollment {
+  id        String           @id @default(uuid())
+  studentId String
+  sectionId String
+  status    EnrollmentStatus @default(SUCCESS)
+  dropDate  DateTime?
+  createdAt DateTime         @default(now())
+  section   Section          @relation(fields: [sectionId], references: [id])
+  student   StudentProfile   @relation(fields: [studentId], references: [userId])
+}
+
+model AcademicRecord {
+  id          String            @id @default(uuid())
+  studentId   String
+  courseId    String
+  grade       String            // A, B+, B, C, D, F, S, U, W
+  gradedById  String?           // อาจารย์ผู้ให้คะแนน
+  course      Course            @relation(fields: [courseId], references: [id])
+  student     StudentProfile    @relation(fields: [studentId], references: [userId])
+  gradedBy    ProfessorProfile? @relation(fields: [gradedById], references: [userId])
+}
+
+model SemesterConfig {
+  id           String   @id @default(uuid())
+  semester     Int
+  academicYear Int
+  regStart     DateTime
+  regEnd       DateTime
+  withdrawEnd  DateTime
+  isCurrent    Boolean  @default(false)
+}
+
+enum Role {
+  STUDENT
+  PROFESSOR
+  ADMIN
+}
+
+enum CourseCategory {
+  GENERAL_EDUCATION
+  CORE_COURSE
+  REQUIRED_COURSE
+  MAJOR_ELECTIVE
+  FREE_ELECTIVE
+}
+
+enum EnrollmentStatus {
+  SUCCESS
+  DROPPED
+  WITHDRAWN
+}
