@@ -23,21 +23,21 @@ model User {
 model StudentProfile {
   userId      String           @id
   entryYear   Int
-  year        Int
-  department  String           
-  faculty     String           
+  department  String
+  faculty     String
   gpax        Float            @default(0.00)
+  year        Int
   records     AcademicRecord[]
   enrollments Enrollment[]
   user        User             @relation(fields: [userId], references: [id])
 }
 
 model ProfessorProfile {
-  userId          String           @id
-  department      String
-  user            User             @relation(fields: [userId], references: [id])
-  sections        Section[]
-  gradedRecords   AcademicRecord[] 
+  userId        String           @id
+  department    String
+  gradedRecords AcademicRecord[]
+  user          User             @relation(fields: [userId], references: [id])
+  sections      Section[]
 }
 
 model AdminProfile {
@@ -46,28 +46,56 @@ model AdminProfile {
 }
 
 model Course {
-  id                String           @id
-  nameTh            String
-  nameEn            String
-  credits           Int
-  category          CourseCategory   @default(CORE_COURSE)
-  maxEntryYear      Int              @default(99)
-  labHours          Int
-  lectureHours      Int
-  selfStudyHours    Int
-  academicRecords   AcademicRecord[]
-  prerequisites     Prerequisite[]   @relation("MainCourse")
-  isPrerequisiteFor Prerequisite[]   @relation("SubCourse")
-  sections          Section[]
+  id                                            String             @id
+  nameTh                                        String
+  nameEn                                        String
+  credits                                       Int
+  category                                      CourseCategory     @default(CORE_COURSE)
+  maxEntryYear                                  Int                @default(99)
+  labHours                                      Int
+  lectureHours                                  Int
+  selfStudyHours                                Int
+  isWildcard                                    Boolean            @default(false)
+  facultyId                                     String             
+  deptId                                        String             
+  academicRecords                               AcademicRecord[]
+  curriculumCourses                             CurriculumCourse[]
+  Prerequisite_Prerequisite_courseIdToCourse    Prerequisite[]     @relation("Prerequisite_courseIdToCourse")
+  Prerequisite_Prerequisite_preCourseIdToCourse Prerequisite[]     @relation("Prerequisite_preCourseIdToCourse")
+  sections                                      Section[]
 }
 
 model Prerequisite {
-  courseId    String
-  preCourseId String
-  course      Course @relation("MainCourse", fields: [courseId], references: [id])
-  preCourse   Course @relation("SubCourse", fields: [preCourseId], references: [id])
+  courseId                                String
+  preCourseId                             String
+  Course_Prerequisite_courseIdToCourse    Course @relation("Prerequisite_courseIdToCourse", fields: [courseId], references: [id])
+  Course_Prerequisite_preCourseIdToCourse Course @relation("Prerequisite_preCourseIdToCourse", fields: [preCourseId], references: [id])
 
   @@id([courseId, preCourseId])
+}
+
+model Curriculum {
+  id                String             @id @default(uuid())
+  name              String
+  createdAt         DateTime           @default(now())
+  description       String?
+  updatedAt         DateTime           @updatedAt
+  year              Int
+  curriculumCourses CurriculumCourse[]
+}
+
+model CurriculumCourse {
+  id           String     @id @default(uuid())
+  curriculumId String
+  courseId     String
+  semester     Int
+  year         Int
+  positionX    Int
+  positionY    Int
+  course       Course     @relation(fields: [courseId], references: [id])
+  curriculum   Curriculum @relation(fields: [curriculumId], references: [id])
+
+  @@unique([curriculumId, courseId, semester])
 }
 
 model Section {
@@ -76,9 +104,9 @@ model Section {
   sectionNo     Int
   capacity      Int
   enrolledCount Int               @default(0)
-  professorId   String?           
   semester      Int
   academicYear  Int
+  professorId   String?
   enrollments   Enrollment[]
   schedules     Schedule[]
   course        Course            @relation(fields: [courseId], references: [id])
@@ -106,14 +134,14 @@ model Enrollment {
 }
 
 model AcademicRecord {
-  id          String            @id @default(uuid())
-  studentId   String
-  courseId    String
-  grade       String            // A, B+, B, C, D, F, S, U, W
-  gradedById  String?           // อาจารย์ผู้ให้คะแนน
-  course      Course            @relation(fields: [courseId], references: [id])
-  student     StudentProfile    @relation(fields: [studentId], references: [userId])
-  gradedBy    ProfessorProfile? @relation(fields: [gradedById], references: [userId])
+  id         String            @id @default(uuid())
+  studentId  String
+  courseId   String
+  grade      String
+  gradedById String?
+  course     Course            @relation(fields: [courseId], references: [id])
+  gradedBy   ProfessorProfile? @relation(fields: [gradedById], references: [userId])
+  student    StudentProfile    @relation(fields: [studentId], references: [userId])
 }
 
 model SemesterConfig {

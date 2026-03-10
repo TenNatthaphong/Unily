@@ -40,6 +40,9 @@ async function main() {
         labHours: item.labHours,
         selfStudyHours: item.selfStudyHours,
         category: item.category as CourseCategory,
+        facultyId: item.facultyId,
+        deptId: item.deptId,
+        isWildcard: item.isWildcard,
       },
       create: {
         id: item.id,
@@ -51,6 +54,9 @@ async function main() {
         selfStudyHours: item.selfStudyHours,
         category: item.category as CourseCategory,
         maxEntryYear: 99,
+        facultyId: item.facultyId,
+        deptId: item.deptId,
+        isWildcard: item.isWildcard,
       },
     });
   }
