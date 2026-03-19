@@ -1,5 +1,5 @@
 // src/curriculum/curriculum.controller.ts
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
 import { CreateCurriculumDto } from './dto/create-curriculum.dto';
 
@@ -7,15 +7,18 @@ import { CreateCurriculumDto } from './dto/create-curriculum.dto';
 export class CurriculumController {
   constructor(private readonly curriculumService: CurriculumService) {}
 
-  @Post()
-  create(@Body() createCurriculumDto: CreateCurriculumDto) {
-    return this.curriculumService.create(createCurriculumDto);
-  }
+  // @Post()
+  // create(@Body() createCurriculumDto: CreateCurriculumDto) {
+  //   return this.curriculumService.create(createCurriculumDto);
+  // }
 
-  @Get()
-  findAll() {
-    return this.curriculumService.findAll();
-  }
+  // @Get()
+  // searchCurriculums(
+  //   @Query('facultyId') facultyId?: string,
+  //   @Query('deptId') deptId?: string
+  // ) {
+  //   return this.curriculumService.searchCurriculums(facultyId, deptId);
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

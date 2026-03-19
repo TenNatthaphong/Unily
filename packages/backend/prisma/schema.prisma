@@ -34,7 +34,8 @@ model StudentProfile {
 
 model ProfessorProfile {
   userId        String           @id
-  department    String
+  facultyId     String           @default("04")
+  deptId        String           @default("06")
   gradedRecords AcademicRecord[]
   user          User             @relation(fields: [userId], references: [id])
   sections      Section[]
@@ -42,6 +43,7 @@ model ProfessorProfile {
 
 model AdminProfile {
   userId String @id
+  auditLog AuditLog[]
   user   User   @relation(fields: [userId], references: [id])
 }
 
@@ -56,8 +58,8 @@ model Course {
   lectureHours                                  Int
   selfStudyHours                                Int
   isWildcard                                    Boolean            @default(false)
-  facultyId                                     String             
-  deptId                                        String             
+  deptId                                        String
+  facultyId                                     String
   academicRecords                               AcademicRecord[]
   curriculumCourses                             CurriculumCourse[]
   Prerequisite_Prerequisite_courseIdToCourse    Prerequisite[]     @relation("Prerequisite_courseIdToCourse")
@@ -77,6 +79,8 @@ model Prerequisite {
 model Curriculum {
   id                String             @id @default(uuid())
   name              String
+  facultyId         String
+  deptId            String
   createdAt         DateTime           @default(now())
   description       String?
   updatedAt         DateTime           @updatedAt
@@ -152,6 +156,47 @@ model SemesterConfig {
   regEnd       DateTime
   withdrawEnd  DateTime
   isCurrent    Boolean  @default(false)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model kv_store_105269f1 {
+  key   String @id
+  value Json
+
+  @@index([key])
+  @@index([key], map: "kv_store_105269f1_key_idx1")
+  @@index([key], map: "kv_store_105269f1_key_idx2")
+  @@index([key], map: "kv_store_105269f1_key_idx3")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  adminId     String
+  adminName   String
+  action      Action
+  target      String   // เช่น "หลักสูตรวิทยาการคอมพิวเตอร์ 2567"
+  createdAt   DateTime @default(now())
+  admin       AdminProfile @relation(fields: [adminId], references: [userId])
+}
+
+// สำหรับข้อ 2: กิจกรรมและแบนเนอร์ประชาสัมพันธ์
+model Event {
+  id          String    @id @default(uuid())
+  title       String
+  description String?   @db.Text
+  startDate   DateTime
+  endDate     DateTime
+  category    String    // เช่น "ACADEMIC", "REGISTRATION", "ACTIVITY"
+  bannerUrl   String?   // เก็บ Path ของรูปภาพ
+  isPublished Boolean   @default(false)
+  updatedBy   String
+  updatedAt   DateTime  @updatedAt
+}
+
+enum Action {
+  CREATE
+  UPDATE
+  DELETE
 }
 
 enum Role {

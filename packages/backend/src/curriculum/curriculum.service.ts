@@ -6,22 +6,25 @@ import { CreateCurriculumDto } from './dto/create-curriculum.dto';
 export class CurriculumService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateCurriculumDto) {
-    return this.prisma.curriculum.create({
-      data: dto,
-    });
-  }
+  // async create(dto: CreateCurriculumDto) {
+  //   return this.prisma.curriculum.create({
+  //     data: dto,
+  //   });
+  // }
 
-  async findAll() {
-    return this.prisma.curriculum.findMany({
-      orderBy: { year: 'desc' },
-      include: {
-        _count: {
-          select: { curriculumCourses: true } // ดูว่ามีวิชาถูกจัดลงแผนกี่วิชาแล้ว
-        }
-      }
-    });
-  }
+  // async searchCurriculums(facultyId?: string, deptId?: string) {
+  //   return this.prisma.curriculum.findMany({
+  //     where: {
+  //       facultyId: facultyId || undefined,
+  //       deptId: deptId || undefined,
+  //     },
+  //     include: {
+  //       faculty: { select: { name: true } },
+  //       department: { select: { name: true } },
+  //       _count: { select: { curriculumCourses: true } } // นับจำนวนวิชาในหลักสูตรนั้นๆ
+  //     }
+  //   });
+  // }
 
   async findOne(id: string) {
     return this.prisma.curriculum.findUnique({
