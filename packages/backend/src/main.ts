@@ -10,9 +10,6 @@ async function bootstrap() {
     .setTitle('University Admin API')
     .setDescription('ระบบจัดการหลักสูตรและรายวิชา (Admin/Professor/Student)')
     .setVersion('1.0')
-    .addTag('admin')      // แยกหมวดหมู่ API
-    .addTag('courses')
-    .addTag('curriculums')
     .addBearerAuth()      // สำหรับระบบ Login (ถ้ามี)
     .build();
 

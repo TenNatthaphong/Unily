@@ -1,0 +1,94 @@
+{
+  "faculties": [
+    {
+      "facultyCode": "04",
+      "nameTh": "คณะวิทยาศาสตร์ประยุกต์",
+      "nameEn": "Faculty of Applied Science",
+      "departments": [
+        { "deptCode": "01", "shortName": "MA", "nameTh": "ภาควิชาคณิตศาสตร์", "nameEn": "Department of Mathematics" },
+        { "deptCode": "02", "shortName": "IC", "nameTh": "ภาควิชาเคมีอุตสาหกรรม", "nameEn": "Department of Industrial Chemistry" },
+        { "deptCode": "03", "shortName": "IMI", "nameTh": "ภาควิชาฟิสิกส์อุตสาหกรรมและอุปกรณ์การแพทย์", "nameEn": "Department of Industrial Physics and Medical Instrumentation" },
+        { "deptCode": "05", "shortName": "AS", "nameTh": "ภาควิชาสถิติประยุกต์", "nameEn": "Department of Applied Statistics" },
+        { "deptCode": "06", "shortName": "CS", "nameTh": "ภาควิชาวิทยาการคอมพิวเตอร์และสารสนเทศ", "nameEn": "Department of Computer and Information Science" },
+        { "deptCode": "07", "shortName": "AFET", "nameTh": "ภาควิชาเทคโนโลยีอุตสาหกรรมเกษตร อาหาร และสิ่งแวดล้อม", "nameEn": "Department of Agro-Industrial, Food and Environmental Technology" },
+        { "deptCode": "08", "shortName": "BT", "nameTh": "ภาควิชาเทคโนโลยีชีวภาพ", "nameEn": "Department of Biotechnology" }
+      ]
+    },
+    {
+      "facultyCode": "08",
+      "nameTh": "คณะศิลปศาสตร์ประยุกต์",
+      "nameEn": "Faculty of Applied Arts",
+      "departments": [
+        { "deptCode": "01", "shortName": "LANG", "nameTh": "ภาควิชาภาษา", "nameEn": "Department of Languages" },
+        { "deptCode": "02", "shortName": "SOC", "nameTh": "ภาควิชาสังคมศาสตร์", "nameEn": "Department of Social Sciences" },
+        { "deptCode": "03", "shortName": "HUM", "nameTh": "ภาควิชามนุษยศาสตร์", "nameEn": "Department of Humanities" }
+      ]
+    },
+    {
+      "facultyCode": "01",
+      "nameTh": "คณะวิศวกรรมศาสตร์",
+      "nameEn": "Faculty of Engineering",
+      "departments": [
+        { "deptCode": "01", "shortName": "MAE", "nameTh": "ภาควิชาวิศวกรรมเครื่องกลและการบินอวกาศ", "nameEn": "Department of Mechanical and Aerospace Engineering" },
+        { "deptCode": "02", "shortName": "ECE", "nameTh": "ภาควิชาวิศวกรรมไฟฟ้าและคอมพิวเตอร์", "nameEn": "Department of Electrical and Computer Engineering" },
+        { "deptCode": "03", "shortName": "PE", "nameTh": "ภาควิชาวิศวกรรมการผลิต", "nameEn": "Department of Production Engineering" },
+        { "deptCode": "04", "shortName": "ChE", "nameTh": "ภาควิชาวิศวกรรมเคมี", "nameEn": "Department of Chemical Engineering" },
+        { "deptCode": "08", "shortName": "CE", "nameTh": "ภาควิชาวิศวกรรมโยธา", "nameEn": "Department of Civil Engineering" },
+        { "deptCode": "10", "shortName": "IE", "nameTh": "ภาควิชาวิศวกรรมอุตสาหการ", "nameEn": "Department of Industrial Engineering" },
+        { "deptCode": "12", "shortName": "MTE", "nameTh": "ภาควิชาวิศวกรรมวัสดุและเทคโนโลยีการผลิต", "nameEn": "Department of Materials and Production Engineering" },
+        { "deptCode": "13", "shortName": "TME", "nameTh": "ภาควิชาวิศวกรรมเครื่องมือและแม่พิมพ์", "nameEn": "Department of Tool and Die Engineering" }
+      ]
+    },
+    {
+      "facultyCode": "02",
+      "nameTh": "คณะครุศาสตร์อุตสาหกรรม",
+      "nameEn": "Faculty of Technical Education",
+      "departments": [
+        { "deptCode": "01", "shortName": "IED", "nameTh": "ภาควิชาครุศาสตร์อุตสาหกรรม", "nameEn": "Department of Industrial Education" },
+        { "deptCode": "02", "shortName": "TED-M", "nameTh": "ภาควิชาครุศาสตร์เครื่องกล", "nameEn": "Department of Mechanical Education" },
+        { "deptCode": "03", "shortName": "TED-E", "nameTh": "ภาควิชาครุศาสตร์ไฟฟ้า", "nameEn": "Department of Electrical Education" },
+        { "deptCode": "04", "shortName": "TED-C", "nameTh": "ภาควิชาครุศาสตร์คอมพิวเตอร์", "nameEn": "Department of Computer Education" },
+        { "deptCode": "05", "shortName": "TED-CE", "nameTh": "ภาควิชาครุศาสตร์โยธา", "nameEn": "Department of Civil Education" }
+      ]
+    },
+    {
+      "facultyCode": "03",
+      "nameTh": "วิทยาลัยเทคโนโลยีอุตสาหกรรม",
+      "nameEn": "College of Industrial Technology",
+      "departments": [
+        { "deptCode": "01", "shortName": "MET", "nameTh": "ภาควิชาเทคโนโลยีวิศวกรรมเครื่องกล", "nameEn": "Department of Mechanical Engineering Technology" },
+        { "deptCode": "02", "shortName": "EET", "nameTh": "ภาควิชาเทคโนโลยีวิศวกรรมไฟฟ้า", "nameEn": "Department of Electrical Engineering Technology" },
+        { "deptCode": "03", "shortName": "CET", "nameTh": "ภาควิชาเทคโนโลยีวิศวกรรมโยธา", "nameEn": "Department of Civil Engineering Technology" },
+        { "deptCode": "05", "shortName": "IPT", "nameTh": "ภาควิชาเทคโนโลยีวิศวกรรมอุตสาหการ", "nameEn": "Department of Industrial Engineering Technology" },
+        { "deptCode": "07", "shortName": "CPT", "nameTh": "ภาควิชาเทคโนโลยีวิศวกรรมคอมพิวเตอร์", "nameEn": "Department of Computer Engineering Technology" },
+        { "deptCode": "08", "shortName": "WET", "nameTh": "ภาควิชาเทคโนโลยีวิศวกรรมการเชื่อม", "nameEn": "Department of Welding Engineering Technology" },
+        { "deptCode": "10", "shortName": "EnET", "nameTh": "ภาควิชาเทคโนโลยีวิศวกรรมอิเล็กทรอนิกส์", "nameEn": "Department of Electronics Engineering Technology" }
+      ]
+    },
+    {
+      "facultyCode": "10",
+      "nameTh": "คณะบริหารธุรกิจ",
+      "nameEn": "Faculty of Business Administration",
+      "departments": [
+        { "deptCode": "01", "shortName": "IBA", "nameTh": "ภาควิชาบริหารธุรกิจอุตสาหกรรม", "nameEn": "Department of Industrial Business Administration" },
+        { "deptCode": "02", "shortName": "ACC", "nameTh": "ภาควิชาการบัญชี", "nameEn": "Department of Accounting" }
+      ]
+    },
+    {
+      "facultyCode": "11",
+      "nameTh": "คณะพัฒนาธุรกิจและอุตสาหกรรม",
+      "nameEn": "Faculty of Business and Industrial Development",
+      "departments": [
+        { "deptCode": "01", "shortName": "BID", "nameTh": "ภาควิชาการพัฒนาธุรกิจอุตสาหกรรม", "nameEn": "Department of Business and Industrial Development" }
+      ]
+    },
+    {
+      "facultyCode": "09",
+      "nameTh": "บัณฑิตวิทยาลัยวิศวกรรมศาสตร์นานาชาติสิรินธร ไทย-เยอรมัน",
+      "nameEn": "The Sirindhorn International Thai-German Graduate School of Engineering (TGGS)",
+      "departments": [
+        { "deptCode": "01", "shortName": "TGGS", "nameTh": "สำนักงานบัณฑิตวิทยาลัย", "nameEn": "Graduate School Office" }
+      ]
+    }
+  ]
+}

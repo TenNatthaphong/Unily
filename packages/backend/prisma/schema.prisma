@@ -8,128 +8,164 @@ datasource db {
 }
 
 model User {
-  id               String            @id @default(uuid())
-  username         String            @unique
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email            String            @unique
-  password         String?
+  password         String
   firstName        String
   lastName         String
   role             Role              @default(STUDENT)
+  status           UserStatus        @default(ACTIVE)
   adminProfile     AdminProfile?
   professorProfile ProfessorProfile?
   studentProfile   StudentProfile?
 }
 
 model StudentProfile {
-  userId      String           @id
+  userId      String           @id @db.Uuid
+  studentCode String           @unique
+  facultyId   String           @db.Uuid
+  deptId      String           @db.Uuid
   entryYear   Int
-  department  String
-  faculty     String
-  gpax        Float            @default(0.00)
   year        Int
+  gpax        Float            @default(0.00)
+  status      StudentStatus    @default(STUDYING)
   records     AcademicRecord[]
   enrollments Enrollment[]
+  department  Department       @relation(fields: [deptId], references: [id])
+  faculty     Faculty          @relation(fields: [facultyId], references: [id])
   user        User             @relation(fields: [userId], references: [id])
 }
 
 model ProfessorProfile {
-  userId        String           @id
-  facultyId     String           @default("04")
-  deptId        String           @default("06")
+  userId     String     @id @db.Uuid
+  facultyId  String     @db.Uuid
+  deptId     String     @db.Uuid
+  department Department @relation(fields: [deptId], references: [id])
+  faculty    Faculty    @relation(fields: [facultyId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+  sections   Section[]
   gradedRecords AcademicRecord[]
-  user          User             @relation(fields: [userId], references: [id])
-  sections      Section[]
 }
 
 model AdminProfile {
-  userId String @id
-  auditLog AuditLog[]
+  userId String @id @db.Uuid
+  auditLogs        AuditLog[]
   user   User   @relation(fields: [userId], references: [id])
 }
 
+model Faculty {
+  id                                         String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  facultyCode                                String             @unique
+  nameTh                                     String
+  nameEn                                     String
+  courses                                    Course[]
+  curriculums                                Curriculum[]
+  Department_Department_facultyCodeToFaculty Department[]       @relation("Department_facultyCodeToFaculty")
+  departments                                Department[]
+  professors                                 ProfessorProfile[]
+  students                                   StudentProfile[]
+}
+
+model Department {
+  id                                      String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  facultyCode                             String
+  deptCode                                String
+  shortName                               String
+  nameTh                                  String
+  nameEn                                  String
+  facultyId                               String             @db.Uuid
+  courses                                 Course[]
+  curriculums                             Curriculum[]
+  Faculty_Department_facultyCodeToFaculty Faculty            @relation("Department_facultyCodeToFaculty", fields: [facultyCode], references: [facultyCode])
+  faculty_id                              Faculty            @relation(fields: [facultyId], references: [id])
+  professors                              ProfessorProfile[]
+  students                                StudentProfile[]
+
+  @@unique([facultyId, shortName])
+  @@unique([facultyId, deptCode])
+}
+
 model Course {
-  id                                            String             @id
-  nameTh                                        String
-  nameEn                                        String
-  credits                                       Int
-  category                                      CourseCategory     @default(CORE_COURSE)
-  maxEntryYear                                  Int                @default(99)
-  labHours                                      Int
-  lectureHours                                  Int
-  selfStudyHours                                Int
-  isWildcard                                    Boolean            @default(false)
-  deptId                                        String
-  facultyId                                     String
-  academicRecords                               AcademicRecord[]
-  curriculumCourses                             CurriculumCourse[]
-  Prerequisite_Prerequisite_courseIdToCourse    Prerequisite[]     @relation("Prerequisite_courseIdToCourse")
-  Prerequisite_Prerequisite_preCourseIdToCourse Prerequisite[]     @relation("Prerequisite_preCourseIdToCourse")
-  sections                                      Section[]
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseCode        String             @unique
+  nameTh            String
+  nameEn            String
+  credits           Int
+  labHours          Int
+  lectureHours      Int
+  selfStudyHours    Int
+  category          CourseCategory     @default(CORE_COURSE)
+  maxEntryYear      Int                @default(99)
+  isWildcard        Boolean            @default(false)
+  deptId            String             @db.Uuid
+  facultyId         String             @db.Uuid
+  academicRecords   AcademicRecord[]
+  department        Department         @relation(fields: [deptId], references: [id])
+  faculty           Faculty            @relation(fields: [facultyId], references: [id])
+  curriculumCourses CurriculumCourse[]
+  prerequisites     Prerequisite[]     @relation("CoursePrerequisites")
+  requiredBy        Prerequisite[]     @relation("RequiredBy")
+  sections          Section[]
 }
 
 model Prerequisite {
-  courseId                                String
-  preCourseId                             String
-  Course_Prerequisite_courseIdToCourse    Course @relation("Prerequisite_courseIdToCourse", fields: [courseId], references: [id])
-  Course_Prerequisite_preCourseIdToCourse Course @relation("Prerequisite_preCourseIdToCourse", fields: [preCourseId], references: [id])
+  id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId         String @db.Uuid
+  requiresCourseId String @db.Uuid
+  course           Course @relation("CoursePrerequisites", fields: [courseId], references: [id])
+  requiresCourse   Course @relation("RequiredBy", fields: [requiresCourseId], references: [id])
 
-  @@id([courseId, preCourseId])
+  @@unique([courseId, requiresCourseId])
 }
 
 model Curriculum {
-  id                String             @id @default(uuid())
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  curriculumCode    String             @unique
   name              String
-  facultyId         String
-  deptId            String
-  createdAt         DateTime           @default(now())
   description       String?
-  updatedAt         DateTime           @updatedAt
   year              Int
+  deptId            String             @db.Uuid
+  facultyId         String             @db.Uuid
+  status            CurriculumStatus   @default(ACTIVE)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  department        Department         @relation(fields: [deptId], references: [id])
+  faculty           Faculty            @relation(fields: [facultyId], references: [id])
   curriculumCourses CurriculumCourse[]
 }
 
 model CurriculumCourse {
-  id           String     @id @default(uuid())
-  curriculumId String
-  courseId     String
-  semester     Int
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  curriculumId String     @db.Uuid
+  courseId     String     @db.Uuid
   year         Int
+  semester     Int
   positionX    Int
   positionY    Int
   course       Course     @relation(fields: [courseId], references: [id])
   curriculum   Curriculum @relation(fields: [curriculumId], references: [id])
 
-  @@unique([curriculumId, courseId, semester])
+  @@unique([curriculumId, courseId])
 }
 
 model Section {
-  id            String            @id @default(uuid())
-  courseId      String
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  courseId      String           @db.Uuid
+  professorId   String           @db.Uuid
   sectionNo     Int
   capacity      Int
-  enrolledCount Int               @default(0)
-  semester      Int
+  enrolledCount Int              @default(0)
   academicYear  Int
-  professorId   String?
+  semester      Int
   enrollments   Enrollment[]
-  schedules     Schedule[]
-  course        Course            @relation(fields: [courseId], references: [id])
-  professor     ProfessorProfile? @relation(fields: [professorId], references: [userId])
-}
-
-model Schedule {
-  id        String  @id @default(uuid())
-  sectionId String
-  day       String
-  startTime String
-  endTime   String
-  section   Section @relation(fields: [sectionId], references: [id])
+  course        Course           @relation(fields: [courseId], references: [id])
+  professor     ProfessorProfile @relation(fields: [professorId], references: [userId])
 }
 
 model Enrollment {
-  id        String           @id @default(uuid())
-  studentId String
-  sectionId String
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId String           @db.Uuid
+  sectionId String           @db.Uuid
   status    EnrollmentStatus @default(SUCCESS)
   dropDate  DateTime?
   createdAt DateTime         @default(now())
@@ -138,71 +174,65 @@ model Enrollment {
 }
 
 model AcademicRecord {
-  id         String            @id @default(uuid())
-  studentId  String
-  courseId   String
-  grade      String
-  gradedById String?
-  course     Course            @relation(fields: [courseId], references: [id])
-  gradedBy   ProfessorProfile? @relation(fields: [gradedById], references: [userId])
-  student    StudentProfile    @relation(fields: [studentId], references: [userId])
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId    String         @db.Uuid
+  courseId     String         @db.Uuid
+  academicYear Int
+  semester     Int
+  grade        String
+  gradedById   String           @db.Uuid
+  gradedBy     ProfessorProfile @relation(fields: [gradedById], references: [userId])
+  course       Course           @relation(fields: [courseId], references: [id])
+  student      StudentProfile   @relation(fields: [studentId], references: [userId])
 }
 
 model SemesterConfig {
-  id           String   @id @default(uuid())
-  semester     Int
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   academicYear Int
+  semester     Int
   regStart     DateTime
   regEnd       DateTime
   withdrawEnd  DateTime
   isCurrent    Boolean  @default(false)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model kv_store_105269f1 {
-  key   String @id
-  value Json
-
-  @@index([key])
-  @@index([key], map: "kv_store_105269f1_key_idx1")
-  @@index([key], map: "kv_store_105269f1_key_idx2")
-  @@index([key], map: "kv_store_105269f1_key_idx3")
-}
-
 model AuditLog {
-  id          String   @id @default(uuid())
-  adminId     String
-  adminName   String
-  action      Action
-  target      String   // เช่น "หลักสูตรวิทยาการคอมพิวเตอร์ 2567"
-  createdAt   DateTime @default(now())
-  admin       AdminProfile @relation(fields: [adminId], references: [userId])
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId   String   @db.Uuid
+  adminName String
+  target    String
+  action    Action
+  createdAt DateTime @default(now())
+  user      AdminProfile     @relation(fields: [adminId], references: [userId])
 }
 
-// สำหรับข้อ 2: กิจกรรมและแบนเนอร์ประชาสัมพันธ์
 model Event {
-  id          String    @id @default(uuid())
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title       String
-  description String?   @db.Text
+  description String?
   startDate   DateTime
   endDate     DateTime
-  category    String    // เช่น "ACADEMIC", "REGISTRATION", "ACTIVITY"
-  bannerUrl   String?   // เก็บ Path ของรูปภาพ
-  isPublished Boolean   @default(false)
-  updatedBy   String
-  updatedAt   DateTime  @updatedAt
-}
-
-enum Action {
-  CREATE
-  UPDATE
-  DELETE
+  location    String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  category    EventCategory @default(GENERAL)
 }
 
 enum Role {
   STUDENT
   PROFESSOR
   ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum StudentStatus {
+  STUDYING
+  GRADUATED
+  RETIRED
 }
 
 enum CourseCategory {
@@ -217,4 +247,23 @@ enum EnrollmentStatus {
   SUCCESS
   DROPPED
   WITHDRAWN
+}
+
+enum CurriculumStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum EventCategory {
+  GENERAL
+  ACADEMIC
+  EXAM
+  HOLIDAY
+  ACTIVITY
+}
+
+enum Action {
+  CREATE
+  UPDATE
+  DELETE
 }

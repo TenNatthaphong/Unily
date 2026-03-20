@@ -5,89 +5,113 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import * as fs from 'fs';
 import * as path from 'path';
 
-// 1. ตั้งค่าการเชื่อมต่อผ่าน pg Pool
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-
-// 2. สร้าง PrismaClient โดยใช้ Adapter
+const adapter = new PrismaPg(pool as any);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log('🌱 Starting Seeding Process (with Native Adapter)...');
+  console.log('🌱 Starting Seeding Process (Auto-ID Generation)...');
 
-  // อ่านไฟล์ JSON
-  const filePath = path.join(__dirname, 'courses.json');
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`❌ Error: courses.json not found at ${filePath}`);
+  // 1. Load Data
+  const facDeptData = JSON.parse(fs.readFileSync(path.join(__dirname, 'facNdept.json'), 'utf-8')).faculties;
+  const coursesData = JSON.parse(fs.readFileSync(path.join(__dirname, 'courses.json'), 'utf-8'));
+
+  const facultyMap = new Map<string, string>(); // [facultyCode]: uuid
+  const deptMap = new Map<string, string>();    // [facCode-deptCode]: uuid
+  const courseCodeToUuid = new Map<string, string>(); // [courseCode]: uuid
+
+  // --- STEP 1: Faculty & Department ---
+  for (const f of facDeptData) {
+    const faculty = await prisma.faculty.upsert({
+      where: { facultyCode: f.facultyCode },
+      update: { nameTh: f.nameTh, nameEn: f.nameEn },
+      create: { 
+        facultyCode: f.facultyCode, 
+        nameTh: f.nameTh, 
+        nameEn: f.nameEn 
+        // ไม่ต้องส่ง id: ให้ DB เจนเอง
+      }
+    });
+    facultyMap.set(f.facultyCode, faculty.id);
+
+    for (const d of f.departments) {
+      const dept = await prisma.department.upsert({
+        where: { 
+          facultyId_deptCode: { facultyId: faculty.id, deptCode: d.deptCode } 
+        },
+        update: { shortName: d.shortName, nameTh: d.nameTh, nameEn: d.nameEn },
+        create: { 
+          deptCode: d.deptCode, 
+          facultyCode: f.facultyCode,
+          shortName: d.shortName, 
+          nameTh: d.nameTh, 
+          nameEn: d.nameEn, 
+          facultyId: faculty.id 
+        }
+      });
+      deptMap.set(`${f.facultyCode}-${d.deptCode}`, dept.id);
+    }
   }
-  
-  const coursesData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  console.log(`📊 Found ${coursesData.length} courses in JSON.`);
 
-  // 3. ขั้นตอนการ Upsert รายวิชา
-  console.log('⏳ Upserting Courses...');
+  // --- STEP 2: Courses ---
   for (const item of coursesData) {
-    const cleanNameTh = item.nameTh.split(/\s\d\(/)[0].trim();
+    const realFacultyUuid = facultyMap.get(item.facultyId);
+    const realDeptUuid = deptMap.get(`${item.facultyId}-${item.deptId}`);
 
-    await prisma.course.upsert({
-      where: { id: item.id },
+    if (!realFacultyUuid || !realDeptUuid) continue;
+
+    const course = await prisma.course.upsert({
+      where: { courseCode: item.id }, // item.id ใน JSON คือรหัสวิชา เช่น '040613101'
       update: {
-        nameTh: cleanNameTh,
+        nameTh: item.nameTh.split(/\s\d\(/)[0].trim(),
         nameEn: item.nameEn || '',
         credits: item.credits,
-        lectureHours: item.lectureHours,
-        labHours: item.labHours,
-        selfStudyHours: item.selfStudyHours,
-        category: item.category as CourseCategory,
-        facultyId: item.facultyId,
-        deptId: item.deptId,
-        isWildcard: item.isWildcard,
+        facultyId: realFacultyUuid,
+        deptId: realDeptUuid,
       },
       create: {
-        id: item.id,
-        nameTh: cleanNameTh,
+        courseCode: item.id, // เก็บ รหัสวิชา ลงใน courseCode แทน id
+        nameTh: item.nameTh.split(/\s\d\(/)[0].trim(),
         nameEn: item.nameEn || '',
         credits: item.credits,
         lectureHours: item.lectureHours,
         labHours: item.labHours,
         selfStudyHours: item.selfStudyHours,
-        category: item.category as CourseCategory,
-        maxEntryYear: 99,
-        facultyId: item.facultyId,
-        deptId: item.deptId,
-        isWildcard: item.isWildcard,
+        facultyId: realFacultyUuid,
+        deptId: realDeptUuid,
+        // id จะถูกเจนอัตโนมัติเป็น UUID
       },
     });
+    courseCodeToUuid.set(item.id, course.id);
   }
 
-  // 4. เชื่อมความสัมพันธ์ Prerequisite
-  console.log('🔗 Connecting Prerequisites...');
+  // --- STEP 3: Prerequisites ---
   for (const item of coursesData) {
-    if (item.prerequisites && Array.isArray(item.prerequisites)) {
-      for (const preId of item.prerequisites) {
-        try {
-          await prisma.prerequisite.upsert({
-            where: {
-              courseId_preCourseId: {
-                courseId: item.id,
-                preCourseId: preId,
-              },
+    const currentUuid = courseCodeToUuid.get(item.id);
+    if (!currentUuid || !item.prerequisites) continue;
+
+    for (const preCode of item.prerequisites) {
+      const preUuid = courseCodeToUuid.get(preCode);
+      if (preUuid) {
+        await prisma.prerequisite.upsert({
+          where: {
+            courseId_requiresCourseId: {
+              courseId: currentUuid,
+              requiresCourseId: preUuid,
             },
-            update: {},
-            create: {
-              courseId: item.id,
-              preCourseId: preId,
-            },
-          });
-        } catch (error) {
-          console.warn(`⚠️ Warning: Could not connect ${preId} for ${item.id}`);
-        }
+          },
+          update: {},
+          create: {
+            courseId: currentUuid,
+            requiresCourseId: preUuid,
+          },
+        });
       }
     }
   }
 
-  console.log('🚀 Seeding Completed Successfully!');
+  console.log('🚀 Seeding Completed with Auto-generated UUIDs!');
 }
 
 main()

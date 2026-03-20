@@ -1,26 +1,38 @@
-import { IsString, IsInt, Min, Max, IsOptional } from 'class-validator';
+import { IsString, IsInt, IsArray, ValidateNested } from 'class-validator';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
-export class CreateCurriculumItemDto {
+class CurriculumItemDto {
+
   @IsString()
+  @ApiProperty({example: '04062566'})
   curriculumId: string;
 
   @IsString()
+  @ApiProperty({example: '040613601'})
   courseId: string;
 
   @IsInt()
-  @Min(1)
-  @Max(8)
+  @ApiProperty({example: 1})
+  positionX: number;
+
+  @IsInt()
+  @ApiProperty({example: 1})
+  positionY: number;
+
+  @IsInt()
+  @ApiProperty({example: 1, description: "Year of the course"})
+  year: number;
+
+  @IsInt()
+  @ApiProperty({example: 1, description: "Semester of the course"})
   semester: number;
+}
 
-  @IsInt()
-  @IsOptional()
-  year?: number;
-
-  @IsInt()
-  @IsOptional()
-  positionX?: number = 0;
-
-  @IsInt()
-  @IsOptional()
-  positionY?: number = 0;
+export class CurriculumItemWithoutIdDto extends OmitType(CurriculumItemDto, ['curriculumId'] as const) {}
+export class CreateCurriculumItemDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CurriculumItemWithoutIdDto) // ใช้ Class ใหม่ที่เรา Omit ออกมา
+  items: CurriculumItemWithoutIdDto[]; 
 }

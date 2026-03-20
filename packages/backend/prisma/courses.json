@@ -11,8 +11,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 317, 318, 319, 320, 565]"
+    "prerequisites": []
+    
   },
   {
     "id": "080103002",
@@ -26,8 +26,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103001"],
-    "reference": "[cite: 321, 322, 323, 324, 568]"
+    "prerequisites": ["080103001"]
+    
   },
   {
     "id": "080103030",
@@ -41,8 +41,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"],
-    "reference": "[cite: 326, 571]"
+    "prerequisites": ["080103002"]
+    
   },
   {
     "id": "080103032",
@@ -56,8 +56,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"],
-    "reference": "[cite: 326, 572]"
+    "prerequisites": ["080103002"]
+    
   },
   {
     "id": "080103034",
@@ -71,8 +71,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"],
-    "reference": "[cite: 326, 573]"
+    "prerequisites": ["080103002"]
+    
   },
   {
     "id": "080103035",
@@ -86,8 +86,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"],
-    "reference": "[cite: 326, 574]"
+    "prerequisites": ["080103002"]
+    
   },
   {
     "id": "040003004",
@@ -101,8 +101,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 329, 413]"
+    "prerequisites": []
+    
   },
   {
     "id": "040113005",
@@ -116,8 +116,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 333, 415]"
+    "prerequisites": []
+    
   },
   {
     "id": "040313016",
@@ -131,8 +131,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 333, 418]"
+    "prerequisites": []
+    
   },
   {
     "id": "040413001",
@@ -146,8 +146,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "04",
-    "prerequisites": [],
-    "reference": "[cite: 333, 419]"
+    "prerequisites": []
+    
   },
   {
     "id": "040433002",
@@ -161,8 +161,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "04",
-    "prerequisites": [],
-    "reference": "[cite: 333, 420]"
+    "prerequisites": []
+    
   },
   {
     "id": "080203901",
@@ -176,8 +176,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 340, 576]"
+    "prerequisites": []
+    
   },
   {
     "id": "080203904",
@@ -191,8 +191,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 340, 578]"
+    "prerequisites": []
+    
   },
   {
     "id": "080203905",
@@ -206,8 +206,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 340, 580]"
+    "prerequisites": []
+    
   },
   {
     "id": "080303601",
@@ -221,8 +221,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 347, 589]"
+    "prerequisites": []
+    
   },
   {
     "id": "080303606",
@@ -236,8 +236,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 350, 591]"
+    "prerequisites": []
+    
   },
   {
     "id": "080303501",
@@ -251,8 +251,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 357, 583]"
+    "prerequisites": []
+    
   },
   {
     "id": "080303503",
@@ -266,8 +266,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 360, 585]"
+    "prerequisites": []
+    
   },
   {
     "id": "080303504",
@@ -281,8 +281,8 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 362, 587]"
+    "prerequisites": []
+    
   },
   {
     "id": "040203101",
@@ -296,8 +296,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 371, 415]"
+    "prerequisites": []
+    
   },
   {
     "id": "040503011",
@@ -311,8 +311,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "05",
-    "prerequisites": [],
-    "reference": "[cite: 371, 423]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613103",
@@ -326,8 +326,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 371, 427]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613104",
@@ -341,8 +341,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040203101"],
-    "reference": "[cite: 371, 429]"
+    "prerequisites": ["040203101"]
+    
   },
   {
     "id": "040613105",
@@ -356,8 +356,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613104"],
-    "reference": "[cite: 371, 431]"
+    "prerequisites": ["040613104"]
+    
   },
   {
     "id": "040613100",
@@ -371,8 +371,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 371, 425]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613201",
@@ -386,8 +386,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 371, 451]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613203",
@@ -401,8 +401,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 372, 453]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613204",
@@ -416,8 +416,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613203"],
-    "reference": "[cite: 372, 455]"
+    "prerequisites": ["040613203"]
+    
   },
   {
     "id": "040613205",
@@ -431,8 +431,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 372, 457]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613206",
@@ -446,8 +446,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613205"],
-    "reference": "[cite: 372, 459]"
+    "prerequisites": ["040613205"]
+    
   },
   {
     "id": "040613301",
@@ -461,8 +461,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 372, 464]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613302",
@@ -476,8 +476,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 372, 467]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613303",
@@ -491,8 +491,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 372, 469]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613306",
@@ -506,8 +506,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"],
-    "reference": "[cite: 372, 477]"
+    "prerequisites": ["040613302"]
+    
   },
   {
     "id": "040613501",
@@ -521,8 +521,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613100"],
-    "reference": "[cite: 372, 490]"
+    "prerequisites": ["040613100"]
+    
   },
   {
     "id": "040613502",
@@ -536,8 +536,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 372, 492]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613601",
@@ -551,8 +551,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613100"],
-    "reference": "[cite: 372, 505]"
+    "prerequisites": ["040613100"]
+    
   },
   {
     "id": "040613701",
@@ -566,8 +566,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613205"],
-    "reference": "[cite: 372, 520]"
+    "prerequisites": ["040613205"]
+    
   },
   {
     "id": "040613141",
@@ -581,8 +581,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 375, 441]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613142",
@@ -596,8 +596,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613141"],
-    "reference": "[cite: 378, 443]"
+    "prerequisites": ["040613141"]
+    
   },
   {
     "id": "040613130",
@@ -611,8 +611,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 383, 437]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613131",
@@ -626,8 +626,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613130"],
-    "reference": "[cite: 386, 438]"
+    "prerequisites": ["040613130"]
+    
   },
   {
     "id": "040613132",
@@ -641,8 +641,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613131"],
-    "reference": "[cite: 386, 439]"
+    "prerequisites": ["040613131"]
+    
   },
   {
     "id": "040613111",
@@ -656,8 +656,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 393, 433]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613112",
@@ -671,8 +671,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 393, 435]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613151",
@@ -686,8 +686,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 393, 445]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613152",
@@ -701,8 +701,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 393, 447]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613153",
@@ -716,8 +716,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 393, 449]"
+    "prerequisites": []
+    
   },
   {
     "id": "040613207",
@@ -731,8 +731,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613204"],
-    "reference": "[cite: 393, 461]"
+    "prerequisites": ["040613204"]
+    
   },
   {
     "id": "040613304",
@@ -746,8 +746,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"],
-    "reference": "[cite: 393, 472]"
+    "prerequisites": ["040613302"]
+    
   },
   {
     "id": "040613305",
@@ -761,8 +761,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"],
-    "reference": "[cite: 393, 475]"
+    "prerequisites": ["040613302"]
+    
   },
   {
     "id": "040613307",
@@ -776,8 +776,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"],
-    "reference": "[cite: 393, 479]"
+    "prerequisites": ["040613302"]
+    
   },
   {
     "id": "040613308",
@@ -791,8 +791,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"],
-    "reference": "[cite: 393, 482]"
+    "prerequisites": ["040613302"]
+    
   },
   {
     "id": "040613411",
@@ -806,8 +806,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 393, 484]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613412",
@@ -821,8 +821,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613411"],
-    "reference": "[cite: 393, 486]"
+    "prerequisites": ["040613411"]
+    
   },
   {
     "id": "040613421",
@@ -836,8 +836,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613204"],
-    "reference": "[cite: 395, 488]"
+    "prerequisites": ["040613204"]
+    
   },
   {
     "id": "040613503",
@@ -851,8 +851,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502"],
-    "reference": "[cite: 395, 494]"
+    "prerequisites": ["040613502"]
+    
   },
   {
     "id": "040613504",
@@ -866,8 +866,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502"],
-    "reference": "[cite: 395, 497]"
+    "prerequisites": ["040613502"]
+    
   },
   {
     "id": "040613505",
@@ -881,8 +881,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613100"],
-    "reference": "[cite: 395, 499]"
+    "prerequisites": ["040613100"]
+    
   },
   {
     "id": "040613506",
@@ -896,8 +896,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613505"],
-    "reference": "[cite: 395, 502]"
+    "prerequisites": ["040613505"]
+    
   },
   {
     "id": "040613602",
@@ -911,8 +911,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502", "040613601"],
-    "reference": "[cite: 395, 508]"
+    "prerequisites": ["040613502", "040613601"]
+    
   },
   {
     "id": "040613603",
@@ -926,8 +926,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613203", "040613601"],
-    "reference": "[cite: 395, 511]"
+    "prerequisites": ["040613203", "040613601"]
+    
   },
   {
     "id": "040613604",
@@ -941,8 +941,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502", "040613601"],
-    "reference": "[cite: 395, 514]"
+    "prerequisites": ["040613502", "040613601"]
+    
   },
   {
     "id": "040613605",
@@ -956,8 +956,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502", "040613601"],
-    "reference": "[cite: 395, 517]"
+    "prerequisites": ["040613502", "040613601"]
+    
   },
   {
     "id": "040613702",
@@ -971,8 +971,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"],
-    "reference": "[cite: 395, 523]"
+    "prerequisites": ["040613701"]
+    
   },
   {
     "id": "040613703",
@@ -986,8 +986,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"],
-    "reference": "[cite: 395, 526]"
+    "prerequisites": ["040613701"]
+    
   },
   {
     "id": "040613704",
@@ -1001,8 +1001,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613702"],
-    "reference": "[cite: 395, 528]"
+    "prerequisites": ["040613702"]
+    
   },
   {
     "id": "040613705",
@@ -1016,8 +1016,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"],
-    "reference": "[cite: 395, 530]"
+    "prerequisites": ["040613701"]
+    
   },
   {
     "id": "040613706",
@@ -1031,8 +1031,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"],
-    "reference": "[cite: 395, 533]"
+    "prerequisites": ["040613701"]
+    
   },
   {
     "id": "040613707",
@@ -1046,8 +1046,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"],
-    "reference": "[cite: 395, 535]"
+    "prerequisites": ["040613701"]
+    
   },
   {
     "id": "040613801",
@@ -1061,8 +1061,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613104", "040613201"],
-    "reference": "[cite: 395, 538]"
+    "prerequisites": ["040613104", "040613201"]
+    
   },
   {
     "id": "040613802",
@@ -1076,8 +1076,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 395, 541]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613803",
@@ -1091,8 +1091,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 397, 544]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613804",
@@ -1106,8 +1106,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613104"],
-    "reference": "[cite: 397, 547]"
+    "prerequisites": ["040613104"]
+    
   },
   {
     "id": "040613805",
@@ -1121,8 +1121,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613801"],
-    "reference": "[cite: 397, 549]"
+    "prerequisites": ["040613801"]
+    
   },
   {
     "id": "040613806",
@@ -1136,8 +1136,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613801"],
-    "reference": "[cite: 397, 551]"
+    "prerequisites": ["040613801"]
+    
   },
   {
     "id": "040613901",
@@ -1151,8 +1151,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613112"],
-    "reference": "[cite: 397, 553]"
+    "prerequisites": ["040613112"]
+    
   },
   {
     "id": "040613902",
@@ -1166,8 +1166,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"],
-    "reference": "[cite: 397, 555]"
+    "prerequisites": ["040613201"]
+    
   },
   {
     "id": "040613903",
@@ -1181,8 +1181,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613301"],
-    "reference": "[cite: 397, 557]"
+    "prerequisites": ["040613301"]
+    
   },
   {
     "id": "040613904",
@@ -1196,8 +1196,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613901"],
-    "reference": "[cite: 397, 559]"
+    "prerequisites": ["040613901"]
+    
   },
   {
     "id": "040613905",
@@ -1211,8 +1211,8 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 397, 562]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-01",
@@ -1226,8 +1226,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-02",
@@ -1241,8 +1241,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-03",
@@ -1256,8 +1256,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-04",
@@ -1271,8 +1271,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-05",
@@ -1286,8 +1286,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-06",
@@ -1301,8 +1301,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-07",
@@ -1316,8 +1316,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-08",
@@ -1331,8 +1331,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-09",
@@ -1346,8 +1346,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "CS-ELEC-10",
@@ -1361,8 +1361,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-01",
@@ -1376,8 +1376,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-02",
@@ -1391,8 +1391,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-03",
@@ -1406,8 +1406,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-04",
@@ -1421,8 +1421,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-05",
@@ -1436,8 +1436,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-06",
@@ -1451,8 +1451,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-07",
@@ -1466,8 +1466,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-08",
@@ -1481,8 +1481,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-09",
@@ -1496,8 +1496,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "FREE-ELEC-10",
@@ -1511,8 +1511,8 @@
     "isWildcard": true,
     "facultyId": "00",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-01",
@@ -1526,8 +1526,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-02",
@@ -1541,8 +1541,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-03",
@@ -1556,8 +1556,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-04",
@@ -1571,8 +1571,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-05",
@@ -1586,8 +1586,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-06",
@@ -1601,8 +1601,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-07",
@@ -1616,8 +1616,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-08",
@@ -1631,8 +1631,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-09",
@@ -1646,8 +1646,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SCI-ELEC-10",
@@ -1661,8 +1661,8 @@
     "isWildcard": true,
     "facultyId": "04",
     "deptId": "00",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-01",
@@ -1676,8 +1676,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-02",
@@ -1691,8 +1691,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-03",
@@ -1706,8 +1706,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-04",
@@ -1721,8 +1721,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-05",
@@ -1736,8 +1736,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-06",
@@ -1751,8 +1751,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-07",
@@ -1766,8 +1766,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-08",
@@ -1781,8 +1781,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-09",
@@ -1796,8 +1796,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SOC-ELEC-10",
@@ -1811,8 +1811,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "02",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-01",
@@ -1826,8 +1826,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-02",
@@ -1841,8 +1841,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-03",
@@ -1856,8 +1856,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-04",
@@ -1871,8 +1871,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-05",
@@ -1886,8 +1886,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-06",
@@ -1901,8 +1901,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-07",
@@ -1916,8 +1916,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-08",
@@ -1931,8 +1931,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-09",
@@ -1946,8 +1946,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "HUM-ELEC-10",
@@ -1961,8 +1961,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-01",
@@ -1976,8 +1976,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-02",
@@ -1991,8 +1991,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-03",
@@ -2006,8 +2006,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-04",
@@ -2021,8 +2021,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-05",
@@ -2036,8 +2036,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-06",
@@ -2051,8 +2051,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-07",
@@ -2066,8 +2066,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-08",
@@ -2081,8 +2081,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-09",
@@ -2096,8 +2096,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "LANG-ELEC-10",
@@ -2111,8 +2111,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-01",
@@ -2126,8 +2126,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-02",
@@ -2141,8 +2141,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-03",
@@ -2156,8 +2156,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-04",
@@ -2171,8 +2171,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-05",
@@ -2186,8 +2186,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-06",
@@ -2201,8 +2201,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-07",
@@ -2216,8 +2216,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-08",
@@ -2231,8 +2231,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-09",
@@ -2246,8 +2246,8 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   },
   {
     "id": "SR-ELEC-10",
@@ -2261,7 +2261,7 @@
     "isWildcard": true,
     "facultyId": "08",
     "deptId": "03",
-    "prerequisites": [],
-    "reference": "[cite: 408, 410, 412]"
+    "prerequisites": []
+    
   }
 ]

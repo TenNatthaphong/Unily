@@ -1,8 +1,7 @@
-import { Controller, Get, Query, Param } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { CourseService } from './course.service';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
-
-@ApiTags('courses') // ชื่อกลุ่มในหน้า Swagger
+import { ApiQuery } from '@nestjs/swagger';
+// ชื่อกลุ่มในหน้า Swagger
 @Controller('courses')
 export class CourseController {
   constructor(
