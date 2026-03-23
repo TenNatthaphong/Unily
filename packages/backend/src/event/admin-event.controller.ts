@@ -1,13 +1,17 @@
-import { Body, Param, Post, Delete, Patch } from '@nestjs/common';
+import { Body, Param, Post, Delete, Patch, UseGuards, UseInterceptors } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuditInterceptor } from 'src/common/interceptor/audit.interceptor';
-import { UseInterceptors } from '@nestjs/common';
+import { AuditInterceptor } from '../common/interceptor/audit.interceptor';
+import { Role } from '@prisma/client';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 
-
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.ADMIN)
 @UseInterceptors(AuditInterceptor)
 @Controller('admin/events')
 export class AdminEventController {

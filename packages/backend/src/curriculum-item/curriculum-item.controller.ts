@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { CurriculumItemService } from './curriculum-item.service';
 import { CreateCurriculumItemDto } from './dto/create-curriculum-item.dto';
 
@@ -6,4 +6,8 @@ import { CreateCurriculumItemDto } from './dto/create-curriculum-item.dto';
 export class CurriculumItemController {
   constructor(private readonly itemService: CurriculumItemService) {}
 
+  @Get()
+  findById(@Query('code') code: string) {
+    return this.itemService.findById(code);
+  } 
 }

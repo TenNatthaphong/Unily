@@ -5,13 +5,14 @@
       "nameTh": "คณะวิทยาศาสตร์ประยุกต์",
       "nameEn": "Faculty of Applied Science",
       "departments": [
+        { "deptCode": "00", "shortName": "Sci-Central", "nameTh": "ส่วนกลางคณะวิทยาศาสตร์ประยุกต์", "nameEn": "Applied Science Central" },
         { "deptCode": "01", "shortName": "MA", "nameTh": "ภาควิชาคณิตศาสตร์", "nameEn": "Department of Mathematics" },
         { "deptCode": "02", "shortName": "IC", "nameTh": "ภาควิชาเคมีอุตสาหกรรม", "nameEn": "Department of Industrial Chemistry" },
         { "deptCode": "03", "shortName": "IMI", "nameTh": "ภาควิชาฟิสิกส์อุตสาหกรรมและอุปกรณ์การแพทย์", "nameEn": "Department of Industrial Physics and Medical Instrumentation" },
+        { "deptCode": "04", "shortName": "BT", "nameTh": "ภาควิชาเทคโนโลยีชีวภาพ", "nameEn": "Department of Biotechnology" },
         { "deptCode": "05", "shortName": "AS", "nameTh": "ภาควิชาสถิติประยุกต์", "nameEn": "Department of Applied Statistics" },
         { "deptCode": "06", "shortName": "CS", "nameTh": "ภาควิชาวิทยาการคอมพิวเตอร์และสารสนเทศ", "nameEn": "Department of Computer and Information Science" },
-        { "deptCode": "07", "shortName": "AFET", "nameTh": "ภาควิชาเทคโนโลยีอุตสาหกรรมเกษตร อาหาร และสิ่งแวดล้อม", "nameEn": "Department of Agro-Industrial, Food and Environmental Technology" },
-        { "deptCode": "08", "shortName": "BT", "nameTh": "ภาควิชาเทคโนโลยีชีวภาพ", "nameEn": "Department of Biotechnology" }
+        { "deptCode": "07", "shortName": "AFET", "nameTh": "ภาควิชาเทคโนโลยีอุตสาหกรรมเกษตร อาหาร และสิ่งแวดล้อม", "nameEn": "Department of Agro-Industrial, Food and Environmental Technology" }
       ]
     },
     {
@@ -19,6 +20,7 @@
       "nameTh": "คณะศิลปศาสตร์ประยุกต์",
       "nameEn": "Faculty of Applied Arts",
       "departments": [
+        { "deptCode": "00", "shortName": "Arts-Central", "nameTh": "ส่วนกลางคณะศิลปศาสตร์ประยุกต์", "nameEn": "Applied Arts Central" },
         { "deptCode": "01", "shortName": "LANG", "nameTh": "ภาควิชาภาษา", "nameEn": "Department of Languages" },
         { "deptCode": "02", "shortName": "SOC", "nameTh": "ภาควิชาสังคมศาสตร์", "nameEn": "Department of Social Sciences" },
         { "deptCode": "03", "shortName": "HUM", "nameTh": "ภาควิชามนุษยศาสตร์", "nameEn": "Department of Humanities" }
@@ -88,6 +90,14 @@
       "nameEn": "The Sirindhorn International Thai-German Graduate School of Engineering (TGGS)",
       "departments": [
         { "deptCode": "01", "shortName": "TGGS", "nameTh": "สำนักงานบัณฑิตวิทยาลัย", "nameEn": "Graduate School Office" }
+      ]
+    },
+    {
+      "facultyCode": "00",
+      "nameTh": "สำนักงานอธิการบดี",
+      "nameEn": "Office of the President",
+      "departments": [
+        { "deptCode": "00", "shortName": "President-Office", "nameTh": "สำนักงานอธิการบดี", "nameEn": "Office of the President" }
       ]
     }
   ]

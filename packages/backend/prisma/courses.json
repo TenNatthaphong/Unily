@@ -1,6 +1,6 @@
 [
   {
-    "id": "080103001",
+    "code": "080103001",
     "nameTh": "ภาษาอังกฤษ 1",
     "nameEn": "English I",
     "credits": 3,
@@ -15,7 +15,7 @@
     
   },
   {
-    "id": "080103002",
+    "code": "080103002",
     "nameTh": "ภาษาอังกฤษ 2",
     "nameEn": "English II",
     "credits": 3,
@@ -26,11 +26,13 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103001"]
+    "prerequisites": [
+      "080103001"
+    ]
     
   },
   {
-    "id": "080103030",
+    "code": "080103030",
     "nameTh": "การอ่านเชิงวิชาการ",
     "nameEn": "Academic Reading",
     "credits": 3,
@@ -41,11 +43,13 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"]
+    "prerequisites": [
+      "080103002"
+    ]
     
   },
   {
-    "id": "080103032",
+    "code": "080103032",
     "nameTh": "การเขียนย่อหน้า",
     "nameEn": "Paragraph Writing",
     "credits": 3,
@@ -56,11 +60,13 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"]
+    "prerequisites": [
+      "080103002"
+    ]
     
   },
   {
-    "id": "080103034",
+    "code": "080103034",
     "nameTh": "การสนทนาภาษาอังกฤษ",
     "nameEn": "English Conversation",
     "credits": 3,
@@ -71,11 +77,13 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"]
+    "prerequisites": [
+      "080103002"
+    ]
     
   },
   {
-    "id": "080103035",
+    "code": "080103035",
     "nameTh": "ทักษะเพื่อการนำเสนอ",
     "nameEn": "Oral Presentation",
     "credits": 3,
@@ -86,11 +94,13 @@
     "isWildcard": false,
     "facultyId": "08",
     "deptId": "01",
-    "prerequisites": ["080103002"]
+    "prerequisites": [
+      "080103002"
+    ]
     
   },
   {
-    "id": "040003004",
+    "code": "040003004",
     "nameTh": "กระบวนการคิดเชิงออกแบบ",
     "nameEn": "Design Thinking",
     "credits": 3,
@@ -105,7 +115,7 @@
     
   },
   {
-    "id": "040113005",
+    "code": "040113005",
     "nameTh": "เคมีในชีวิตประจำวัน",
     "nameEn": "Chemistry in Everyday Life",
     "credits": 3,
@@ -120,7 +130,7 @@
     
   },
   {
-    "id": "040313016",
+    "code": "040313016",
     "nameTh": "ฟิสิกส์ในชีวิตประจำวัน",
     "nameEn": "Physics in Daily Life",
     "credits": 3,
@@ -135,7 +145,7 @@
     
   },
   {
-    "id": "040413001",
+    "code": "040413001",
     "nameTh": "ชีววิทยาในชีวิตประจำวัน",
     "nameEn": "Biology in Daily Life",
     "credits": 3,
@@ -150,7 +160,7 @@
     
   },
   {
-    "id": "040433002",
+    "code": "040433002",
     "nameTh": "อาหารในชีวิตประจำวัน",
     "nameEn": "Food in Daily Life",
     "credits": 3,
@@ -165,7 +175,7 @@
     
   },
   {
-    "id": "080203901",
+    "code": "080203901",
     "nameTh": "มนุษย์กับสังคม",
     "nameEn": "Man and Society",
     "credits": 3,
@@ -180,7 +190,7 @@
     
   },
   {
-    "id": "080203904",
+    "code": "080203904",
     "nameTh": "กฎหมายในชีวิตประจำวัน",
     "nameEn": "Law for Everyday Life",
     "credits": 3,
@@ -195,7 +205,7 @@
     
   },
   {
-    "id": "080203905",
+    "code": "080203905",
     "nameTh": "เศรษฐกิจกับชีวิตประจำวัน",
     "nameEn": "Economy and Everyday Life",
     "credits": 3,
@@ -210,7 +220,7 @@
     
   },
   {
-    "id": "080303601",
+    "code": "080303601",
     "nameTh": "มนุษยสัมพันธ์",
     "nameEn": "Human Relations",
     "credits": 3,
@@ -225,7 +235,7 @@
     
   },
   {
-    "id": "080303606",
+    "code": "080303606",
     "nameTh": "การคิดเชิงระบบและความคิดสร้างสรรค์",
     "nameEn": "Systematic and Creative Thinking",
     "credits": 3,
@@ -240,7 +250,7 @@
     
   },
   {
-    "id": "080303501",
+    "code": "080303501",
     "nameTh": "บาสเกตบอล",
     "nameEn": "Basketball",
     "credits": 1,
@@ -255,7 +265,7 @@
     
   },
   {
-    "id": "080303503",
+    "code": "080303503",
     "nameTh": "แบดมินตัน",
     "nameEn": "Badminton",
     "credits": 1,
@@ -270,7 +280,7 @@
     
   },
   {
-    "id": "080303504",
+    "code": "080303504",
     "nameTh": "ลีลาศ",
     "nameEn": "Dancing",
     "credits": 1,
@@ -285,7 +295,7 @@
     
   },
   {
-    "id": "040203101",
+    "code": "040203101",
     "nameTh": "คณิตศาสตร์ 1",
     "nameEn": "Mathematics I",
     "credits": 3,
@@ -300,7 +310,7 @@
     
   },
   {
-    "id": "040503011",
+    "code": "040503011",
     "nameTh": "สถิติสำหรับวิศวกรและนักวิทยาศาสตร์",
     "nameEn": "Statistics for Engineers and Scientists",
     "credits": 3,
@@ -315,7 +325,7 @@
     
   },
   {
-    "id": "040613103",
+    "code": "040613103",
     "nameTh": "คณิตศาสตร์ดิสครีตสำหรับวิทยาการคอมพิวเตอร์",
     "nameEn": "Discrete Mathematics for Computer Science",
     "credits": 3,
@@ -330,7 +340,7 @@
     
   },
   {
-    "id": "040613104",
+    "code": "040613104",
     "nameTh": "คณิตศาสตร์สำหรับการคณนา",
     "nameEn": "Mathematics for Computing",
     "credits": 3,
@@ -341,11 +351,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040203101"]
+    "prerequisites": [
+      "040203101"
+    ]
     
   },
   {
-    "id": "040613105",
+    "code": "040613105",
     "nameTh": "วิธีการเชิงตัวเลข",
     "nameEn": "Numerical Method",
     "credits": 3,
@@ -356,11 +368,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613104"]
+    "prerequisites": [
+      "040613104"
+    ]
     
   },
   {
-    "id": "040613100",
+    "code": "040613100",
     "nameTh": "พื้นฐานวิทยาการคอมพิวเตอร์และประเด็นทางวิชาชีพ",
     "nameEn": "Fundamental of Computer Science and Professional Issue",
     "credits": 3,
@@ -375,7 +389,7 @@
     
   },
   {
-    "id": "040613201",
+    "code": "040613201",
     "nameTh": "การโปรแกรมคอมพิวเตอร์ 1",
     "nameEn": "Computer Programming I",
     "credits": 3,
@@ -390,7 +404,7 @@
     
   },
   {
-    "id": "040613203",
+    "code": "040613203",
     "nameTh": "การโปรแกรมเชิงโครงสร้าง",
     "nameEn": "Structured Programming",
     "credits": 3,
@@ -401,11 +415,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613204",
+    "code": "040613204",
     "nameTh": "การโปรแกรมเชิงวัตถุ",
     "nameEn": "Object-oriented Programming",
     "credits": 3,
@@ -416,11 +432,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613203"]
+    "prerequisites": [
+      "040613203"
+    ]
     
   },
   {
-    "id": "040613205",
+    "code": "040613205",
     "nameTh": "โครงสร้างข้อมูล",
     "nameEn": "Data Structure",
     "credits": 3,
@@ -431,11 +449,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613206",
+    "code": "040613206",
     "nameTh": "การออกแบบและการวิเคราะห์ขั้นตอนวิธี",
     "nameEn": "Design and Analysis of Algorithm",
     "credits": 3,
@@ -446,11 +466,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613205"]
+    "prerequisites": [
+      "040613205"
+    ]
     
   },
   {
-    "id": "040613301",
+    "code": "040613301",
     "nameTh": "ระบบฐานข้อมูล",
     "nameEn": "Database System",
     "credits": 3,
@@ -461,11 +483,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613302",
+    "code": "040613302",
     "nameTh": "การวิเคราะห์และออกแบบระบบ",
     "nameEn": "System Analysis and Design",
     "credits": 3,
@@ -476,11 +500,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613303",
+    "code": "040613303",
     "nameTh": "ปฏิสัมพันธ์ระหว่างมนุษย์และคอมพิวเตอร์",
     "nameEn": "Human Computer Interaction",
     "credits": 3,
@@ -495,7 +521,7 @@
     
   },
   {
-    "id": "040613306",
+    "code": "040613306",
     "nameTh": "วิศวกรรมซอฟต์แวร์",
     "nameEn": "Software Engineering",
     "credits": 3,
@@ -506,11 +532,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"]
+    "prerequisites": [
+      "040613302"
+    ]
     
   },
   {
-    "id": "040613501",
+    "code": "040613501",
     "nameTh": "องค์ประกอบคอมพิวเตอร์และระบบปฏิบัติการ",
     "nameEn": "Computer Organization and Operating System",
     "credits": 3,
@@ -521,11 +549,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613100"]
+    "prerequisites": [
+      "040613100"
+    ]
     
   },
   {
-    "id": "040613502",
+    "code": "040613502",
     "nameTh": "เครือข่ายคอมพิวเตอร์",
     "nameEn": "Computer Network",
     "credits": 3,
@@ -540,7 +570,7 @@
     
   },
   {
-    "id": "040613601",
+    "code": "040613601",
     "nameTh": "ความมั่นคงของระบบคอมพิวเตอร์",
     "nameEn": "Computer System Security",
     "credits": 3,
@@ -551,11 +581,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613100"]
+    "prerequisites": [
+      "040613100"
+    ]
     
   },
   {
-    "id": "040613701",
+    "code": "040613701",
     "nameTh": "ระบบอัจฉริยะ",
     "nameEn": "Intelligent System",
     "credits": 3,
@@ -566,11 +598,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613205"]
+    "prerequisites": [
+      "040613205"
+    ]
     
   },
   {
-    "id": "040613141",
+    "code": "040613141",
     "nameTh": "โครงงานพิเศษ 1",
     "nameEn": "Special Project I",
     "credits": 1,
@@ -585,7 +619,7 @@
     
   },
   {
-    "id": "040613142",
+    "code": "040613142",
     "nameTh": "โครงงานพิเศษ 2",
     "nameEn": "Special Project II",
     "credits": 3,
@@ -596,18 +630,20 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613141"]
+    "prerequisites": [
+      "040613141"
+    ]
     
   },
   {
-    "id": "040613130",
+    "code": "040613130",
     "nameTh": "เตรียมสหกิจศึกษา",
     "nameEn": "Pre-cooperative Education",
     "credits": 1,
     "lectureHours": 1,
     "labHours": 0,
     "selfStudyHours": 2,
-    "category": "REQUIRED_COURSE",
+    "category": "COOP_COURSE",
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
@@ -615,37 +651,41 @@
     
   },
   {
-    "id": "040613131",
+    "code": "040613131",
     "nameTh": "สหกิจศึกษา 1",
     "nameEn": "Co-operative Education I",
     "credits": 3,
     "lectureHours": 0,
     "labHours": 135,
     "selfStudyHours": 0,
-    "category": "REQUIRED_COURSE",
+    "category": "COOP_COURSE",
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613130"]
+    "prerequisites": [
+      "040613130"
+    ]
     
   },
   {
-    "id": "040613132",
+    "code": "040613132",
     "nameTh": "สหกิจศึกษา 2",
     "nameEn": "Co-operative Education II",
     "credits": 6,
     "lectureHours": 0,
     "labHours": 270,
     "selfStudyHours": 0,
-    "category": "REQUIRED_COURSE",
+    "category": "COOP_COURSE",
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613131"]
+    "prerequisites": [
+      "040613131"
+    ]
     
   },
   {
-    "id": "040613111",
+    "code": "040613111",
     "nameTh": "ดิจิทัลและระบบตรรกะ",
     "nameEn": "Digital and Logic System",
     "credits": 3,
@@ -660,7 +700,7 @@
     
   },
   {
-    "id": "040613112",
+    "code": "040613112",
     "nameTh": "การออกแบบวงจรดิจิทัล",
     "nameEn": "Digital Circuit Design",
     "credits": 3,
@@ -675,7 +715,7 @@
     
   },
   {
-    "id": "040613151",
+    "code": "040613151",
     "nameTh": "การศึกษาเฉพาะเรื่องทางวิทยาการคอมพิวเตอร์ 1",
     "nameEn": "Selected Topics in Computer Science I",
     "credits": 3,
@@ -690,7 +730,7 @@
     
   },
   {
-    "id": "040613152",
+    "code": "040613152",
     "nameTh": "การศึกษาเฉพาะเรื่องทางวิทยาการคอมพิวเตอร์ 2",
     "nameEn": "Selected Topics in Computer Science II",
     "credits": 3,
@@ -705,7 +745,7 @@
     
   },
   {
-    "id": "040613153",
+    "code": "040613153",
     "nameTh": "การศึกษาเฉพาะเรื่องทางวิทยาการคอมพิวเตอร์ 3",
     "nameEn": "Selected Topics in Computer Science III",
     "credits": 3,
@@ -720,7 +760,7 @@
     
   },
   {
-    "id": "040613207",
+    "code": "040613207",
     "nameTh": "หลักการภาษาโปรแกรม",
     "nameEn": "Principles of Programming Language",
     "credits": 3,
@@ -731,11 +771,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613204"]
+    "prerequisites": [
+      "040613204"
+    ]
     
   },
   {
-    "id": "040613304",
+    "code": "040613304",
     "nameTh": "การบริหารโครงการ",
     "nameEn": "Project Management",
     "credits": 3,
@@ -746,11 +788,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"]
+    "prerequisites": [
+      "040613302"
+    ]
     
   },
   {
-    "id": "040613305",
+    "code": "040613305",
     "nameTh": "สถาปัตยกรรมซอฟต์แวร์",
     "nameEn": "Software Architecture",
     "credits": 3,
@@ -761,11 +805,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"]
+    "prerequisites": [
+      "040613302"
+    ]
     
   },
   {
-    "id": "040613307",
+    "code": "040613307",
     "nameTh": "การทดสอบซอฟต์แวร์",
     "nameEn": "Software Testing",
     "credits": 3,
@@ -776,11 +822,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"]
+    "prerequisites": [
+      "040613302"
+    ]
     
   },
   {
-    "id": "040613308",
+    "code": "040613308",
     "nameTh": "วิศวกรรมความต้องการ",
     "nameEn": "Requirement Engineering",
     "credits": 3,
@@ -791,11 +839,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613302"]
+    "prerequisites": [
+      "040613302"
+    ]
     
   },
   {
-    "id": "040613411",
+    "code": "040613411",
     "nameTh": "การพัฒนาเว็บ",
     "nameEn": "Web Development",
     "credits": 3,
@@ -806,11 +856,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613412",
+    "code": "040613412",
     "nameTh": "เว็บเฟรมเวิร์ค",
     "nameEn": "Web Framework",
     "credits": 3,
@@ -821,11 +873,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613411"]
+    "prerequisites": [
+      "040613411"
+    ]
     
   },
   {
-    "id": "040613421",
+    "code": "040613421",
     "nameTh": "การพัฒนาโปรแกรมประยุกต์เคลื่อนที่",
     "nameEn": "Mobile Application Development",
     "credits": 3,
@@ -836,11 +890,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613204"]
+    "prerequisites": [
+      "040613204"
+    ]
     
   },
   {
-    "id": "040613503",
+    "code": "040613503",
     "nameTh": "การสื่อสารและเครือข่ายไร้สาย",
     "nameEn": "Wireless Communications and Network",
     "credits": 3,
@@ -851,11 +907,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502"]
+    "prerequisites": [
+      "040613502"
+    ]
     
   },
   {
-    "id": "040613504",
+    "code": "040613504",
     "nameTh": "เทคโนโลยีการเชื่อมต่อระหว่างเครือข่าย",
     "nameEn": "Inter-networking Technology",
     "credits": 3,
@@ -866,11 +924,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502"]
+    "prerequisites": [
+      "040613502"
+    ]
     
   },
   {
-    "id": "040613505",
+    "code": "040613505",
     "nameTh": "เครื่องมือยูนิกซ์",
     "nameEn": "UNIX Tool",
     "credits": 3,
@@ -881,11 +941,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613100"]
+    "prerequisites": [
+      "040613100"
+    ]
     
   },
   {
-    "id": "040613506",
+    "code": "040613506",
     "nameTh": "การบริหารยูนิกซ์",
     "nameEn": "UNIX Administration",
     "credits": 3,
@@ -896,11 +958,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613505"]
+    "prerequisites": [
+      "040613505"
+    ]
     
   },
   {
-    "id": "040613602",
+    "code": "040613602",
     "nameTh": "ความมั่นคงของเครือข่าย",
     "nameEn": "Network Security",
     "credits": 3,
@@ -911,11 +975,14 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502", "040613601"]
+    "prerequisites": [
+      "040613502",
+      "040613601"
+    ]
     
   },
   {
-    "id": "040613603",
+    "code": "040613603",
     "nameTh": "การโปรแกรมเชิงป้องกัน",
     "nameEn": "Defensive Programming",
     "credits": 3,
@@ -926,11 +993,14 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613203", "040613601"]
+    "prerequisites": [
+      "040613203",
+      "040613601"
+    ]
     
   },
   {
-    "id": "040613604",
+    "code": "040613604",
     "nameTh": "นิติวิทยาศาสตร์ดิจิทัล",
     "nameEn": "Digital Forensics",
     "credits": 3,
@@ -941,11 +1011,14 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502", "040613601"]
+    "prerequisites": [
+      "040613502",
+      "040613601"
+    ]
     
   },
   {
-    "id": "040613605",
+    "code": "040613605",
     "nameTh": "การทดสอบเจาะระบบและการป้องกัน",
     "nameEn": "Penetration Testing and Protection",
     "credits": 3,
@@ -956,11 +1029,14 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613502", "040613601"]
+    "prerequisites": [
+      "040613502",
+      "040613601"
+    ]
     
   },
   {
-    "id": "040613702",
+    "code": "040613702",
     "nameTh": "การเรียนรู้ของเครื่องคอมพิวเตอร์",
     "nameEn": "Machine Learning",
     "credits": 3,
@@ -971,11 +1047,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"]
+    "prerequisites": [
+      "040613701"
+    ]
     
   },
   {
-    "id": "040613703",
+    "code": "040613703",
     "nameTh": "การพัฒนาซอฟต์แวร์ทางปัญญาประดิษฐ์",
     "nameEn": "Artificial Intelligence Software Development",
     "credits": 3,
@@ -986,11 +1064,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"]
+    "prerequisites": [
+      "040613701"
+    ]
     
   },
   {
-    "id": "040613704",
+    "code": "040613704",
     "nameTh": "การเรียนรู้เชิงลึก",
     "nameEn": "Deep Learning",
     "credits": 3,
@@ -1001,11 +1081,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613702"]
+    "prerequisites": [
+      "040613702"
+    ]
     
   },
   {
-    "id": "040613705",
+    "code": "040613705",
     "nameTh": "วิศวกรรมข้อมูลขนาดใหญ่",
     "nameEn": "Big Data Engineering",
     "credits": 3,
@@ -1016,11 +1098,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"]
+    "prerequisites": [
+      "040613701"
+    ]
     
   },
   {
-    "id": "040613706",
+    "code": "040613706",
     "nameTh": "การประมวลผลภาษาธรรมชาติ",
     "nameEn": "Natural Language Processing",
     "credits": 3,
@@ -1031,11 +1115,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"]
+    "prerequisites": [
+      "040613701"
+    ]
     
   },
   {
-    "id": "040613707",
+    "code": "040613707",
     "nameTh": "คอมพิวเตอร์วิทัศน์",
     "nameEn": "Computer Vision",
     "credits": 3,
@@ -1046,11 +1132,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613701"]
+    "prerequisites": [
+      "040613701"
+    ]
     
   },
   {
-    "id": "040613801",
+    "code": "040613801",
     "nameTh": "คอมพิวเตอร์กราฟิกส์",
     "nameEn": "Computer Graphics",
     "credits": 3,
@@ -1061,11 +1149,14 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613104", "040613201"]
+    "prerequisites": [
+      "040613104",
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613802",
+    "code": "040613802",
     "nameTh": "การออกแบบเกมคอมพิวเตอร์",
     "nameEn": "Computer Game Design",
     "credits": 3,
@@ -1076,11 +1167,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613803",
+    "code": "040613803",
     "nameTh": "ความเป็นจริงเสมือนและความเป็นจริงเสริม",
     "nameEn": "Virtual Reality and Augmented Reality",
     "credits": 3,
@@ -1091,11 +1184,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613804",
+    "code": "040613804",
     "nameTh": "การสร้างแบบจำลองสามมิติ",
     "nameEn": "3D Modeling",
     "credits": 3,
@@ -1106,11 +1201,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613104"]
+    "prerequisites": [
+      "040613104"
+    ]
     
   },
   {
-    "id": "040613805",
+    "code": "040613805",
     "nameTh": "ภาพเคลื่อนไหวคอมพิวเตอร์",
     "nameEn": "Computer Animation",
     "credits": 3,
@@ -1121,11 +1218,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613801"]
+    "prerequisites": [
+      "040613801"
+    ]
     
   },
   {
-    "id": "040613806",
+    "code": "040613806",
     "nameTh": "การให้แสงและเงา",
     "nameEn": "Lighting and Shading",
     "credits": 3,
@@ -1136,11 +1235,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613801"]
+    "prerequisites": [
+      "040613801"
+    ]
     
   },
   {
-    "id": "040613901",
+    "code": "040613901",
     "nameTh": "การออกแบบระบบฝังตัว",
     "nameEn": "Embedded System Design",
     "credits": 3,
@@ -1151,11 +1252,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613112"]
+    "prerequisites": [
+      "040613112"
+    ]
     
   },
   {
-    "id": "040613902",
+    "code": "040613902",
     "nameTh": "อินเทอร์เน็ตของสรรพสิ่ง",
     "nameEn": "Internet of Things",
     "credits": 3,
@@ -1166,11 +1269,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613201"]
+    "prerequisites": [
+      "040613201"
+    ]
     
   },
   {
-    "id": "040613903",
+    "code": "040613903",
     "nameTh": "เทคโนโลยีสารสนเทศภูมิศาสตร์สำหรับเมืองอัจฉริยะ",
     "nameEn": "Geospatial Information Technology for Smart City",
     "credits": 3,
@@ -1181,11 +1286,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613301"]
+    "prerequisites": [
+      "040613301"
+    ]
     
   },
   {
-    "id": "040613904",
+    "code": "040613904",
     "nameTh": "วิทยาการหุ่นยนต์และการควบคุม",
     "nameEn": "Robotic Science and Control System",
     "credits": 3,
@@ -1196,11 +1303,13 @@
     "isWildcard": false,
     "facultyId": "04",
     "deptId": "06",
-    "prerequisites": ["040613901"]
+    "prerequisites": [
+      "040613901"
+    ]
     
   },
   {
-    "id": "040613905",
+    "code": "040613905",
     "nameTh": "ห่วงโซ่บล็อก",
     "nameEn": "Blockchain",
     "credits": 3,
@@ -1215,7 +1324,7 @@
     
   },
   {
-    "id": "CS-ELEC-01",
+    "code": "CS-ELEC",
     "nameTh": "วิชาเลือกเฉพาะด้าน",
     "nameEn": "Professional Elective Course",
     "credits": 3,
@@ -1230,142 +1339,7 @@
     
   },
   {
-    "id": "CS-ELEC-02",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-03",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-04",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-05",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-06",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-07",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-08",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-09",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "CS-ELEC-10",
-    "nameTh": "วิชาเลือกเฉพาะด้าน",
-    "nameEn": "Professional Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "MAJOR_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "06",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-01",
+    "code": "FREE-ELEC",
     "nameTh": "วิชาเลือกเสรี",
     "nameEn": "Free Elective",
     "credits": 3,
@@ -1380,142 +1354,7 @@
     
   },
   {
-    "id": "FREE-ELEC-02",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-03",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-04",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-05",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-06",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-07",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-08",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-09",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "FREE-ELEC-10",
-    "nameTh": "วิชาเลือกเสรี",
-    "nameEn": "Free Elective",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": true,
-    "facultyId": "00",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-01",
+    "code": "SCI-ELEC",
     "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
     "nameEn": "Science and Mathematics Elective Course",
     "credits": 3,
@@ -1530,142 +1369,7 @@
     
   },
   {
-    "id": "SCI-ELEC-02",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-03",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-04",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-05",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-06",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-07",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-08",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-09",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SCI-ELEC-10",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาวิทยาศาสตร์และคณิตศาสตร์",
-    "nameEn": "Science and Mathematics Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "04",
-    "deptId": "00",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-01",
+    "code": "SOCIAL-ELEC",
     "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
     "nameEn": "Social Sciences Elective Course",
     "credits": 3,
@@ -1680,142 +1384,7 @@
     
   },
   {
-    "id": "SOC-ELEC-02",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-03",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-04",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-05",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-06",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-07",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-08",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-09",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SOC-ELEC-10",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาสังคมศาสตร์",
-    "nameEn": "Social Sciences Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "02",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-01",
+    "code": "HUMAN-ELEC",
     "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
     "nameEn": "Humanities Elective Course",
     "credits": 3,
@@ -1830,142 +1399,7 @@
     
   },
   {
-    "id": "HUM-ELEC-02",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-03",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-04",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-05",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-06",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-07",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-08",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-09",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "HUM-ELEC-10",
-    "nameTh": "วิชาเลือกในกลุ่มมนุษย์ศาสตร์",
-    "nameEn": "Humanities Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-01",
+    "code": "LANG-ELEC",
     "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
     "nameEn": "Language Elective Course",
     "credits": 3,
@@ -1977,145 +1411,9 @@
     "facultyId": "08",
     "deptId": "01",
     "prerequisites": []
-    
   },
   {
-    "id": "LANG-ELEC-02",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-03",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-04",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-05",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-06",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-07",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-08",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-09",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "LANG-ELEC-10",
-    "nameTh": "วิชาเลือกในกลุ่มวิชาภาษา",
-    "nameEn": "Language Elective Course",
-    "credits": 3,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "01",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-01",
+    "code": "SPORT-ELEC",
     "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
     "nameEn": "Sport and Recreation Elective Course",
     "credits": 1,
@@ -2127,141 +1425,5 @@
     "facultyId": "08",
     "deptId": "03",
     "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-02",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-03",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-04",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-05",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-06",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-07",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-08",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-09",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
-  },
-  {
-    "id": "SR-ELEC-10",
-    "nameTh": "วิชาเลือกในกลุ่มกีฬาและนันทนาการ",
-    "nameEn": "Sport and Recreation Elective Course",
-    "credits": 1,
-    "lectureHours": 0,
-    "labHours": 0,
-    "selfStudyHours": 0,
-    "category": "GENERAL_EDUCATION",
-    "isWildcard": true,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
-    
   }
 ]

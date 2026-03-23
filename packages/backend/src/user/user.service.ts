@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import csvParser = require('csv-parser');
 import { Readable } from 'stream';
@@ -153,7 +153,7 @@ export class UserService {
        usersToInsert.push({
          id: userId,
          email: row.email,
-         password: row.password || '123456', // default pass if empty
+         password: row.password,
          firstName: row.firstName,
          lastName: row.lastName,
          role: row.role as any,

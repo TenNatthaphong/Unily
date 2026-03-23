@@ -1,33 +1,60 @@
-import { IsString, IsInt } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsInt, IsArray, IsEnum, ValidateNested, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { DayOfWeek } from '@prisma/client';
 
-export class CreateSectionDto {
+export class CreateScheduleDto {
+  @IsEnum(DayOfWeek)
+  @ApiProperty({ enum: DayOfWeek, example: DayOfWeek.MON })
+  dayOfWeek: DayOfWeek;
 
   @IsString()
-  @ApiProperty({example: '040613601'})
+  @ApiProperty({ example: '09:00' })
+  startTime: string;
+
+  @IsString()
+  @ApiProperty({ example: '12:00' })
+  endTime: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({ example: 'CB1201' })
+  roomName?: string;
+}
+
+export class CreateSectionDto {
+  @IsString()
+  @ApiProperty({ example: 'course-uuid' })
   courseId: string;
 
   @IsInt()
-  @ApiProperty({example: 1})
+  @ApiProperty({ example: 1 })
   sectionNo: number;
 
   @IsInt()
-  @ApiProperty({example: 50})
+  @ApiProperty({ example: 50 })
   capacity: number;
 
   @IsInt()
-  @ApiProperty({example: 10})
+  @IsOptional()
+  @ApiProperty({ example: 0 })
   enrolledCount: number;
 
   @IsInt()
-  @ApiProperty({example: 1})
+  @ApiProperty({ example: 1 })
   semester: number;
 
   @IsInt()
-  @ApiProperty({example: 2566})
+  @ApiProperty({ example: 2566 })
   academicYear: number;
 
   @IsString()
-  @ApiProperty({example: '3acb4930-a929-475c-b336-e3d4801db16f'})
+  @ApiProperty({ example: 'prof-uuid' })
   professorId: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateScheduleDto)
+  @ApiProperty({ type: [CreateScheduleDto] })
+  schedules: CreateScheduleDto[];
 }

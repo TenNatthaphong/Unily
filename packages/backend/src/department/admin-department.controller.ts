@@ -1,9 +1,15 @@
-import { Controller, Post, Body, Patch, Delete, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Delete, Query, UseInterceptors, UseGuards } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
-import { AuditInterceptor } from 'src/common/interceptor/audit.interceptor';
+import { AuditInterceptor } from '../common/interceptor/audit.interceptor';
+import { Role } from '@prisma/client';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.ADMIN)
 @UseInterceptors(AuditInterceptor)
 @Controller('admin/department')
 export class AdminDepartmentController {

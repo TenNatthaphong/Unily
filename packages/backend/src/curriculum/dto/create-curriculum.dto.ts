@@ -2,7 +2,7 @@ import { IsString, IsInt, Min, Max, IsEnum, IsArray, ValidateNested } from 'clas
 import { CurriculumStatus } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { CurriculumItemWithoutIdDto } from 'src/curriculum-item/dto/create-curriculum-item.dto';
+import { CurriculumItemWithoutIdDto } from '../../curriculum-item/dto/create-curriculum-item.dto';
 
 export class CreateCurriculumDto {
   @IsString()

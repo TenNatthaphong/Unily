@@ -15,25 +15,30 @@ model User {
   lastName         String
   role             Role              @default(STUDENT)
   status           UserStatus        @default(ACTIVE)
+  refreshToken     String?
   adminProfile     AdminProfile?
   professorProfile ProfessorProfile?
   studentProfile   StudentProfile?
 }
 
 model StudentProfile {
-  userId      String           @id @db.Uuid
-  studentCode String           @unique
-  facultyId   String           @db.Uuid
-  deptId      String           @db.Uuid
-  entryYear   Int
-  year        Int
-  gpax        Float            @default(0.00)
-  status      StudentStatus    @default(STUDYING)
-  records     AcademicRecord[]
-  enrollments Enrollment[]
-  department  Department       @relation(fields: [deptId], references: [id])
-  faculty     Faculty          @relation(fields: [facultyId], references: [id])
-  user        User             @relation(fields: [userId], references: [id])
+  userId       String           @id @db.Uuid
+  studentCode  String           @unique
+  facultyId    String           @db.Uuid
+  deptId       String           @db.Uuid
+  entryYear    Int
+  year         Int
+  gpax         Float            @default(0.00)
+  status       StudentStatus    @default(STUDYING)
+  ca           Int              @default(0)
+  cs           Int              @default(0)
+  curriculumId String?          @db.Uuid
+  records      AcademicRecord[]
+  enrollments  Enrollment[]
+  curriculum   Curriculum?      @relation(fields: [curriculumId], references: [id])
+  department   Department       @relation(fields: [deptId], references: [id])
+  faculty      Faculty          @relation(fields: [facultyId], references: [id])
+  user         User             @relation(fields: [userId], references: [id])
 }
 
 model ProfessorProfile {
@@ -44,13 +49,12 @@ model ProfessorProfile {
   faculty    Faculty    @relation(fields: [facultyId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
   sections   Section[]
-  gradedRecords AcademicRecord[]
 }
 
 model AdminProfile {
-  userId String @id @db.Uuid
-  auditLogs        AuditLog[]
-  user   User   @relation(fields: [userId], references: [id])
+  userId    String     @id @db.Uuid
+  user      User       @relation(fields: [userId], references: [id])
+  auditLogs AuditLog[]
 }
 
 model Faculty {
@@ -95,7 +99,6 @@ model Course {
   lectureHours      Int
   selfStudyHours    Int
   category          CourseCategory     @default(CORE_COURSE)
-  maxEntryYear      Int                @default(99)
   isWildcard        Boolean            @default(false)
   deptId            String             @db.Uuid
   facultyId         String             @db.Uuid
@@ -129,23 +132,27 @@ model Curriculum {
   status            CurriculumStatus   @default(ACTIVE)
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+  totalCredits      Int                @default(0)
+  note              String?
   department        Department         @relation(fields: [deptId], references: [id])
   faculty           Faculty            @relation(fields: [facultyId], references: [id])
   curriculumCourses CurriculumCourse[]
+  students          StudentProfile[]
 }
 
 model CurriculumCourse {
-  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  curriculumId String     @db.Uuid
-  courseId     String     @db.Uuid
-  year         Int
-  semester     Int
-  positionX    Int
-  positionY    Int
-  course       Course     @relation(fields: [courseId], references: [id])
-  curriculum   Curriculum @relation(fields: [curriculumId], references: [id])
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  curriculumId   String     @db.Uuid
+  courseId       String     @db.Uuid
+  year           Int
+  semester       Int
+  positionX      Int
+  positionY      Int
+  mappingPattern String?
+  course         Course     @relation(fields: [courseId], references: [id])
+  curriculum     Curriculum @relation(fields: [curriculumId], references: [id])
 
-  @@unique([curriculumId, courseId])
+  @@unique([curriculumId, positionX, positionY])
 }
 
 model Section {
@@ -158,19 +165,37 @@ model Section {
   academicYear  Int
   semester      Int
   enrollments   Enrollment[]
+  schedules     Schedule[]
   course        Course           @relation(fields: [courseId], references: [id])
   professor     ProfessorProfile @relation(fields: [professorId], references: [userId])
 }
 
+model Schedule {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sectionId String    @db.Uuid
+  startTime String
+  endTime   String
+  dayOfWeek DayOfWeek
+  section   Section   @relation(fields: [sectionId], references: [id])
+}
+
 model Enrollment {
-  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  studentId String           @db.Uuid
-  sectionId String           @db.Uuid
-  status    EnrollmentStatus @default(SUCCESS)
-  dropDate  DateTime?
-  createdAt DateTime         @default(now())
-  section   Section          @relation(fields: [sectionId], references: [id])
-  student   StudentProfile   @relation(fields: [studentId], references: [userId])
+  id           String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  studentId    String           @db.Uuid
+  sectionId    String           @db.Uuid
+  status       EnrollmentStatus @default(SUCCESS)
+  dropDate     DateTime?
+  createdAt    DateTime         @default(now())
+  academicYear Int
+  finalScore   Float            @default(0)
+  grade        Grade?
+  midtermScore Float            @default(0)
+  semester     Int
+  totalScore   Float            @default(0)
+  section      Section          @relation(fields: [sectionId], references: [id])
+  student      StudentProfile   @relation(fields: [studentId], references: [userId])
+
+  @@unique([studentId, sectionId])  
 }
 
 model AcademicRecord {
@@ -179,31 +204,35 @@ model AcademicRecord {
   courseId     String         @db.Uuid
   academicYear Int
   semester     Int
-  grade        String
-  gradedById   String           @db.Uuid
-  gradedBy     ProfessorProfile @relation(fields: [gradedById], references: [userId])
-  course       Course           @relation(fields: [courseId], references: [id])
-  student      StudentProfile   @relation(fields: [studentId], references: [userId])
+  ca           Int            @default(0)
+  cg           Int            @default(0)
+  cs           Int            @default(0)
+  gp           Float          @default(0.00)
+  gpa          Float          @default(0.00)
+  grade        Grade
+  course       Course         @relation(fields: [courseId], references: [id])
+  student      StudentProfile @relation(fields: [studentId], references: [userId])
 }
 
 model SemesterConfig {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  academicYear Int
-  semester     Int
-  regStart     DateTime
-  regEnd       DateTime
-  withdrawEnd  DateTime
-  isCurrent    Boolean  @default(false)
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  academicYear  Int
+  semester      Int
+  regStart      DateTime
+  regEnd        DateTime
+  withdrawStart DateTime
+  withdrawEnd   DateTime
+  isCurrent     Boolean  @default(false)
 }
 
 model AuditLog {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  adminId   String   @db.Uuid
+  id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId   String       @db.Uuid
   adminName String
   target    String
   action    Action
-  createdAt DateTime @default(now())
-  user      AdminProfile     @relation(fields: [adminId], references: [userId])
+  createdAt DateTime     @default(now())
+  user      AdminProfile @relation(fields: [adminId], references: [userId])
 }
 
 model Event {
@@ -216,6 +245,17 @@ model Event {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   category    EventCategory @default(GENERAL)
+}
+
+enum Grade {
+  A
+  B_PLUS
+  B
+  C_PLUS
+  C
+  D_PLUS
+  D
+  F
 }
 
 enum Role {
@@ -241,12 +281,13 @@ enum CourseCategory {
   REQUIRED_COURSE
   MAJOR_ELECTIVE
   FREE_ELECTIVE
+  COOP_COURSE
 }
 
 enum EnrollmentStatus {
   SUCCESS
   DROPPED
-  WITHDRAWN
+  ENROLLED
 }
 
 enum CurriculumStatus {
@@ -266,4 +307,14 @@ enum Action {
   CREATE
   UPDATE
   DELETE
+}
+
+enum DayOfWeek {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+  SAT
+  SUN
 }

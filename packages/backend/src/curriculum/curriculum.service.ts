@@ -36,11 +36,11 @@ export class CurriculumService {
       },
     });
   }
-  async search(id? : string,facultyId?: string, deptId?: string) {
-    if(id){
+  async search(code? : string,facultyId?: string, deptId?: string) {
+    if(code){
       return this.prisma.curriculum.findMany({
         where: {
-          id: id,
+          curriculumCode: code,
         },
         include: {
           _count: { select: { curriculumCourses: true } }
@@ -64,6 +64,4 @@ export class CurriculumService {
       }
     });
   }
-
-
 }
