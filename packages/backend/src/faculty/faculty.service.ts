@@ -7,6 +7,17 @@ import { UpdateFacultyDto } from './dto/update-faculty.dto';
 export class FacultyService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // ===========================================================================
+  // CRUD OPERATIONS
+  // ===========================================================================
+
+  async findAll() {
+    return this.prisma.faculty.findMany({
+      include: { _count: { select: { departments: true } } },
+      orderBy: { facultyCode: 'asc' }
+    });
+  }
+
   async create(dto: CreateFacultyDto) {
     return this.prisma.faculty.create({ data: dto });
   }
@@ -17,12 +28,5 @@ export class FacultyService {
 
   async delete(facultyCode: string) {
     return this.prisma.faculty.delete({ where: { facultyCode } });
-  }
-
-  async findAll() {
-    return this.prisma.faculty.findMany({
-      include: { _count: { select: { departments: true } } },
-      orderBy: { facultyCode: 'asc' }
-    });
   }
 }

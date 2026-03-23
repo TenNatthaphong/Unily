@@ -7,6 +7,14 @@ import { UpdateEventDto } from './dto/update-event.dto';
 export class EventService {
   constructor(private prisma: PrismaService) {}
 
+  // ===========================================================================
+  // EVENT OPERATIONS
+  // ===========================================================================
+
+  async findAll() {
+    return this.prisma.event.findMany({ orderBy: { startDate: 'asc' } });
+  }
+
   async create(data: CreateEventDto) {
     return this.prisma.event.create({ data });
   }
@@ -18,11 +26,4 @@ export class EventService {
   async remove(id: string) {
     return this.prisma.event.delete({ where: { id } });
   }
-
-  async findAll() {
-    return this.prisma.event.findMany({
-      orderBy: { startDate: 'asc' },
-    });
-  }
-
 }

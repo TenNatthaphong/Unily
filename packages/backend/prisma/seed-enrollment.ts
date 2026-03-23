@@ -11,6 +11,10 @@ const prisma = new PrismaClient({ adapter });
 // --- Configurations ---
 // 10 วิชาเกณฑ์ COOP ตามประกาศภาควิชา
 const COOP_CRITERIA_COURSES = ["040613203", "040613205", "040613204", "040613302", "040613501", "040613306", "040613502", "040613301", "040613601", "040613701"];
+// COOP course codes: pre-coop → coop1 → coop2
+// pre-coop/coop1 F → revert กลับปกติ | coop2 F → ไม่ revert (วิชาท้าย chain)
+const COOP_REVERT_CODES = ["040613130", "040613131"]; // F แล้ว revert
+const COOP_COURSE_CODES = ["040613130", "040613131", "040613132"]; // ทั้ง chain (สำหรับ filter failedInTerm)
 const TIME_SLOTS = {
     h2: [{ s: "09:00", e: "11:00" }, { s: "13:00", e: "15:00" }, { s: "15:00", e: "17:00" }],
     h3: [{ s: "09:00", e: "12:00" }, { s: "13:00", e: "16:00" }, { s: "17:00", e: "20:00" }],
@@ -64,6 +68,13 @@ async function main() {
     
     process.stdout.write('   🧹 Cleaning database... ');
     await prisma.$executeRaw`TRUNCATE TABLE "Enrollment", "AcademicRecord", "Schedule", "Section", "SemesterConfig" CASCADE`;
+    // Reset studentProfile ให้กลับค่าเริ่มต้น (กรณีรัน seed-enrollment ซ้ำโดยไม่ได้รัน seed ก่อน)
+    const regularCurric = await prisma.curriculum.findUnique({ where: { curriculumCode: "CS64-REGULAR" } });
+    if (regularCurric) {
+        await prisma.studentProfile.updateMany({
+            data: { year: 1, gpax: 0, ca: 0, cs: 0, status: StudentStatus.STUDYING, curriculumId: regularCurric.id }
+        });
+    }
     console.log('Done.');
 
     const allStudents = await prisma.studentProfile.findMany();
@@ -86,11 +97,14 @@ async function main() {
     curricIds.forEach(cid => {
         lockedByCurric.set(cid, new Set(allCurriculumCourses.filter(c => c.curriculumId === cid && !c.mappingPattern).map(c => c.courseId)));
     });
-    
+    // รวม locked courses จากทุกหลักสูตร — ป้องกัน COOP student ลง Special Project / REGULAR student ลง COOP courses ผ่านช่อง elective
+    const allLockedCourseIds = new Set<string>();
+    for (const [, ids] of lockedByCurric) for (const id of ids) allLockedCourseIds.add(id);
+
     const requiredCoreFull = allCurriculumCourses.filter(c => !c.mappingPattern);
 
     const TARGET_YEAR = 2568;
-    const TARGET_SEM = 2;
+    const TARGET_SEM = 3;
 
     // semester config dates (ISO string -> Date)
     const SEMESTER_DATES: Record<string, { regStart: Date; regEnd: Date; withdrawStart: Date; withdrawEnd: Date; isCurrent: boolean }> = {
@@ -104,7 +118,8 @@ async function main() {
         "2567-2": { regStart: new Date("2024-11-04T08:00:00+07:00"), regEnd: new Date("2024-11-18T16:00:00+07:00"), withdrawStart: new Date("2024-11-04T08:00:00+07:00"), withdrawEnd: new Date("2024-12-30T16:00:00+07:00"), isCurrent: false },
         "2567-3": { regStart: new Date("2025-04-07T08:00:00+07:00"), regEnd: new Date("2025-04-14T16:00:00+07:00"), withdrawStart: new Date("2025-04-07T08:00:00+07:00"), withdrawEnd: new Date("2025-05-19T16:00:00+07:00"), isCurrent: false },
         "2568-1": { regStart: new Date("2025-07-07T08:00:00+07:00"), regEnd: new Date("2025-07-21T16:00:00+07:00"), withdrawStart: new Date("2025-07-07T08:00:00+07:00"), withdrawEnd: new Date("2025-09-01T16:00:00+07:00"), isCurrent: false },
-        "2568-2": { regStart: new Date("2025-11-03T08:00:00+07:00"), regEnd: new Date("2025-11-17T16:00:00+07:00"), withdrawStart: new Date("2025-11-03T08:00:00+07:00"), withdrawEnd: new Date("2025-12-29T16:00:00+07:00"), isCurrent: true },
+        "2568-2": { regStart: new Date("2025-11-03T08:00:00+07:00"), regEnd: new Date("2025-11-17T16:00:00+07:00"), withdrawStart: new Date("2025-11-03T08:00:00+07:00"), withdrawEnd: new Date("2025-12-29T16:00:00+07:00"), isCurrent: false },
+        "2568-3": { regStart: new Date("2026-04-06T08:00:00+07:00"), regEnd: new Date("2026-04-13T16:00:00+07:00"), withdrawStart: new Date("2026-04-06T08:00:00+07:00"), withdrawEnd: new Date("2026-05-18T16:00:00+07:00"), isCurrent: true },
     };
 
     for (const year of [2565, 2566, 2567, 2568]) {
@@ -139,47 +154,54 @@ async function main() {
                     targets = [pc.course];
                     const spCodes = ["040613130", "040613131", "040613132", "040613141", "040613142"];
                     const isSp = spCodes.includes(pc.course.courseCode);
-                    nSec = isSp ? 1 : 8; cap = isSp ? 200 : 40; 
+                    nSec = isSp ? 1 : 10; cap = isSp ? 200 : 40;
                 } else {
                     let p = pc.mappingPattern?.replace('%', '') || '';
                     if (p === "080303") p = "0803035";
                     const isCS = p === "0406", isSci = p === "04";
-                    
+
                     const matches = allCourses.filter(c => {
                         if (!c.courseCode.startsWith(p)) return false;
-                        if (isSci && c.courseCode.startsWith("0406")) return false; 
+                        if (isSci && c.courseCode.startsWith("0406")) return false;
                         // Simplified Lock: Exclude only courses core in the SAME term
                         return !plannedCourses.some(pl => !pl.mappingPattern && pl.courseId === c.id);
                     });
-                    
+
                     targets = isCS ? matches.sort(() => 0.5 - Math.random()).slice(0, 30) : matches.sort(() => 0.5 - Math.random()).slice(0, 15);
                     nSec = isCS ? 2 : 3; cap = 30;
                 }
                 for (const tc of targets) {
+                    // สร้าง day×slot combos ทั้งหมด แล้ว shuffle → กระจาย section ไม่ให้ซ้ำ slot
+                    const hrs = (tc.lectureHours || 0) + (tc.labHours || 0);
+                    const slotGrp = hrs >= 4 ? TIME_SLOTS.h4 : (hrs === 2 ? TIME_SLOTS.h2 : TIME_SLOTS.h3);
+                    const combos: { day: DayOfWeek; s: string; e: string }[] = [];
+                    for (const day of DAYS) for (const sl of slotGrp) combos.push({ day, s: sl.s, e: sl.e });
+                    for (let i = combos.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [combos[i], combos[j]] = [combos[j], combos[i]]; }
+
                     for (let s = 1; s <= nSec; s++) {
+                        const combo = combos[(s - 1) % combos.length]; // วน combos กระจายครบทุก slot
                         const sec = await prisma.section.create({
                             data: {
                                 courseId: tc.id, professorId: professors[Math.floor(Math.random() * professors.length)].userId,
                                 academicYear: year, semester, sectionNo: s, capacity: cap, enrolledCount: 0
                             }
                         });
-                        const hrs = (tc.lectureHours || 0) + (tc.labHours || 0);
-                        const slotGrp = hrs >= 4 ? TIME_SLOTS.h4 : (hrs === 2 ? TIME_SLOTS.h2 : TIME_SLOTS.h3);
-                        const slot = slotGrp[Math.floor(Math.random() * slotGrp.length)];
-                        await prisma.schedule.create({ data: { sectionId: sec.id, dayOfWeek: DAYS[Math.floor(Math.random() * DAYS.length)], startTime: slot.s, endTime: slot.e } });
+                        await prisma.schedule.create({ data: { sectionId: sec.id, dayOfWeek: combo.day, startTime: combo.s, endTime: combo.e } });
                         sectionCountBefore++;
                     }
                 }
                 processedKeys.add(key as string);
             }
 
-            // PRE-PHASE 2: COOP TRANSITION (เช็คก่อน enrollment เพื่อให้ลง pre-coop ได้ในเทอมนี้)
+            // PRE-PHASE 2: COOP TRANSITION — เช็คครั้งเดียวก่อนลงทะเบียนปี3เทอม2
+            // ใช้ผลเรียน 5 ภาค (ป1/1, ป1/2, ป2/1, ป2/2, ป3/1) ใครไม่ผ่านก็อดเลย
             const allRecordsAtStart = await prisma.academicRecord.findMany({ include: { course: true } });
-            if (coopCurric) {
+            if (coopCurric && semester === 2) {
+                let coopPass = 0, coopFail = 0;
                 for (const std of allStudents) {
                     if (std.curriculumId === coopCurric.id) continue; // เป็น COOP อยู่แล้ว
                     const sY = (year - std.entryYear) + 1;
-                    if (sY !== 3) continue; // เช็คเฉพาะปี 3
+                    if (sY !== 3) continue; // เช็คเฉพาะปี 3 เทอม 2
                     // เช็คเฉพาะ semester 1,2 เท่านั้น (ไม่นับ summer/sem3) — 5 ภาคการศึกษา
                     const rs = allRecordsAtStart.filter(r => r.studentId === std.userId && r.semester !== 3);
                     const tCS = rs.reduce((s,r) => s+r.cs, 0);
@@ -191,9 +213,19 @@ async function main() {
                     const gpa10 = gpa10CA > 0 ? (qp10.reduce((s,r) => s+r.gp, 0) / gpa10CA) : 0;
                     if (tCS >= 90 && gpax5 >= 2.75 && qp10.length >= 10 && gpa10 >= 2.5) {
                         std.curriculumId = coopCurric.id;
+                        coopPass++;
                         // ไม่ update DB ที่นี่ — จะ update ใน phase3 ตามปกติ
+                    } else {
+                        coopFail++;
+                        // DEBUG: log 3 คนแรกที่ไม่ผ่าน
+                        if (coopFail <= 3) {
+                            const passed10Codes = qp10.map(r => r.course.courseCode);
+                            const missing = COOP_CRITERIA_COURSES.filter(c => !passed10Codes.includes(c));
+                            console.log(`\n      [COOP-FAIL] student=${std.userId.slice(0,8)} csNS=${tCS} gpax5=${gpax5.toFixed(2)} qp10=${qp10.length}/10 gpa10=${gpa10.toFixed(2)}${missing.length > 0 ? ` missing: ${missing.join(',')}` : ''}`);
+                        }
                     }
                 }
+                if (coopPass + coopFail > 0) console.log(`\n      [COOP-CHECK] entryYear=${year-2} → pass=${coopPass} fail=${coopFail} (${((coopPass/(coopPass+coopFail))*100).toFixed(0)}%)`);
             }
 
             // PHASE 2: ENROLLMENT
@@ -206,8 +238,8 @@ async function main() {
                 const passedIds = new Set(stdRecords.filter(r => r.grade !== Grade.F).map(r => r.courseId));
                 const studyYear = (year - std.entryYear) + 1;
                 const studCurriculum = allCurriculumCourses.filter(c => c.curriculumId === std.curriculumId);
-                const studentLockedPlan = lockedByCurric.get(std.curriculumId ?? '') || new Set();
-                const failedInTerm = stdRecords.filter(r => r.grade === Grade.F && r.academicYear === year - 1 && r.semester === semester && !passedIds.has(r.courseId)).map(r => r.courseId);
+                // retry เฉพาะวิชาที่ F ปีก่อน เทอมเดียวกัน — ไม่รวม COOP courses (ถ้า revert กลับ REGULAR ไม่ควร retry)
+                const failedInTerm = stdRecords.filter(r => r.grade === Grade.F && r.academicYear === year - 1 && r.semester === semester && !passedIds.has(r.courseId) && !COOP_COURSE_CODES.includes(r.course.courseCode)).map(r => r.courseId);
 
                 const isCoopStudent = std.curriculumId === coopCurric?.id;
                 const queue = [
@@ -243,12 +275,12 @@ async function main() {
                     } else {
                         let p = item.pattern?.replace('%', '') || '';
                         const isSci = p === "04";
-                        const passedInPattern = stdRecords.filter(r => r.grade !== Grade.F && !studentLockedPlan.has(r.courseId) && r.course.courseCode.startsWith(p) && !(isSci && r.course.courseCode.startsWith("0406"))).length;
+                        const passedInPattern = stdRecords.filter(r => r.grade !== Grade.F && !allLockedCourseIds.has(r.courseId) && r.course.courseCode.startsWith(p) && !(isSci && r.course.courseCode.startsWith("0406"))).length;
                         const inTermInPattern = Array.from(termPatternCounts.keys()).filter(k => k.startsWith(p) && !(isSci && k.startsWith("0406"))).reduce((s,k) => s + termPatternCounts.get(k)!, 0);
                         const slotsRequiredUntilNow = studCurriculum.filter(c => c.year <= studyYear && c.mappingPattern === item.pattern).length;
 
                         if (passedInPattern + inTermInPattern >= slotsRequiredUntilNow) continue;
-                        targets = sectionsPool.filter(s => s.course.courseCode.startsWith(p) && !(isSci && s.course.courseCode.startsWith("0406")) && !studentLockedPlan.has(s.courseId) && !passedIds.has(s.courseId) && !termCourseIds.has(s.courseId) && s.enrolledCount < s.capacity && prereqOk(s.courseId));
+                        targets = sectionsPool.filter(s => s.course.courseCode.startsWith(p) && !(isSci && s.course.courseCode.startsWith("0406")) && !allLockedCourseIds.has(s.courseId) && !passedIds.has(s.courseId) && !termCourseIds.has(s.courseId) && s.enrolledCount < s.capacity && prereqOk(s.courseId));
                     }
 
                     for (const sec of targets) {
@@ -265,7 +297,13 @@ async function main() {
 
             if (enrollmentBatch.length > 0) {
                 await prisma.enrollment.createMany({ data: enrollmentBatch });
-                for (const sec of sectionsPool) if (sec.enrolledCount > 0) await prisma.section.update({ where: { id: sec.id }, data: { enrolledCount: sec.enrolledCount } });
+                // Batch update section enrolledCount (ทีละ 50 parallel)
+                const dirtySecss = sectionsPool.filter(s => s.enrolledCount > 0);
+                for (let i = 0; i < dirtySecss.length; i += 50) {
+                    await Promise.all(dirtySecss.slice(i, i + 50).map(s =>
+                        prisma.section.update({ where: { id: s.id }, data: { enrolledCount: s.enrolledCount } })
+                    ));
+                }
             }
 
             const emptySecIds = sectionsPool.filter(s => s.enrolledCount === 0).map(s => s.id);
@@ -276,57 +314,86 @@ async function main() {
             const sectionCountAfter = sectionCountBefore - emptySecIds.length;
 
             // PHASE 3: END SEMESTER
-            let grads = 0, coops = 0;
+            let grads = 0, coops = 0, coopReverts = 0;
             if (!isLastOfAll) {
                 await prisma.semesterConfig.update({ where: { id: activeSemester.id }, data: { isCurrent: false } });
                 const termPool = await prisma.enrollment.findMany({ where: { academicYear: year, semester }, include: { section: { include: { course: true } } } });
                 const recBatch: any[] = [];
+                // Batch: สร้าง grade ทุก enrollment แล้ว update ทีเดียว (แทน await ทีละตัว)
+                const enrollUpdates: { id: string; midtermScore: number; finalScore: number; totalScore: number; grade: Grade; status: EnrollmentStatus }[] = [];
                 for (const e of termPool) {
                     const total = getRandomTotal();
                     const { midterm, final: finalScore } = splitScore(total);
                     const grade = calculateGrade(total);
                     const gp = GP_MAP[grade] ?? 0;
                     const cr = e.section.course.credits;
-                    // update คะแนนและ grade ลง enrollment ก่อน
-                    await prisma.enrollment.update({
-                        where: { id: e.id },
-                        data: { midtermScore: midterm, finalScore, totalScore: total, grade, status: EnrollmentStatus.SUCCESS }
-                    });
+                    enrollUpdates.push({ id: e.id, midtermScore: midterm, finalScore, totalScore: total, grade, status: EnrollmentStatus.SUCCESS });
                     recBatch.push({ studentId: e.studentId, courseId: e.section.courseId, academicYear: year, semester, grade, gpa: gp, gp: gp * cr, ca: cr, cs: grade === Grade.F ? 0 : cr });
+                }
+                // Batch update enrollments (ทีละ 50 parallel)
+                for (let i = 0; i < enrollUpdates.length; i += 50) {
+                    await Promise.all(enrollUpdates.slice(i, i + 50).map(u =>
+                        prisma.enrollment.update({ where: { id: u.id }, data: { midtermScore: u.midtermScore, finalScore: u.finalScore, totalScore: u.totalScore, grade: u.grade, status: u.status } })
+                    ));
                 }
                 await prisma.academicRecord.createMany({ data: recBatch });
 
+                // สร้าง lookup map แทน findMany ทั้ง table (เร็วกว่า filter ทุกรอบ)
                 const freshRecords = await prisma.academicRecord.findMany({ include: { course: true } });
+                const recordsByStudent = new Map<string, typeof freshRecords>();
+                for (const r of freshRecords) {
+                    const arr = recordsByStudent.get(r.studentId) || [];
+                    arr.push(r);
+                    recordsByStudent.set(r.studentId, arr);
+                }
+                // หา courseIds ของ pre-coop + coop1 เพื่อเช็ค F → revert (coop2 F ไม่ revert เพราะเป็นวิชาท้าย chain)
+                const coopRevertIds = new Set(allCourses.filter(c => COOP_REVERT_CODES.includes(c.courseCode)).map(c => c.id));
+
+                // Batch: คำนวณ profile ทุกคน แล้ว update ทีเดียว
+                const profileUpdates: { userId: string; data: any }[] = [];
                 for (const std of allStudents) {
-                    const rs = freshRecords.filter(r => r.studentId === std.userId);
+                    const rs = recordsByStudent.get(std.userId) || [];
                     const tCA = rs.reduce((s,r) => s+r.ca, 0), tCS = rs.reduce((s,r) => s+r.cs,0), gpax = tCA > 0 ? (rs.reduce((s,r) => s+r.gp, 0) / tCA) : 0;
                     const sY = (year - std.entryYear) + 1;
                     let cId = std.curriculumId;
-                    if (coopCurric && cId !== coopCurric.id && sY >= 3) {
-                        // เช็คเฉพาะ sem1,2 เท่านั้น ไม่นับ summer — 5 ภาคการศึกษา
-                        const rsNS = rs.filter(r => r.semester !== 3);
-                        const csNS = rsNS.reduce((s,r) => s+r.cs, 0);
-                        const caNS = rsNS.reduce((s,r) => s+r.ca, 0);
-                        const gpax5 = caNS > 0 ? (rsNS.reduce((s,r) => s+r.gp, 0) / caNS) : 0;
-                        const qp10 = rsNS.filter(r => COOP_CRITERIA_COURSES.includes(r.course.courseCode) && r.grade !== Grade.F);
-                        const gpa10CA = qp10.reduce((s,r) => s+r.ca, 0);
-                        const gpa10 = gpa10CA > 0 ? (qp10.reduce((s,r) => s+r.gp, 0) / gpa10CA) : 0;
-                        if (csNS >= 90 && gpax5 >= 2.75 && qp10.length >= 10 && gpa10 >= 2.5) { cId = coopCurric.id; coops++; }
+
+                    // 🎓 COOP TRANSITION COUNT
+                    if (coopCurric && cId === coopCurric.id && !(std as any)._coopCounted) {
+                        (std as any)._coopCounted = true;
+                        coops++;
                     }
-                    // GRADUATION CHECK: หน่วยกิตครบ + ผ่านวิชาบังคับทุกตัว + GPAX >= 2.0
+                    // ⛔ COOP F CHECK: pre-coop/coop1 F → กลับหลักสูตรปกติ (coop2 F ไม่ revert เพราะวิชาท้าย)
+                    if (coopCurric && regularCurric && cId === coopCurric.id) {
+                        const gotFInCoopRevert = rs.some(r =>
+                            r.academicYear === year && r.semester === semester &&
+                            r.grade === Grade.F && coopRevertIds.has(r.courseId)
+                        );
+                        if (gotFInCoopRevert) {
+                            cId = regularCurric.id;
+                            coopReverts++;
+                        }
+                    }
+                    // 🎓 GRADUATION CHECK: หน่วยกิตครบ + ผ่านวิชาบังคับทุกตัว + GPAX >= 2.0
                     const allCorePassedForCurric = requiredCoreFull
                         .filter(c => c.curriculumId === cId)
                         .every(c => rs.some(r => r.courseId === c.courseId && r.grade !== Grade.F));
                     const isG = tCS >= 128 && gpax >= 2.0 && allCorePassedForCurric;
                     if (isG) grads++;
-                    // sync in-memory so subsequent terms use updated curriculumId, year, and graduation status
+                    // sync in-memory
                     std.curriculumId = cId;
                     std.year = sY;
                     if (isG) (std as any)._graduated = true;
-                    await prisma.studentProfile.update({ where: { userId: std.userId }, data: { gpax: parseFloat(gpax.toFixed(2)), ca: tCA, cs: tCS, year: sY, status: isG ? StudentStatus.GRADUATED : StudentStatus.STUDYING, curriculumId: cId } });
+                    profileUpdates.push({ userId: std.userId, data: { gpax: parseFloat(gpax.toFixed(2)), ca: tCA, cs: tCS, year: sY, status: isG ? StudentStatus.GRADUATED : StudentStatus.STUDYING, curriculumId: cId } });
+                }
+                // Batch update profiles (ทีละ 50 parallel)
+                for (let i = 0; i < profileUpdates.length; i += 50) {
+                    await Promise.all(profileUpdates.slice(i, i + 50).map(u =>
+                        prisma.studentProfile.update({ where: { userId: u.userId }, data: u.data })
+                    ));
                 }
             }
-            process.stdout.write(`Enroll: ${enrollmentBatch.length.toString().padEnd(3)} | Secs: ${sectionCountBefore} -> ${sectionCountAfter} | Grad: ${grads.toString().padEnd(2)} | COOP: ${coops.toString().padEnd(2)} | Time: `);
+            const revertStr = coopReverts > 0 ? ` | ⛔ F→REG: ${coopReverts}` : '';
+            process.stdout.write(`📝 Enroll: ${enrollmentBatch.length.toString().padEnd(4)} | 🏫 Secs: ${sectionCountBefore} → ${sectionCountAfter} | 🎓 Grad: ${grads.toString().padEnd(2)} | 🤝 COOP: ${coops.toString().padEnd(2)}${revertStr} | ⏱️ `);
             console.timeEnd(termTag);
         }
     }

@@ -11,65 +11,63 @@ import { calculateGrade, getGradePoint, calculateGPAX } from '../common/utils/gr
 export class SectionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async checkProfessorConflict(professorId: string, academicYear: number, semester: number, newSchedules: any[], excludeSectionId?: string) {
-    const existingSections = await this.prisma.section.findMany({
-      where: {
-        professorId, academicYear, semester,
-        id: excludeSectionId ? { not: excludeSectionId } : undefined,
-      },
-      include: { schedules: true },
+  // ===========================================================================
+  // CONFLICT CHECKS
+  // ===========================================================================
+
+  async checkProfessorConflict(profId: string, yr: number, sem: number, schedules: any[], excludeId?: string) {
+    const existing = await this.prisma.section.findMany({
+      where: { professorId: profId, academicYear: yr, semester: sem, id: excludeId ? { not: excludeId } : undefined },
+      include: { schedules: true }
     });
 
-    for (const newS of newSchedules) {
-      for (const section of existingSections) {
-        for (const existingS of section.schedules) {
-          if (newS.dayOfWeek === existingS.dayOfWeek) {
-            if (isTimeOverlapping(newS.startTime, newS.endTime, existingS.startTime, existingS.endTime)) {
-              throw new ConflictException(
-                `Professor has a time conflict on ${newS.dayOfWeek} at ${existingS.startTime}-${existingS.endTime} (Section ${section.sectionNo})`,
-              );
-            }
+    schedules.forEach(ns => {
+      existing.forEach(sec => {
+        sec.schedules.forEach(es => {
+          if (ns.dayOfWeek === es.dayOfWeek && isTimeOverlapping(ns.startTime, ns.endTime, es.startTime, es.endTime)) {
+            throw new ConflictException(`Professor conflict on ${ns.dayOfWeek} (Section ${sec.sectionNo})`);
           }
-        }
-      }
-    }
+        });
+      });
+    });
   }
 
-  async create(createSectionDto: CreateSectionDto) {
-    const { schedules, ...sectionData } = createSectionDto;
-    await this.checkProfessorConflict(sectionData.professorId, sectionData.academicYear, sectionData.semester, schedules);
-    return this.prisma.section.create({
-      data: { ...sectionData, schedules: { create: schedules } },
-      include: { schedules: true },
-    });
+  // ===========================================================================
+  // SECTION CRUD
+  // ===========================================================================
+
+  async create(dto: CreateSectionDto) {
+    await this.checkProfessorConflict(dto.professorId, dto.academicYear, dto.semester, dto.schedules);
+    const { schedules, ...data } = dto;
+    return this.prisma.section.create({ data: { ...data, schedules: { create: schedules } }, include: { schedules: true } });
   }
 
   async findByCourse(courseId: string) {
     return this.prisma.section.findMany({
       where: { courseId },
-      include: { course: true, schedules: true, professor: { include: { user: { select: { firstName: true, lastName: true } } } } },
+      include: { course: true, schedules: true, professor: { include: { user: { select: { firstName: true, lastName: true } } } } }
     });
   }
 
   async findOne(id: string) {
-    const section = await this.prisma.section.findUnique({
+    const sec = await this.prisma.section.findUnique({
       where: { id },
-      include: { course: true, schedules: true, professor: { include: { user: { select: { firstName: true, lastName: true } } } } },
+      include: { course: true, schedules: true, professor: { include: { user: { select: { firstName: true, lastName: true } } } } }
     });
-    if (!section) throw new NotFoundException(`Section with ID "${id}" not found`);
-    return section;
+    if (!sec) throw new NotFoundException('Section not found');
+    return sec;
   }
 
-  async update(id: string, updateSectionDto: UpdateSectionDto) {
-    const { schedules, ...sectionData } = updateSectionDto;
+  async update(id: string, dto: UpdateSectionDto) {
+    const { schedules, ...data } = dto;
     const existing = await this.findOne(id);
-    if (schedules || sectionData.professorId || sectionData.academicYear || sectionData.semester) {
-      await this.checkProfessorConflict(sectionData.professorId || existing.professorId, sectionData.academicYear || existing.academicYear, sectionData.semester || existing.semester, schedules || existing.schedules, id);
+    if (schedules || data.professorId) {
+      await this.checkProfessorConflict(data.professorId || existing.professorId, data.academicYear || existing.academicYear, data.semester || existing.semester, schedules || existing.schedules, id);
     }
     return this.prisma.section.update({
       where: { id },
-      data: { ...sectionData, ...(schedules && { schedules: { deleteMany: {}, create: schedules } }) },
-      include: { schedules: true },
+      data: { ...data, ...(schedules && { schedules: { deleteMany: {}, create: schedules } }) },
+      include: { schedules: true }
     });
   }
 
@@ -77,107 +75,58 @@ export class SectionService {
     return this.prisma.section.delete({ where: { id } });
   }
 
-  async updateGrades(id: string, professorId: string, bulkGradeDto: BulkGradeDto) {
-    const section = await this.prisma.section.findUnique({ where: { id } });
-    if (!section) throw new NotFoundException('Section not found');
-    if (section.professorId !== professorId) throw new ForbiddenException('Only the instructor can grade this section');
+  // ===========================================================================
+  // GRADING & SEMESTER CLOSING
+  // ===========================================================================
 
-    const results: any[] = [];
-    for (const gradeInput of bulkGradeDto.grades) {
-      const enrollment = await this.prisma.enrollment.findUnique({
-        where: { studentId_sectionId: { studentId: gradeInput.studentId, sectionId: id } },
-      });
-      if (!enrollment) continue;
+  async updateGrades(id: string, profId: string, dto: BulkGradeDto) {
+    const sec = await this.prisma.section.findUnique({ where: { id } });
+    if (!sec || sec.professorId !== profId) throw new ForbiddenException('Unauthorized grading access');
 
-      const mid = gradeInput.midtermScore ?? enrollment.midtermScore;
-      const fin = gradeInput.finalScore ?? enrollment.finalScore;
+    return Promise.all(dto.grades.map(async g => {
+      const enr = await this.prisma.enrollment.findUnique({ where: { studentId_sectionId: { studentId: g.studentId, sectionId: id } } });
+      if (!enr) return null;
+      const mid = g.midtermScore ?? enr.midtermScore;
+      const fin = g.finalScore ?? enr.finalScore;
       const total = mid + fin;
-      const grade = gradeInput.grade || calculateGrade(total);
-
-      const updated = await this.prisma.enrollment.update({
-        where: { id: enrollment.id },
-        data: { midtermScore: mid, finalScore: fin, totalScore: total, grade },
+      return this.prisma.enrollment.update({
+        where: { id: enr.id },
+        data: { midtermScore: mid, finalScore: fin, totalScore: total, grade: g.grade || calculateGrade(total) }
       });
-      results.push(updated);
-    }
-    return results;
+    }));
   }
 
-  /**
-   * ปิดเทอม (ต้อง isCurrent == false)
-   */
-  async closeSemester(academicYear: number, semester: number) {
-    const semConfig = await this.prisma.semesterConfig.findFirst({
-      where: { academicYear, semester },
-    });
-    if (!semConfig) throw new NotFoundException(`SemesterConfig not found`);
-    if (semConfig.isCurrent) throw new BadRequestException('เทอมนี้ยังเป็น isCurrent = true อยู่ กรุณาเปลี่ยนเทอมก่อน');
+  async closeSemester(yr: number, sem: number) {
+    const config = await this.prisma.semesterConfig.findFirst({ where: { academicYear: yr, semester: sem } });
+    if (!config || config.isCurrent) throw new BadRequestException('Cannot close current or non-existent semester');
 
     return this.prisma.$transaction(async (tx) => {
-      const sections = await tx.section.findMany({
-        where: { academicYear, semester },
-        include: { enrollments: true, course: true },
-      });
+      const sections = await tx.section.findMany({ where: { academicYear: yr, semester: sem }, include: { enrollments: true, course: true } });
+      const students = new Set<string>();
 
-      const affectedStudentIds = new Set<string>();
-
-      for (const section of sections) {
-        for (const enrollment of section.enrollments) {
-          if (!enrollment.grade) continue;
-
-          const gradePoint = getGradePoint(enrollment.grade);
-          const credits = section.course.credits;
-
+      for (const s of sections) {
+        for (const e of s.enrollments) {
+          if (!e.grade) continue;
+          const gp = getGradePoint(e.grade);
           await tx.academicRecord.create({
-            data: {
-              studentId: enrollment.studentId,
-              courseId: section.courseId,
-              academicYear: section.academicYear,
-              semester: section.semester,
-              grade: enrollment.grade,
-              ca: credits,
-              cs: enrollment.grade === Grade.F ? 0 : credits,
-              gp: gradePoint * credits,
-              gpa: gradePoint,
-            },
+            data: { studentId: e.studentId, courseId: s.courseId, academicYear: yr, semester: sem, grade: e.grade, ca: s.course.credits, cs: e.grade === Grade.F ? 0 : s.course.credits, gp: gp * s.course.credits, gpa: gp }
           });
-          affectedStudentIds.add(enrollment.studentId);
+          students.add(e.studentId);
         }
-        await tx.enrollment.updateMany({
-            where: { sectionId: section.id, grade: { not: null } },
-            data: { status: 'SUCCESS' },
-        });
+        await tx.enrollment.updateMany({ where: { sectionId: s.id, grade: { not: null } }, data: { status: 'SUCCESS' } });
       }
 
-      // อัปเดต GPAX และ ตรวจสอบการจบการศึกษา (Graduation)
-      for (const studentId of affectedStudentIds) {
-        const records = await tx.academicRecord.findMany({ where: { studentId } });
+      for (const sid of students) {
+        const records = await tx.academicRecord.findMany({ where: { studentId: sid } });
         const { gpax, totalCA, totalCS } = calculateGPAX(records);
-
-        // ดึงจำนวนวิชาที่กำหนดในหลักสูตร (สมมติเลขไว้ก่อน) 
-        // ในระบบจริงควรดึงจาก curriculum.json
-        const totalCreditsRequired = 130; 
-        const status = (totalCS >= totalCreditsRequired) ? StudentStatus.GRADUATED : StudentStatus.STUDYING;
-
+        const profile = await tx.studentProfile.findUnique({ where: { userId: sid }, include: { curriculum: true } });
+        const target = profile?.curriculum?.totalCredits || 128;
         await tx.studentProfile.update({
-          where: { userId: studentId },
-          data: { gpax, ca: totalCA, cs: totalCS, status },
+          where: { userId: sid },
+          data: { gpax, ca: totalCA, cs: totalCS, status: totalCS >= target ? StudentStatus.GRADUATED : StudentStatus.STUDYING }
         });
       }
-
-      return { message: `ปิดเทอมสำเร็จ พบนักศึกษา ${affectedStudentIds.size} คนที่มีการอัปเดตผลการเรียน` };
+      return { count: students.size };
     });
-  }
-
-  /**
-   * ฟังก์ชันแถม: อัปเดตชั้นพีนึกศึกษา (Admin เป็นคนสั่ง)
-   */
-  async advanceStudentYears() {
-     return this.prisma.studentProfile.updateMany({
-        where: { status: StudentStatus.STUDYING },
-        data: {
-            year: { increment: 1 }
-        }
-     });
   }
 }

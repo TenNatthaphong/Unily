@@ -7,24 +7,30 @@ import { UpdateDepartmentDto } from './dto/update-department.dto';
 export class DepartmentService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // ===========================================================================
+  // CRUD OPERATIONS
+  // ===========================================================================
+
   async create(dto: CreateDepartmentDto) {
     return this.prisma.department.create({ data: dto });
   }
 
-  async update(deptId: string, dto: UpdateDepartmentDto) {
-    return this.prisma.department.update({ where: { id:deptId }, data: dto });
+  async update(id: string, dto: UpdateDepartmentDto) {
+    return this.prisma.department.update({ where: { id }, data: dto });
   }
 
-  async delete(deptId: string) {
-    return this.prisma.department.delete({ where: { id:deptId } });
+  async delete(id: string) {
+    return this.prisma.department.delete({ where: { id } });
   }
-  
-async findByFaculty(facultyId: string) {
+
+  // ===========================================================================
+  // SEARCH & FILTER
+  // ===========================================================================
+
+  async findByFaculty(facultyId: string) {
     return this.prisma.department.findMany({
       where: { facultyId },
       orderBy: { deptCode: 'asc' }
     });
   }
-
-
 }
