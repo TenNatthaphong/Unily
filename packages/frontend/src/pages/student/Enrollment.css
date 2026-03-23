@@ -1,0 +1,72 @@
+.enrollment-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.enrollment-header {
+  margin-bottom: var(--space-lg);
+}
+.enrollment-header h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -0.05em; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.enrollment-header p { color: var(--text-secondary); font-weight: 500; font-size: 1rem; }
+
+.enrollment-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.filters-sidebar {
+  position: sticky;
+  top: calc(var(--top-bar-height) + var(--space-lg));
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: var(--space-lg);
+}
+
+/* --- Section Card Phase 5 --- */
+.section-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.section-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--shadow-xl), var(--shadow-glow); border-color: var(--primary); }
+
+.sc-header { padding: 24px; border-bottom: 1px solid var(--bg-card-border); background: linear-gradient(to bottom, rgba(255,255,255,0.02), transparent); }
+.sc-code { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em; }
+.sc-title { font-size: 1.125rem; font-weight: 800; color: var(--text-primary); margin: 0; line-height: 1.4; }
+
+.sc-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
+
+.sc-stats-row { display: flex; align-items: center; justify-content: space-between; }
+.sc-stat-item { display: flex; gap: 8px; align-items: center; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); }
+.sc-stat-item.primary-stat { color: var(--primary); }
+
+.capacity-container { display: flex; flex-direction: column; gap: 8px; }
+.capacity-label { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
+.capacity-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+.capacity-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.cap-green { background: linear-gradient(90deg, #10b981, #059669); }
+.cap-yellow { background: linear-gradient(90deg, #f59e0b, #d97706); }
+.cap-red { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+.sc-schedules { display: flex; flex-wrap: wrap; gap: 8px; }
+.sched-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; color: var(--primary); }
+
+.sc-footer { padding: 24px; background: rgba(255,255,255,0.01); border-top: 1px solid var(--bg-card-border); }
+
+@media (max-width: 1024px) {
+  .enrollment-layout { grid-template-columns: 1fr; }
+  .filters-sidebar { position: static; }
+}

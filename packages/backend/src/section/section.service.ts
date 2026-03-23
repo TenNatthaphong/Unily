@@ -42,6 +42,37 @@ export class SectionService {
     return this.prisma.section.create({ data: { ...data, schedules: { create: schedules } }, include: { schedules: true } });
   }
 
+  async findByProfessor(profId: string, yr?: number, sem?: number) {
+    return this.prisma.section.findMany({
+      where: {
+        professorId: profId,
+        AND: [
+          yr ? { academicYear: yr } : {},
+          sem ? { semester: sem } : {},
+        ]
+      },
+      include: {
+        course: { include: { faculty: true, department: true } },
+        schedules: true,
+      }
+    });
+  }
+
+  async findStudents(sectionId: string) {
+    return this.prisma.enrollment.findMany({
+      where: { sectionId },
+      include: {
+        student: {
+          include: {
+            user: { select: { firstName: true, lastName: true, email: true } },
+            department: true,
+            faculty: true,
+          }
+        }
+      }
+    });
+  }
+
   async findByCourse(courseId: string) {
     return this.prisma.section.findMany({
       where: { courseId },
@@ -106,10 +137,10 @@ export class SectionService {
 
       for (const s of sections) {
         for (const e of s.enrollments) {
-          if (!e.grade) continue;
+          if (!e.grade || e.status === 'DROPPED') continue;
           const gp = getGradePoint(e.grade);
           await tx.academicRecord.create({
-            data: { studentId: e.studentId, courseId: s.courseId, academicYear: yr, semester: sem, grade: e.grade, ca: s.course.credits, cs: e.grade === Grade.F ? 0 : s.course.credits, gp: gp * s.course.credits, gpa: gp }
+            data: { studentId: e.studentId, courseId: s.courseId, academicYear: yr, semester: sem, grade: e.grade, ca: s.course.credits, cs: e.grade === 'F' ? 0 : s.course.credits, gp: gp * s.course.credits, gpa: gp }
           });
           students.add(e.studentId);
         }
@@ -128,5 +159,13 @@ export class SectionService {
       }
       return { count: students.size };
     });
+  }
+
+  async advanceStudentYears() {
+    const result = await this.prisma.studentProfile.updateMany({
+      where: { status: 'STUDYING' },
+      data: { year: { increment: 1 } }
+    });
+    return { count: result.count };
   }
 }

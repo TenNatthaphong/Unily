@@ -1,0 +1,99 @@
+.study-plan-page {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.progress-card-compact {
+  width: 320px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.progress-info { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.8125rem; }
+.progress-bar-main { height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #10b981); border-radius: 5px; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+.credits-summary { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-align: right; }
+
+/* --- Year Sections --- */
+.curriculum-flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.year-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.year-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.year-num { font-size: 1.25rem; font-weight: 900; font-family: 'Outfit', sans-serif; color: var(--primary); white-space: nowrap; }
+.year-label .line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(59, 130, 246, 0.3), transparent); }
+
+.semester-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.semester-card { padding: 24px; }
+.semester-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 12px; }
+.semester-header h4 { margin: 0; font-size: 1rem; font-weight: 800; }
+.course-count { font-size: 0.6875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+.course-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.course-plan-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+.course-plan-item:hover { transform: translateX(4px); background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); }
+
+.status-icon { display: flex; align-items: center; }
+.completed .status-icon { color: var(--success); }
+.completed { background: rgba(16, 185, 129, 0.05); }
+
+.course-plan-info { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.course-plan-info .code { font-size: 0.6875rem; font-weight: 800; color: var(--primary); filter: brightness(1.2); }
+.course-plan-info .name { font-size: 0.8125rem; font-weight: 700; }
+.plan-credits { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); }
+
+/* --- Legend --- */
+.plan-legend { margin-top: 40px; padding: 24px; display: flex; align-items: center; gap: 40px; }
+.legend-header { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 0.875rem; color: var(--primary); }
+.legend-items { display: flex; gap: 24px; }
+.lg-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); }
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot.completed { background: var(--success); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+.dot.remaining { background: var(--text-muted); }
+.dot.elective { border: 1.5px solid var(--primary); }
+
+@media (max-width: 768px) {
+  .semester-grid { grid-template-columns: 1fr; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .progress-card-compact { width: 100%; }
+}

@@ -1,0 +1,63 @@
+.professor-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.dashboard-header h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -0.05em; }
+.welcome-msg { color: var(--text-secondary); font-weight: 500; }
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.stat-card {
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.stat-icon {
+  width: 64px; height: 64px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.stat-icon.info { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
+.stat-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
+.stat-content { display: flex; flex-direction: column; gap: 4px; }
+.stat-label { font-size: 0.6875rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; }
+.stat-value { font-size: 1.75rem; font-weight: 900; }
+
+.dashboard-main {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 40px;
+}
+
+.sections-list-compact {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 24px;
+}
+
+.compact-section-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+}
+.compact-section-item:hover { border-color: var(--primary); transform: translateX(4px); }
+
+.section-info .course-code { font-size: 0.75rem; font-weight: 800; color: var(--primary); }
+.section-info .course-name { font-size: 0.8125rem; font-weight: 700; margin: 2px 0; }
+.section-meta { font-size: 0.6875rem; font-weight: 600; color: var(--text-muted); }
+
+@media (max-width: 1024px) {
+  .dashboard-stats { grid-template-columns: 1fr; }
+  .dashboard-main { grid-template-columns: 1fr; }
+}

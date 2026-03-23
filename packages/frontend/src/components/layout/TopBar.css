@@ -1,0 +1,166 @@
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-height);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-md);
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.topbar-hamburger {
+  background: transparent;
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+.topbar-hamburger:hover {
+  background: var(--bg-elevated);
+}
+
+.topbar-logo {
+  cursor: pointer;
+  user-select: none;
+}
+.logo-text {
+  font-family: var(--font-en);
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2D74E0, #4A90E8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.topbar-action {
+  background: transparent;
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+.topbar-action:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.locale-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  line-height: 1;
+}
+
+.topbar-profile-wrapper {
+  position: relative;
+  margin-left: var(--space-xs);
+}
+
+.topbar-profile-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.topbar-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+.topbar-profile-btn:hover .topbar-avatar {
+  box-shadow: var(--shadow-glow);
+  transform: scale(1.05);
+}
+
+.topbar-profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-sm);
+  z-index: 200;
+}
+
+.profile-menu-header {
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.profile-name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+.profile-role {
+  align-self: flex-start;
+}
+
+.profile-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-xs) 0;
+}
+
+.profile-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.profile-menu-item:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+.profile-menu-item.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}

@@ -1,7 +1,9 @@
-import { Controller, Get, Param, Patch, Body, Req } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Body, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -12,16 +14,12 @@ export class UserController {
   }
 
   @Get('profile')
-  async getProfile(@Param('id') id: string, @Req() req: any) {
-    // Ideally use req.user.id for security, but keeping backwards compatibility
-    const userId = id || (req.user && req.user.id);
-    return this.userService.findById(userId);
+  async getProfile(@Req() req: any) {
+    return this.userService.findById(req.user.id);
   }
 
   @Patch('profile')
-  async updateOwnProfile(@Param('id') id: string, @Body() updateDto: UpdateUserDto, @Req() req: any) {
-    // Prevent updating role or status directly
-    const userId = id || (req.user && req.user.id);
-    return this.userService.updateOwnProfile(userId, updateDto);
+  async updateOwnProfile(@Body() updateDto: UpdateUserDto, @Req() req: any) {
+    return this.userService.updateOwnProfile(req.user.id, updateDto);
   }
 }

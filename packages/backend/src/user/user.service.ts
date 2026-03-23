@@ -14,7 +14,14 @@ export class UserService {
   // ===========================================================================
 
   async findById(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        studentProfile: { include: { curriculum: true, department: true, faculty: true } },
+        professorProfile: { include: { department: true, faculty: true } },
+        adminProfile: true
+      }
+    });
   }
 
   async updateOwnProfile(id: string, data: UpdateUserDto) {
@@ -38,7 +45,7 @@ export class UserService {
     return this.prisma.user.update({ where: { id: targetId }, data: { status: 'SUSPENDED' } });
   }
 
-  async adminUpdateStudent(targetId: string, dto: any) {
+  async adminUpdateStudent(adminId: string, targetId: string, dto: any) {
     const { email, firstName, lastName, studentStatus } = dto;
     return this.prisma.user.update({
       where: { id: targetId },
@@ -46,7 +53,7 @@ export class UserService {
     });
   }
 
-  async adminUpdateProfessor(targetId: string, dto: any) {
+  async adminUpdateProfessor(adminId: string, targetId: string, dto: any) {
     const { email, firstName, lastName } = dto;
     return this.prisma.user.update({
       where: { id: targetId },

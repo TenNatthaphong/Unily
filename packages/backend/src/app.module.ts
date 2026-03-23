@@ -7,6 +7,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { AcademicRecordModule } from './academic-record/academic-record.module';
+import { EventModule } from './event/event.module';
+import { SystemConfigModule } from './system-config/system-config.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { AcademicRecordModule } from './academic-record/academic-record.module';
     AuthModule,
     EnrollmentModule,
     AcademicRecordModule,
+    EventModule,
+    SystemConfigModule,
   ],
 })
 export class AppModule {}

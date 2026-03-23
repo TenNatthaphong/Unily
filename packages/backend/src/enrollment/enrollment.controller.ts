@@ -7,34 +7,34 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@ApiTags('enrollments')
+@ApiTags('enrollment')
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Controller('enrollments')
+@Controller('enrollment')
 export class EnrollmentController {
   constructor(private readonly enrollmentService: EnrollmentService) {}
 
-  // ===========================================================================
-  // STUDENT & ADMIN ACTIONS
-  // ===========================================================================
+  @Get('search')
+  @ApiOperation({ summary: 'ค้นหากลุ่มเรียนที่เปิดให้ลงทะเบียน' })
+  @ApiQuery({ name: 'q', required: false })
+  @ApiQuery({ name: 'facultyId', required: false })
+  @ApiQuery({ name: 'deptId', required: false })
+  async search(@Query('q') q?: string, @Query('facultyId') fid?: string, @Query('deptId') did?: string) {
+    return this.enrollmentService.searchSections({ q, facultyId: fid, deptId: did });
+  }
 
   @Post()
   @Roles(Role.STUDENT, Role.ADMIN)
-  @ApiOperation({ summary: 'ลงทะเบียนเรียน (เช็คตารางชน + prerequisite + Retake F)' })
+  @ApiOperation({ summary: 'ลงทะเบียนเรียน' })
   async create(@Body() dto: CreateEnrollmentDto, @Request() req) {
-    // Force studentId to be the logged-in user if the role is STUDENT
-    if (req.user.role === Role.STUDENT) {
-      dto.studentId = req.user.userId;
-    }
-    return this.enrollmentService.create(dto);
+    return this.enrollmentService.create({ ...dto, studentId: req.user.id });
   }
 
-  @Delete('drop/:sectionId')
+  @Delete(':id')
   @Roles(Role.STUDENT, Role.ADMIN)
-  @ApiOperation({ summary: 'ถอนรายวิชา (Drop)' })
-  async drop(@Param('sectionId') sectionId: string, @Request() req, @Query('studentId') studentId?: string) {
-    const targetId = req.user.role === Role.ADMIN ? (studentId || req.user.userId) : req.user.userId;
-    return this.enrollmentService.drop(targetId, sectionId);
+  @ApiOperation({ summary: 'ถอนรายวิชา' })
+  async drop(@Param('id') enrollmentId: string, @Request() req) {
+    return this.enrollmentService.drop(req.user.id, enrollmentId);
   }
 
   @Get('my')
@@ -44,13 +44,9 @@ export class EnrollmentController {
   @ApiQuery({ name: 'semester', required: false, type: Number })
   async getMyEnrollments(@Request() req, @Query('academicYear') yr?: string, @Query('semester') sem?: string) {
     return yr && sem 
-      ? this.enrollmentService.findByStudentAndTerm(req.user.userId, +yr, +sem)
-      : this.enrollmentService.findByStudent(req.user.userId);
+      ? this.enrollmentService.findByStudentAndTerm(req.user.id, +yr, +sem)
+      : this.enrollmentService.findByStudent(req.user.id);
   }
-
-  // ===========================================================================
-  // ADMIN & PROFESSOR ACTIONS
-  // ===========================================================================
 
   @Get('student/:studentId')
   @Roles(Role.ADMIN, Role.PROFESSOR)

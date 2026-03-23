@@ -7,10 +7,26 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
-@ApiTags('sections')
-@Controller('sections')
+@ApiTags('section')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Controller('section')
 export class SectionController {
   constructor(private readonly sectionService: SectionService) {}
+
+  @Get('my')
+  @Roles(Role.PROFESSOR)
+  @ApiOperation({ summary: 'ดูรายวิชาที่อาจารย์ผู้สอนรับผิดชอบ' })
+  async getMySections(@Request() req, @Query('academicYear') yr?: string, @Query('semester') sem?: string) {
+    return this.sectionService.findByProfessor(req.user.id, yr ? +yr : undefined, sem ? +sem : undefined);
+  }
+
+  @Get(':id/students')
+  @Roles(Role.PROFESSOR, Role.ADMIN)
+  @ApiOperation({ summary: 'ดูรายชื่อนักศึกษาในกลุ่มเรียน' })
+  async getSectionStudents(@Param('id') id: string) {
+    return this.sectionService.findStudents(id);
+  }
 
   @Get()
   @ApiOperation({ summary: 'ดูรายการกลุ่มเรียนทั้งหมดในรายวิชานั้น' })
@@ -25,8 +41,6 @@ export class SectionController {
   }
 
   @Patch(':id/grades')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.PROFESSOR)
   @ApiOperation({ summary: 'อาจารย์กรอกคะแนนและเกรด' })
   updateGrades(
@@ -34,6 +48,6 @@ export class SectionController {
     @Body() bulkGradeDto: BulkGradeDto,
     @Request() req
   ) {
-    return this.sectionService.updateGrades(id, req.user.userId, bulkGradeDto);
+    return this.sectionService.updateGrades(id, req.user.id, bulkGradeDto);
   }
 }

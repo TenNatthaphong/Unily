@@ -1,0 +1,207 @@
+.timetable-container {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.timetable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.timetable-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.timetable-legend {
+  display: flex;
+  gap: var(--space-md);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.dot.study { background: var(--primary); }
+.dot.exam { background: var(--danger); }
+
+/* --- Timetable Scroll Area --- */
+.timetable-scroll-area {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.timetable-grid-horizontal {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Top Time Labels --- */
+.timetable-time-header {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.day-label-column {
+  width: 100px;
+  min-width: 100px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--text-secondary);
+}
+
+.day-label-column.spacer {
+  background: transparent;
+}
+
+.time-column-header {
+  display: flex;
+  justify-content: flex-start;
+  padding: 8px 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* --- Row-based Table Body --- */
+.timetable-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.timetable-day-row {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  min-height: 100px;
+}
+
+.day-name {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.day-content-area {
+  position: relative;
+  flex: 1;
+  display: flex;
+}
+
+.grid-lines-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.grid-line {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.lunch-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(245, 158, 11, 0.05); /* Soft lunch highlight */
+  border-left: 1px dashed rgba(245, 158, 11, 0.3);
+  border-right: 1px dashed rgba(245, 158, 11, 0.3);
+}
+
+/* --- Course Items (Horizontal Mode) --- */
+.timetable-item.h-mode {
+  position: absolute;
+  top: 10px;
+  height: calc(100% - 20px);
+  padding: 4px;
+  z-index: 2;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timetable-item-inner {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.course-code {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.course-time {
+  font-size: 0.625rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+.course-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-footer {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  display: flex;
+  gap: 4px;
+  opacity: 0.8;
+}
+
+/* --- Day Coloring (Horizontal) --- */
+.day-mon .timetable-item-inner { background: rgba(234, 179, 8, 0.15); border-left: 4px solid #eab308; color: #eab308; }
+.day-tue .timetable-item-inner { background: rgba(236, 72, 153, 0.15); border-left: 4px solid #ec4899; color: #ec4899; }
+.day-wed .timetable-item-inner { background: rgba(34, 197, 94, 0.15); border-left: 4px solid #22c55e; color: #22c55e; }
+.day-thu .timetable-item-inner { background: rgba(249, 115, 22, 0.15); border-left: 4px solid #f97316; color: #f97316; }
+.day-fri .timetable-item-inner { background: rgba(59, 130, 246, 0.15); border-left: 4px solid #3b82f6; color: #3b82f6; }
+.day-sat .timetable-item-inner { background: rgba(168, 85, 247, 0.15); border-left: 4px solid #a855f7; color: #a855f7; }
+.day-sun .timetable-item-inner { background: rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444; color: #ef4444; }
+
+.timetable-item.h-mode:hover {
+  transform: translateY(-2px) scale(1.02);
+  z-index: 10;
+}
+.timetable-item.h-mode:hover .timetable-item-inner {
+  box-shadow: var(--shadow-md);
+  background: var(--bg-surface);
+}

@@ -34,6 +34,30 @@ export class EnrollmentService {
   // PUBLIC ACTIONS
   // ===========================================================================
 
+  async searchSections(params: { q?: string; facultyId?: string; deptId?: string }) {
+    const { q, facultyId, deptId } = params;
+    return this.prisma.section.findMany({
+      where: {
+        AND: [
+          q ? {
+            OR: [
+              { course: { courseCode: { contains: q, mode: 'insensitive' } } },
+              { course: { nameTh: { contains: q, mode: 'insensitive' } } },
+              { course: { nameEn: { contains: q, mode: 'insensitive' } } },
+            ]
+          } : {},
+          facultyId ? { course: { facultyId } } : {},
+          deptId ? { course: { deptId } } : {},
+        ]
+      },
+      include: {
+        course: { include: { faculty: true, department: true } },
+        professor: { include: { user: { select: { firstName: true, lastName: true } } } },
+        schedules: true
+      }
+    });
+  }
+
   async create(dto: CreateEnrollmentDto) {
     const { studentId, sectionId } = dto;
     const section = await this.prisma.section.findUnique({
@@ -45,7 +69,7 @@ export class EnrollmentService {
 
     // 1. Check if already passed or enrolled
     const alreadyPassed = await this.prisma.academicRecord.findFirst({
-      where: { studentId, courseId: section.courseId, grade: { not: Grade.F } }
+      where: { studentId, courseId: section.courseId, grade: { not: 'F' } }
     });
     if (alreadyPassed) throw new BadRequestException('You have already passed this course.');
 
@@ -53,7 +77,7 @@ export class EnrollmentService {
     if (section.course.prerequisites.length > 0) {
       const prereqs = section.course.prerequisites.map(p => p.requiresCourseId);
       const passedCount = await this.prisma.academicRecord.count({
-        where: { studentId, courseId: { in: prereqs }, grade: { not: Grade.F } }
+        where: { studentId, courseId: { in: prereqs }, grade: { not: 'F' } }
       });
       if (passedCount < prereqs.length) throw new BadRequestException('Prerequisite required');
     }
@@ -75,10 +99,10 @@ export class EnrollmentService {
       }
     }
 
-    // 4. Credit Limit Check (Co-op can bypass max credits)
+    // 4. Credit Limit Check
     const currentCredits = existing.reduce((sum, e) => sum + e.section.course.credits, 0);
     const limits = await this.getCreditLimits(studentId);
-    if (section.course.category !== CourseCategory.COOP_COURSE && (currentCredits + section.course.credits) > limits.max) {
+    if (section.course.category !== 'COOP_COURSE' && (currentCredits + section.course.credits) > limits.max) {
       throw new BadRequestException(`Credits exceed limit (Max: ${limits.max})`);
     }
 
@@ -92,14 +116,14 @@ export class EnrollmentService {
     });
   }
 
-  async drop(studentId: string, sectionId: string) {
-    const enr = await this.prisma.enrollment.findUnique({ where: { studentId_sectionId: { studentId, sectionId } } });
-    if (!enr) throw new NotFoundException('Enrollment not found');
+  async drop(studentId: string, enrollmentId: string) {
+    const enr = await this.prisma.enrollment.findUnique({ where: { id: enrollmentId } });
+    if (!enr || enr.studentId !== studentId) throw new NotFoundException('Enrollment not found');
     if (enr.status === 'SUCCESS') throw new BadRequestException('Cannot drop a graded course');
 
     return this.prisma.$transaction(async (tx) => {
-      await tx.enrollment.delete({ where: { id: enr.id } });
-      await tx.section.update({ where: { id: sectionId }, data: { enrolledCount: { decrement: 1 } } });
+      await tx.enrollment.delete({ where: { id: enrollmentId } });
+      await tx.section.update({ where: { id: enr.sectionId }, data: { enrolledCount: { decrement: 1 } } });
       return { message: 'Dropped successfully' };
     });
   }

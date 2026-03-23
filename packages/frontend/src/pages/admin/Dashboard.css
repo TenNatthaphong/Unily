@@ -1,0 +1,63 @@
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 40px;
+}
+
+.system-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.status-badge.active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.config-item { display: flex; flex-direction: column; gap: 4px; }
+.config-label { font-size: 0.6875rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; }
+.config-value { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+
+.action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+}
+.action-item.danger { border-left: 4px solid var(--danger); background: rgba(239, 68, 68, 0.03); }
+
+.action-info h5 { font-size: 1rem; font-weight: 800; margin: 0; }
+.action-info p { font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; }
+
+@media (max-width: 1024px) {
+  .admin-grid { grid-template-columns: 1fr; }
+  .config-grid { grid-template-columns: 1fr; }
+}
