@@ -31,12 +31,13 @@ const calculateGrade = (total: number): Grade => {
     return Grade.A;
 };
 
-// range 35-85 เกาะกลุ่ม 60-70 ประมาณ 40% | 71-85 ประมาณ 35% | 35-59 ประมาณ 25%
+// range 35-92 เกาะกลุ่ม 65-78 ประมาณ 35% | 79-92 ประมาณ 40% | 35-64 ประมาณ 25%
+// avg GPA ≈ 2.85 → ~60% ผ่านเกณฑ์ COOP (GPA >= 2.75), F rate ≈ 4%
 const getRandomTotal = (): number => {
     const r = Math.random();
-    if (r < 0.40) return Math.floor(Math.random() * 11) + 60;  // 60-70
-    if (r < 0.75) return Math.floor(Math.random() * 15) + 71;  // 71-85
-    return Math.floor(Math.random() * 25) + 35;                 // 35-59
+    if (r < 0.35) return Math.floor(Math.random() * 14) + 65;  // 65-78
+    if (r < 0.75) return Math.floor(Math.random() * 14) + 79;  // 79-92
+    return Math.floor(Math.random() * 30) + 35;                 // 35-64
 };
 
 // split total เป็น midterm(40%) + final(60%) พร้อม noise เล็กน้อย
@@ -200,6 +201,7 @@ async function main() {
             const enrollmentBatch: any[] = [];
             
             for (const std of allStudents) {
+                if ((std as any)._graduated) continue; // จบแล้วไม่ต้องลงทะเบียน
                 const stdRecords = allRecordsAtStart.filter(r => r.studentId === std.userId);
                 const passedIds = new Set(stdRecords.filter(r => r.grade !== Grade.F).map(r => r.courseId));
                 const studyYear = (year - std.entryYear) + 1;
@@ -311,11 +313,16 @@ async function main() {
                         const gpa10 = gpa10CA > 0 ? (qp10.reduce((s,r) => s+r.gp, 0) / gpa10CA) : 0;
                         if (csNS >= 90 && gpax5 >= 2.75 && qp10.length >= 10 && gpa10 >= 2.5) { cId = coopCurric.id; coops++; }
                     }
-                    const isG = tCS >= 128 && requiredCoreFull.filter(c => c.curriculumId === cId).every(c => rs.some(r => r.courseId === c.courseId && r.grade !== Grade.F));
+                    // GRADUATION CHECK: หน่วยกิตครบ + ผ่านวิชาบังคับทุกตัว + GPAX >= 2.0
+                    const allCorePassedForCurric = requiredCoreFull
+                        .filter(c => c.curriculumId === cId)
+                        .every(c => rs.some(r => r.courseId === c.courseId && r.grade !== Grade.F));
+                    const isG = tCS >= 128 && gpax >= 2.0 && allCorePassedForCurric;
                     if (isG) grads++;
-                    // sync in-memory so subsequent terms use updated curriculumId and year
+                    // sync in-memory so subsequent terms use updated curriculumId, year, and graduation status
                     std.curriculumId = cId;
                     std.year = sY;
+                    if (isG) (std as any)._graduated = true;
                     await prisma.studentProfile.update({ where: { userId: std.userId }, data: { gpax: parseFloat(gpax.toFixed(2)), ca: tCA, cs: tCS, year: sY, status: isG ? StudentStatus.GRADUATED : StudentStatus.STUDYING, curriculumId: cId } });
                 }
             }
