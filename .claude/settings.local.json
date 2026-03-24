@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npx prisma:*)",
       "Bash(npx tsc:*)",
-      "Bash(node -e \"const d=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''courses.json'',''utf8''\\)\\); d.filter\\(c=>c.category===''REQUIRED_COURSE''\\).forEach\\(c=>console.log\\(c.courseCode, c.nameEn\\)\\)\")"
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''courses.json'',''utf8''\\)\\); d.filter\\(c=>c.category===''REQUIRED_COURSE''\\).forEach\\(c=>console.log\\(c.courseCode, c.nameEn\\)\\)\")",
+      "Read(//c/AllProject/unily/packages/frontend/**)",
+      "Bash(npm install:*)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(find C:AllProjectunilypackagesbackendsrc -name *config* -o -name *semester*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }
