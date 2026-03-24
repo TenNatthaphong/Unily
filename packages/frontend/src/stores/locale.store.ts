@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type Locale = 'th' | 'en';
+type Locale = 'th';
 
 interface LocaleState {
   locale: Locale;
@@ -8,28 +8,12 @@ interface LocaleState {
   setLocale: (locale: Locale) => void;
 }
 
-function getInitialLocale(): Locale {
-  const stored = localStorage.getItem('locale') as Locale | null;
-  return stored === 'en' ? 'en' : 'th';
-}
-
-export const useLocaleStore = create<LocaleState>((set) => ({
-  locale: getInitialLocale(),
-
-  toggle: () => set((state) => {
-    const next = state.locale === 'th' ? 'en' : 'th';
-    localStorage.setItem('locale', next);
-    document.documentElement.setAttribute('data-locale', next);
-    return { locale: next };
-  }),
-
-  setLocale: (locale) => {
-    localStorage.setItem('locale', locale);
-    document.documentElement.setAttribute('data-locale', locale);
-    set({ locale });
-  },
+export const useLocaleStore = create<LocaleState>(() => ({
+  locale: 'th',
+  toggle: () => { /* ระบบใช้ภาษาไทยเท่านั้น */ },
+  setLocale: () => { /* ระบบใช้ภาษาไทยเท่านั้น */ },
 }));
 
-// Apply locale on load
-const initial = getInitialLocale();
-document.documentElement.setAttribute('data-locale', initial);
+// Lock locale on load
+localStorage.setItem('locale', 'th');
+document.documentElement.setAttribute('data-locale', 'th');

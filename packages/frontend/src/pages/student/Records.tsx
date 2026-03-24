@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { academicRecordApi } from '../../api/academic-record.api';
 import type { AcademicRecord, Grade } from '../../types';
 import { BarChart3, Loader2 } from 'lucide-react';
@@ -49,7 +50,12 @@ export default function StudentRecords() {
   if (isLoading) return <div className="loading-state"><Loader2 className="spin" size={40} /></div>;
 
   return (
-    <div className="records-page animate-fade-in">
+    <motion.div
+      className="records-page"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="page-header">
         <div className="page-title"><BarChart3 size={24} /><h1>ผลการเรียน</h1></div>
       </div>
@@ -106,6 +112,6 @@ export default function StudentRecords() {
           </div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

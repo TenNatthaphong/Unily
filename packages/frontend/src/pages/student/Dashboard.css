@@ -59,7 +59,7 @@
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background-color: #0f172a;
+  background-color: var(--bg-elevated);
   background-size: cover;
   background-position: center;
   min-height: 220px;
@@ -67,7 +67,7 @@
 .dash-banner-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #0f2044 0%, #0a1628 60%, #1e293b 100%);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-dark) 60%, var(--bg-card) 100%);
 }
 .dash-banner-overlay {
   position: absolute;

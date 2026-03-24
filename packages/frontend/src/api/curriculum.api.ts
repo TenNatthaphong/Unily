@@ -32,4 +32,8 @@ export const curriculumApi = {
 
   delete: (id: string) =>
     api.delete(`/admin/curriculums/${id}`),
+
+  // Admin: get curriculum with all items
+  getWithItems: (id: string) =>
+    api.get<Curriculum>(`/curriculums/${id}`),
 };

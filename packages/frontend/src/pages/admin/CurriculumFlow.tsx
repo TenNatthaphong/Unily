@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { motion } from 'framer-motion';
 import Portal from '../../components/ui/Portal';
 import { useParams, useNavigate } from 'react-router-dom';
 import { curriculumApi } from '../../api/curriculum.api';
@@ -30,16 +31,15 @@ function CountdownConfirmDialog({
       <div className="modal-overlay">
         <div className="modal countdown-modal" onClick={e => e.stopPropagation()}>
           <div className="countdown-icon"><AlertTriangle size={40} /></div>
-          <h3>Confirm Save Flow</h3>
+          <h3>ยืนยันบันทึก Flow</h3>
           <p>
-            This will <strong>delete all current curriculum items</strong> and re-create them
-            with the new positions. This cannot be undone.
+            การบันทึกจะ <strong>ลบรายวิชาทั้งหมดในหลักสูตรนี้</strong> แล้วสร้างใหม่ตามตำแหน่งที่กำหนด ไม่สามารถย้อนกลับได้
           </p>
           <div className="countdown-timer">{seconds > 0 ? seconds : '✓'}</div>
           <div className="modal-actions">
-            <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+            <button className="btn btn-secondary" onClick={onCancel}>ยกเลิก</button>
             <button className="btn btn-primary" onClick={onConfirm} disabled={!canConfirm}>
-              {canConfirm ? 'Confirm Save' : `Wait... (${seconds})`}
+              {canConfirm ? 'ยืนยันบันทึก' : `รอสักครู่... (${seconds})`}
             </button>
           </div>
         </div>
@@ -160,18 +160,33 @@ export default function CurriculumFlowPage() {
 
   return (
     <div className="flow-page">
-      <div className="flow-topbar">
-        <button className="btn-icon" onClick={() => navigate('/admin/curriculums')}>
+      <motion.div
+        className="flow-topbar"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+      >
+        <motion.button
+          className="btn-icon"
+          onClick={() => navigate('/admin/curriculums')}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <ArrowLeft size={20} />
-        </button>
+        </motion.button>
         <div className="flow-title">
           <h2>{curriculum?.name}</h2>
           <span className="badge">{curriculum?.curriculumCode}</span>
         </div>
-        <button className="btn btn-primary" onClick={handleSave}>
-          <Save size={16} /> Save Flow
-        </button>
-      </div>
+        <motion.button
+          className="btn btn-primary"
+          onClick={handleSave}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+        >
+          <Save size={16} /> บันทึก Flow
+        </motion.button>
+      </motion.div>
 
       <div className="flow-workspace">
         <CoursePalette courses={allCourses} />

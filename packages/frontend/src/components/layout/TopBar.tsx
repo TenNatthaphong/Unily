@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Menu, Moon, Sun, Bell, LogOut } from 'lucide-react';
 import { useThemeStore } from '../../stores/theme.store';
-import { useLocaleStore } from '../../stores/locale.store';
 import { useAuthStore } from '../../stores/auth.store';
 import { useNavigate } from 'react-router-dom';
 import './TopBar.css';
@@ -12,7 +11,6 @@ interface TopBarProps {
 
 export default function TopBar({ onMenuToggle }: TopBarProps) {
   const { theme, toggle: toggleTheme } = useThemeStore();
-  const { locale, toggle: toggleLocale } = useLocaleStore();
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [showProfile, setShowProfile] = useState(false);
@@ -36,11 +34,7 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
       </div>
 
       <div className="topbar-right">
-        <button className="locale-pill" onClick={toggleLocale}>
-          {locale === 'th' ? '🇹🇭 TH' : '🇬🇧 EN'}
-        </button>
-
-        <button className="topbar-action" onClick={toggleTheme} title={theme === 'dark' ? 'Light mode' : 'Dark mode'}>
+        <button className="topbar-action" onClick={toggleTheme} title={theme === 'dark' ? 'โหมดสว่าง' : 'โหมดมืด'}>
           {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
         </button>
 

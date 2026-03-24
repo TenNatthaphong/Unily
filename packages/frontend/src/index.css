@@ -506,3 +506,97 @@ button, input, select, textarea {
 .checkbox-label input { width: auto; }
 .mt-lg { margin-top: var(--space-lg); }
 .cursor-pointer { cursor: pointer; }
+
+/* ═══════════════════════════════════════════════
+   LIGHT MODE — Component overrides
+   ═══════════════════════════════════════════════ */
+
+/* Card hover border */
+[data-theme="light"] .card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Buttons */
+[data-theme="light"] .btn-secondary {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-primary);
+}
+[data-theme="light"] .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: var(--primary);
+}
+
+/* Input */
+[data-theme="light"] .input {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+}
+[data-theme="light"] .input:focus {
+  background: #ffffff;
+}
+
+/* Glass panels */
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .glass-panel-premium {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Data table header */
+[data-theme="light"] .data-table th {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Progress bar track (dashboard) */
+[data-theme="light"] .dash-progress-bar {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Dashboard banner fallback gradient */
+[data-theme="light"] .dash-banner-gradient {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 60%, #2563eb 100%);
+}
+
+/* btn-icon hover */
+[data-theme="light"] .btn-icon:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Modal overlay */
+[data-theme="light"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Modal body */
+[data-theme="light"] .modal {
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15);
+}
+
+/* Search box in light */
+[data-theme="light"] .search-box {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Table row hover */
+[data-theme="light"] .data-table tr:hover td {
+  background: rgba(59, 130, 246, 0.04);
+}
+
+/* Status badges — map raw enum values to Thai */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.status-badge.active { background: rgba(16,185,129,0.15); color: var(--success); }
+.status-badge.inactive { background: rgba(100,116,139,0.15); color: var(--text-muted); }

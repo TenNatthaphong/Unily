@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { enrollmentApi } from '../../api/enrollment.api';
 import { configApi } from '../../api/config.api';
 import Timetable from '../../components/schedule/Timetable';
@@ -60,7 +61,12 @@ export default function StudentSchedule() {
   }
 
   return (
-    <div className="student-schedule animate-fade-in">
+    <motion.div
+      className="student-schedule"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="schedule-header">
         <div className="page-title">
           <CalendarDays size={24} />
@@ -170,6 +176,6 @@ export default function StudentSchedule() {
           )}
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

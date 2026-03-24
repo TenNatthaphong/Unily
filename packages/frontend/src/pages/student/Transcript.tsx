@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslation } from '../../i18n/useTranslation';
 import { academicRecordApi, type TranscriptResponse } from '../../api/academic-record.api';
 import { GraduationCap, Loader2, Award, FileCheck, ChevronDown } from 'lucide-react';
@@ -63,12 +64,17 @@ export default function Transcript() {
     );
   }
 
-  if (!data) return <div className="no-data-msg">No transcript records found</div>;
+  if (!data) return <div className="no-data-msg">ยังไม่มีข้อมูลผลการเรียน</div>;
 
   const { studentInfo, summary } = data;
 
   return (
-    <div className="transcript-page animate-fade-in">
+    <motion.div
+      className="transcript-page"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="page-header">
         <div className="header-info">
           <span className="badge badge-info">{studentInfo.studentCode}</span>
@@ -91,11 +97,11 @@ export default function Transcript() {
           <span className="value">{summary.gpax.toFixed(2)}</span>
         </div>
         <div className="stat-group">
-          <span className="label">Credits Earned (CS)</span>
+          <span className="label">หน่วยกิตสะสม (CS)</span>
           <span className="value">{summary.totalCS} / 128</span>
         </div>
         <div className="stat-group">
-          <span className="label">Status</span>
+          <span className="label">สถานะ</span>
           <span className="value status-pill">{STATUS_TH[studentInfo.status] ?? studentInfo.status}</span>
         </div>
       </div>
@@ -174,6 +180,6 @@ export default function Transcript() {
           <div className="no-data-msg">ไม่พบข้อมูลในภาคเรียนนี้</div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

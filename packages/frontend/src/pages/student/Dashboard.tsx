@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslation } from '../../i18n/useTranslation';
 import { useAuthStore } from '../../stores/auth.store';
 import { enrollmentApi } from '../../api/enrollment.api';
@@ -7,6 +8,12 @@ import Timetable from '../../components/schedule/Timetable';
 import type { Enrollment, SemesterConfig, Event } from '../../types';
 import { CalendarDays, MapPin, ChevronRight, Loader2, GraduationCap } from 'lucide-react';
 import './Dashboard.css';
+
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.45, delay, ease: [0.22, 1, 0.36, 1] },
+});
 
 const CATEGORY_COLOR: Record<string, string> = {
   GENERAL: 'var(--text-muted)',
@@ -73,9 +80,9 @@ export default function StudentDashboard() {
   calItems.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <div className="dashboard-premium animate-fade-in">
+    <div className="dashboard-premium">
       {/* ── Compact greeting ── */}
-      <div className="dash-greeting">
+      <motion.div className="dash-greeting" {...fadeUp(0)}>
         <div className="dash-greeting-left">
           <span className="dash-hello">{t('common.hello')}, <strong>{user?.firstName}</strong></span>
           {student?.studentCode && <span className="badge badge-info">{student.studentCode}</span>}
@@ -94,10 +101,10 @@ export default function StudentDashboard() {
             <div className="dash-progress-fill" style={{ width: `${((student?.cs || 0) / 128) * 100}%` }} />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Event Banner 70/30 ── */}
-      <div className="dash-event-panel">
+      <motion.div className="dash-event-panel" {...fadeUp(0.08)}>
         {/* 70% – Featured banner */}
         <div
           className="dash-banner"
@@ -148,16 +155,16 @@ export default function StudentDashboard() {
             {calItems.length === 0 && <div className="no-data-msg-compact">ไม่มีกิจกรรม</div>}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Timetable full width ── */}
-      <div className="dash-timetable-section">
+      <motion.div className="dash-timetable-section" {...fadeUp(0.16)}>
         <div className="dash-section-title">
           <GraduationCap size={18} />
           <span>ตารางเรียน — ภาคเรียน {config?.semester}/{config?.academicYear}</span>
         </div>
         <Timetable enrollments={enrollments} fitWidth compact />
-      </div>
+      </motion.div>
     </div>
   );
 }

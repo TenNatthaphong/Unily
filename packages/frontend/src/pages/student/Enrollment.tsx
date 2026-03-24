@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../../i18n/useTranslation';
 import { enrollmentApi } from '../../api/enrollment.api';
 import { courseApi } from '../../api/course.api';
@@ -290,24 +291,39 @@ export default function EnrollmentPage() {
   }, [courses, prereqFilter]);
 
   return (
-    <div className="enrollment-page animate-fade-in">
-      <div className="enrollment-header">
+    <motion.div
+      className="enrollment-page"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <motion.div
+        className="enrollment-header"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, delay: 0.04 }}
+      >
         <div className="header-content">
           <h1>{t('nav.enrollment')}</h1>
-          {config && <p className="enrollment-sub font-mono">TERM {config.academicYear}/{config.semester}</p>}
+          {config && <p className="enrollment-sub font-mono">ภาคเรียน {config.semester}/{config.academicYear}</p>}
         </div>
         <div className="enroll-summary glass-panel p-sm px-lg rounded-full flex gap-sm border">
           <Info size={16} className="text-primary" />
-          <span className="text-sm font-bold">{myEnrollments.filter(e => e.status !== 'DROPPED').length} Courses Enrolled</span>
+          <span className="text-sm font-bold">{myEnrollments.filter(e => e.status !== 'DROPPED').length} วิชาที่ลงทะเบียน</span>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="enroll-filters glass-panel-premium p-md rounded-xl">
+      <motion.div
+        className="enroll-filters glass-panel-premium p-md rounded-xl"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, delay: 0.1 }}
+      >
         <div className="filter-row-1">
           <div className="search-box">
             <Search size={20} className="text-muted" />
             <input
-              placeholder="Search for courses (e.g., CS101, Data Science)"
+              placeholder="ค้นหารายวิชา (เช่น CS101, วิทยาศาสตร์)"
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
             />
@@ -321,13 +337,13 @@ export default function EnrollmentPage() {
         <div className="filter-row-2">
           <div className="select-wrapper">
             <select value={facultyId} onChange={e => { setFacultyId(e.target.value); setDeptId(''); setPage(1); }}>
-              <option value="">All Faculties</option>
+              <option value="">-- ทุกคณะ --</option>
               {faculties.map(f => <option key={f.id} value={f.id}>{f.nameTh || f.nameEn}</option>)}
             </select>
           </div>
           <div className="select-wrapper">
             <select value={deptId} onChange={e => { setDeptId(e.target.value); setPage(1); }} disabled={!facultyId}>
-              <option value="">All Departments</option>
+              <option value="">-- ทุกภาควิชา --</option>
               {departments.map(d => <option key={d.id} value={d.id}>{d.nameTh || d.nameEn}</option>)}
             </select>
           </div>
@@ -357,27 +373,40 @@ export default function EnrollmentPage() {
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {isLoading ? (
         <div className="loading-state-premium h-96"><Loader2 className="spin" size={48} /></div>
       ) : (
         <>
-          <div className="courses-list mt-lg">
+          <motion.div
+            className="courses-list mt-lg"
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+          >
             {displayCourses.map(c => (
-              <CourseCard
-                key={c.id} course={c} period={period}
-                myEnrollments={myEnrollments} config={config!}
-                onEnroll={handleEnroll} onDrop={handleDrop}
-                passedCourseIds={passedCourseIds}
-              />
+              <motion.div
+                key={c.id}
+                variants={{
+                  hidden: { opacity: 0, y: 14 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.32 } },
+                }}
+              >
+                <CourseCard
+                  course={c} period={period}
+                  myEnrollments={myEnrollments} config={config!}
+                  onEnroll={handleEnroll} onDrop={handleDrop}
+                  passedCourseIds={passedCourseIds}
+                />
+              </motion.div>
             ))}
             {displayCourses.length === 0 && (
-              <div className="no-data-msg card bg-card-dark p-xl text-center border">
-                <p className="opacity-40">No matching courses found in the current term.</p>
+              <div className="no-data-msg card p-xl text-center border">
+                <p style={{ opacity: 0.4 }}>ไม่พบรายวิชาที่ตรงกับเงื่อนไข</p>
               </div>
             )}
-          </div>
+          </motion.div>
           <div className="pagination">
             <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}><ChevronLeft size={24} /></button>
             <span className="current-page text-lg">{page}</span>
@@ -385,6 +414,6 @@ export default function EnrollmentPage() {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

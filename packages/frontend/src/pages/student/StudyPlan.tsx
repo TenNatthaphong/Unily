@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { motion } from 'framer-motion';
 import { curriculumApi } from '../../api/curriculum.api';
 import { useTranslation } from '../../i18n/useTranslation';
 import { Loader2, CheckCircle2, Circle, GraduationCap, X, PartyPopper } from 'lucide-react';
@@ -112,7 +113,12 @@ export default function StudyPlan() {
   if (isLoading) return <div className="loading-state"><Loader2 className="spin" size={40} /></div>;
 
   return (
-    <div className="study-plan-page animate-fade-in">
+    <motion.div
+      className="study-plan-page"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+    >
       {/* Header */}
       <div className="sp-header">
         <div className="sp-header-info">
@@ -328,6 +334,6 @@ export default function StudyPlan() {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }
