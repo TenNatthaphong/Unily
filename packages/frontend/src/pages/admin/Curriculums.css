@@ -1,0 +1,12 @@
+.curriculum-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-md);
+}
+.curriculum-card { padding: var(--space-lg); }
+.curriculum-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+.curriculum-card h3 { font-size: 1rem; margin-bottom: var(--space-xs); }
+.curriculum-meta { display: flex; gap: var(--space-md); font-size: 0.8rem; color: var(--text-secondary); margin-bottom: var(--space-sm); }
+.curriculum-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: var(--space-sm); }
+.curriculum-actions { display: flex; gap: var(--space-sm); align-items: center; margin-top: var(--space-md); }
+.btn-sm { padding: 6px 12px; font-size: 0.8rem; }

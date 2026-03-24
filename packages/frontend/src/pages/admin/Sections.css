@@ -1,0 +1,14 @@
+.capacity-cell { display: flex; flex-direction: column; gap: 2px; }
+.capacity-bar-sm { height: 4px; background: var(--border); border-radius: 2px; width: 80px; }
+.capacity-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.capacity-fill.success { background: var(--success); }
+.capacity-fill.warning { background: var(--warning); }
+.capacity-fill.danger { background: var(--danger); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.status-dot.success { background: var(--success); }
+.status-dot.warning { background: var(--warning); }
+.status-dot.danger { background: var(--danger); }
+.schedules-section { margin-top: var(--space-md); }
+.schedules-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm); }
+.schedule-row { display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-xs); }
+.schedule-row select, .schedule-row input { flex: 1; }

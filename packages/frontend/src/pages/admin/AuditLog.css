@@ -1,0 +1,12 @@
+.action-toggles { display: flex; gap: var(--space-xs); }
+.action-toggle {
+  padding: 6px 14px; border-radius: var(--radius-full);
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-secondary); cursor: pointer; font-size: 0.8rem;
+  transition: all 0.15s;
+}
+.action-toggle.active { color: var(--text-primary); background: var(--bg-elevated); }
+.action-badge { padding: 3px 8px; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; }
+.action-create { background: rgba(16,185,129,0.15); color: #34d399; }
+.action-update { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.action-delete { background: rgba(239,68,68,0.15); color: #f87171; }

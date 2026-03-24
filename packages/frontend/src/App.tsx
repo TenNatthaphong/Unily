@@ -2,25 +2,36 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import MainLayout from './components/layout/MainLayout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
-import Login from './pages/Login';
-import StudentDashboard from './pages/student/Dashboard';
-import EnrollmentPage from './pages/student/Enrollment';
-import Transcript from './pages/student/Transcript';
-import StudyPlan from './pages/student/StudyPlan';
-import ProfessorDashboard from './pages/professor/Dashboard';
-import SectionGrading from './pages/professor/Grading';
-import AdminDashboard from './pages/admin/Dashboard';
 import { useAuthStore } from './stores/auth.store';
 
-/**
- * Higher-order component to redirect users to their specific dashboard
- * based on their role after logging in.
- */
+// Pages
+import Login from './pages/Login';
+// Student
+import StudentDashboard from './pages/student/Dashboard';
+import EnrollmentPage from './pages/student/Enrollment';
+import StudentSchedule from './pages/student/Schedule';
+import StudentRecords from './pages/student/Records';
+import Transcript from './pages/student/Transcript';
+import StudyPlan from './pages/student/StudyPlan';
+import GraduationCheck from './pages/student/GraduationCheck';
+// Professor
+import ProfessorDashboard from './pages/professor/Dashboard';
+import ProfessorSchedule from './pages/professor/Schedule';
+import ProfessorSections from './pages/professor/Sections';
+import SectionGrading from './pages/professor/Grading';
+// Admin
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminFaculties from './pages/admin/Faculties';
+import AdminCourses from './pages/admin/Courses';
+import AdminCurriculums from './pages/admin/Curriculums';
+import CurriculumFlowPage from './pages/admin/CurriculumFlow';
+import AdminSections from './pages/admin/Sections';
+import AdminUsers from './pages/admin/Users';
+import AuditLogPage from './pages/admin/AuditLog';
+
 function DashboardRedirect() {
   const { user } = useAuthStore();
-  
   if (!user) return <Navigate to="/login" replace />;
-  
   switch (user.role) {
     case 'STUDENT': return <Navigate to="/student/dashboard" replace />;
     case 'PROFESSOR': return <Navigate to="/professor/dashboard" replace />;
@@ -32,68 +43,86 @@ function DashboardRedirect() {
 function App() {
   return (
     <BrowserRouter>
-      {/* Notifications toast system */}
       <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-      
       <Routes>
-        {/* Public Routes */}
+        {/* Public */}
         <Route path="/login" element={<Login />} />
 
-        {/* Protected Area (requires login) */}
+        {/* Protected Area */}
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-          {/* Main Dashboard Resolver */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardRedirect />} />
-          
-          {/* Student Area */}
+
+          {/* ── Student ─────────────────────────────────────── */}
           <Route path="/student">
             <Route path="dashboard" element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <StudentDashboard />
-              </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['STUDENT']}><StudentDashboard /></ProtectedRoute>
             } />
             <Route path="enrollment" element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <EnrollmentPage />
-              </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['STUDENT']}><EnrollmentPage /></ProtectedRoute>
+            } />
+            <Route path="schedule" element={
+              <ProtectedRoute allowedRoles={['STUDENT']}><StudentSchedule /></ProtectedRoute>
+            } />
+            <Route path="records" element={
+              <ProtectedRoute allowedRoles={['STUDENT']}><StudentRecords /></ProtectedRoute>
             } />
             <Route path="transcript" element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <Transcript />
-              </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['STUDENT']}><Transcript /></ProtectedRoute>
+            } />
+            <Route path="graduation" element={
+              <ProtectedRoute allowedRoles={['STUDENT']}><GraduationCheck /></ProtectedRoute>
             } />
             <Route path="curriculum/plan" element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <StudyPlan />
-              </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['STUDENT']}><StudyPlan /></ProtectedRoute>
             } />
           </Route>
-          
-          {/* Professor Area */}
+
+          {/* ── Professor ────────────────────────────────────── */}
           <Route path="/professor">
             <Route path="dashboard" element={
-              <ProtectedRoute allowedRoles={['PROFESSOR']}>
-                <ProfessorDashboard />
-              </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['PROFESSOR']}><ProfessorDashboard /></ProtectedRoute>
+            } />
+            <Route path="schedule" element={
+              <ProtectedRoute allowedRoles={['PROFESSOR']}><ProfessorSchedule /></ProtectedRoute>
+            } />
+            <Route path="sections" element={
+              <ProtectedRoute allowedRoles={['PROFESSOR']}><ProfessorSections /></ProtectedRoute>
             } />
             <Route path="section/:id/grading" element={
-              <ProtectedRoute allowedRoles={['PROFESSOR']}>
-                <SectionGrading />
-              </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['PROFESSOR']}><SectionGrading /></ProtectedRoute>
             } />
           </Route>
-          
-          {/* Admin Area */}
+
+          {/* ── Admin ────────────────────────────────────────── */}
           <Route path="/admin">
             <Route path="dashboard" element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <AdminDashboard />
-              </ProtectedRoute>
+              <ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>
+            } />
+            <Route path="org/faculties" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><AdminFaculties /></ProtectedRoute>
+            } />
+            <Route path="courses" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><AdminCourses /></ProtectedRoute>
+            } />
+            <Route path="curriculums" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><AdminCurriculums /></ProtectedRoute>
+            } />
+            <Route path="curriculums/:id/flow" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><CurriculumFlowPage /></ProtectedRoute>
+            } />
+            <Route path="sections" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><AdminSections /></ProtectedRoute>
+            } />
+            <Route path="users" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><AdminUsers /></ProtectedRoute>
+            } />
+            <Route path="audit-log" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><AuditLogPage /></ProtectedRoute>
             } />
           </Route>
-          
-          {/* Global Fallback for missing routes inside layout */}
-          <Route path="*" element={<div style={{ padding: '2rem' }}>404 - Not Found</div>} />
+
+          <Route path="*" element={<div style={{ padding: '2rem', textAlign: 'center' }}>404 - Not Found</div>} />
         </Route>
       </Routes>
     </BrowserRouter>

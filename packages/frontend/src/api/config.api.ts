@@ -7,4 +7,14 @@ export const configApi = {
 
   getEvents: () =>
     api.get<Event[]>('/events'),
+
+  // Admin events
+  createEvent: (data: Partial<Event>) =>
+    api.post<Event>('/admin/events', data),
+
+  updateEvent: (id: string, data: Partial<Event>) =>
+    api.patch<Event>(`/admin/events/${id}`, data),
+
+  deleteEvent: (id: string) =>
+    api.delete(`/admin/events/${id}`),
 };
