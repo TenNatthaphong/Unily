@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, Moon, Sun, Bell, User, LogOut } from 'lucide-react';
+import { Menu, Moon, Sun, Bell, LogOut } from 'lucide-react';
 import { useThemeStore } from '../../stores/theme.store';
 import { useLocaleStore } from '../../stores/locale.store';
 import { useAuthStore } from '../../stores/auth.store';
@@ -63,9 +63,6 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
                   <span className="profile-role">{user?.role}</span>
                 </div>
                 <div className="profile-menu-divider" />
-                <button className="profile-menu-item" onClick={() => { navigate('/settings/profile'); setShowProfile(false); }}>
-                  <User size={15} /> โปรไฟล์
-                </button>
                 <button className="profile-menu-item danger" onClick={handleLogout}>
                   <LogOut size={15} /> ออกจากระบบ
                 </button>

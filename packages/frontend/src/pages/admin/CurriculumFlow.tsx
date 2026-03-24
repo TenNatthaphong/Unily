@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import Portal from '../../components/ui/Portal';
 import { useParams, useNavigate } from 'react-router-dom';
 import { curriculumApi } from '../../api/curriculum.api';
 import { curriculumItemApi } from '../../api/curriculum-item.api';
@@ -25,23 +26,25 @@ function CountdownConfirmDialog({
   }, [seconds]);
 
   return (
-    <div className="modal-overlay">
-      <div className="modal countdown-modal" onClick={e => e.stopPropagation()}>
-        <div className="countdown-icon"><AlertTriangle size={40} /></div>
-        <h3>Confirm Save Flow</h3>
-        <p>
-          This will <strong>delete all current curriculum items</strong> and re-create them
-          with the new positions. This cannot be undone.
-        </p>
-        <div className="countdown-timer">{seconds > 0 ? seconds : '✓'}</div>
-        <div className="modal-actions">
-          <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
-          <button className="btn btn-primary" onClick={onConfirm} disabled={!canConfirm}>
-            {canConfirm ? 'Confirm Save' : `Wait... (${seconds})`}
-          </button>
+    <Portal>
+      <div className="modal-overlay">
+        <div className="modal countdown-modal" onClick={e => e.stopPropagation()}>
+          <div className="countdown-icon"><AlertTriangle size={40} /></div>
+          <h3>Confirm Save Flow</h3>
+          <p>
+            This will <strong>delete all current curriculum items</strong> and re-create them
+            with the new positions. This cannot be undone.
+          </p>
+          <div className="countdown-timer">{seconds > 0 ? seconds : '✓'}</div>
+          <div className="modal-actions">
+            <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+            <button className="btn btn-primary" onClick={onConfirm} disabled={!canConfirm}>
+              {canConfirm ? 'Confirm Save' : `Wait... (${seconds})`}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
 

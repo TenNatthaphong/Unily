@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import { curriculumApi } from '../../api/curriculum.api';
 import { useTranslation } from '../../i18n/useTranslation';
-import { Loader2, CheckCircle2, Circle, GraduationCap, X } from 'lucide-react';
+import { Loader2, CheckCircle2, Circle, GraduationCap, X, PartyPopper } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { CurriculumCourse } from '../../types';
 import './StudyPlan.css';
@@ -33,9 +33,15 @@ export default function StudyPlan() {
   const [items, setItems] = useState<PlanItem[]>([]);
   const [curriculumName, setCurriculumName] = useState('');
   const [curriculumCode, setCurriculumCode] = useState('');
+  const [curriculumNote, setCurriculumNote] = useState<string | null>(null);
   const [stats, setStats] = useState({ total: 0, earned: 0, gpax: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<PlanItem | null>(null);
+  const [showCongrats, setShowCongrats] = useState(false);
+  const [arrows, setArrows] = useState<{ x1: number; y1: number; x2: number; y2: number; key: string; completed: boolean }[]>([]);
+
+  const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     curriculumApi.getMyPlan()
@@ -43,9 +49,15 @@ export default function StudyPlan() {
         const { curriculum, plan, stats: s } = r.data;
         setCurriculumName(curriculum.name);
         setCurriculumCode(curriculum.curriculumCode);
-        setStats({ total: s.totalCredits, earned: s.creditsEarned, gpax: s.gpax });
+        if (curriculum.note) setCurriculumNote(curriculum.note);
+        const earned = s.creditsEarned;
+        const total = s.totalCredits;
+        setStats({ total, earned, gpax: s.gpax });
         setItems(plan as PlanItem[]);
         setIsLoading(false);
+        if (total > 0 && earned >= total) {
+          setShowCongrats(true);
+        }
       })
       .catch(() => { toast.error('ไม่พบข้อมูลหลักสูตร'); setIsLoading(false); });
   }, []);
@@ -60,6 +72,40 @@ export default function StudyPlan() {
     });
     return Object.values(map).sort((a, b) => a.year !== b.year ? a.year - b.year : a.semester - b.semester);
   }, [items]);
+
+  const courseIdMap = useMemo(() => new Map(items.map(i => [i.courseId, i])), [items]);
+
+  useLayoutEffect(() => {
+    if (!trackRef.current) return;
+    const compute = () => {
+      if (!trackRef.current) return;
+      const trackRect = trackRef.current.getBoundingClientRect();
+      const newArrows: typeof arrows = [];
+      for (const [courseId, item] of courseIdMap) {
+        const prereqs = item.course?.prerequisites || [];
+        for (const p of prereqs) {
+          const srcEl = nodeRefs.current.get(p.requiresCourseId);
+          const tgtEl = nodeRefs.current.get(courseId);
+          if (!srcEl || !tgtEl) continue;
+          const srcR = srcEl.getBoundingClientRect();
+          const tgtR = tgtEl.getBoundingClientRect();
+          const x1 = srcR.right - trackRect.left;
+          const y1 = srcR.top + srcR.height / 2 - trackRect.top;
+          const x2 = tgtR.left - trackRect.left;
+          const y2 = tgtR.top + tgtR.height / 2 - trackRect.top;
+          const completed =
+            courseIdMap.get(p.requiresCourseId)?.status === 'COMPLETED' &&
+            item.status === 'COMPLETED';
+          newArrows.push({ key: `${p.requiresCourseId}-${courseId}`, x1, y1, x2, y2, completed });
+        }
+      }
+      setArrows(newArrows);
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(trackRef.current);
+    return () => ro.disconnect();
+  }, [items, courseIdMap]);
 
   const pct = stats.total > 0 ? Math.round((stats.earned / stats.total) * 100) : 0;
 
@@ -88,9 +134,52 @@ export default function StudyPlan() {
         </div>
       </div>
 
+      {/* Curriculum note */}
+      {curriculumNote && (
+        <div className="sp-note-banner">
+          <span className="sp-note-icon">📌</span>
+          <span>{curriculumNote}</span>
+        </div>
+      )}
+
       {/* Semester columns — horizontal scroll only if truly needed */}
       <div className="sp-flow-scroll">
-        <div className="sp-flow-track" style={{ gridTemplateColumns: `repeat(${semGroups.length}, 190px)` }}>
+        <div
+          className="sp-flow-track"
+          ref={trackRef}
+          style={{ gridTemplateColumns: `repeat(${semGroups.length}, 200px)`, position: 'relative' }}
+        >
+          <svg
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 0,
+              overflow: 'visible',
+            }}
+          >
+            <defs>
+              <marker id="arrow-head" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="rgba(59,130,246,0.5)" />
+              </marker>
+              <marker id="arrow-head-done" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="rgba(16,185,129,0.6)" />
+              </marker>
+            </defs>
+            {arrows.map(a => (
+              <path
+                key={a.key}
+                d={`M${a.x1},${a.y1} C${a.x1 + 50},${a.y1} ${a.x2 - 50},${a.y2} ${a.x2},${a.y2}`}
+                stroke={a.completed ? 'rgba(16,185,129,0.5)' : 'rgba(59,130,246,0.35)'}
+                strokeWidth="1.5"
+                fill="none"
+                markerEnd={a.completed ? 'url(#arrow-head-done)' : 'url(#arrow-head)'}
+                strokeDasharray={a.completed ? undefined : '4,3'}
+              />
+            ))}
+          </svg>
           {semGroups.map(grp => (
             <div key={`${grp.year}-${grp.semester}`} className="sp-column">
               <div className="sp-col-header">
@@ -101,9 +190,14 @@ export default function StudyPlan() {
                 {grp.items.map(item => (
                   <button
                     key={item.id}
+                    ref={el => {
+                      if (el) nodeRefs.current.set(item.courseId, el);
+                      else nodeRefs.current.delete(item.courseId);
+                    }}
                     className={`sp-node ${item.status === 'COMPLETED' ? 'completed' : ''} ${item.course?.isWildcard && item.status !== 'COMPLETED' ? 'wildcard' : ''}`}
                     onClick={() => setSelected(item)}
                     title={item.matchedCourse?.nameTh || item.course?.nameTh || item.mappingPattern || ''}
+                    style={{ position: 'relative', zIndex: 1 }}
                   >
                     <div className="sp-node-code">
                       {/* Completed wildcard: show the actual course code */}
@@ -135,6 +229,34 @@ export default function StudyPlan() {
         <div className="lg-item"><Circle size={14} color="var(--text-muted)" /> ยังไม่ผ่าน</div>
         <div className="lg-item"><span className="lg-wildcard-dot" /> วิชาเลือก (placeholder)</div>
       </div>
+
+      {/* Congratulations overlay — shown when 100% complete */}
+      {showCongrats && (
+        <div className="sp-overlay" onClick={() => setShowCongrats(false)}>
+          <div className="sp-congrats-card" onClick={e => e.stopPropagation()}>
+            <button className="sp-detail-close" onClick={() => setShowCongrats(false)}><X size={18} /></button>
+            <div className="sp-congrats-icon"><PartyPopper size={48} /></div>
+            <h2 className="sp-congrats-title">ยินดีด้วย! 🎉</h2>
+            <p className="sp-congrats-sub">
+              คุณได้เรียนครบทุกวิชาตามหลักสูตรแล้ว
+            </p>
+            <div className="sp-congrats-stats">
+              <div className="sp-congrats-stat">
+                <span className="sp-congrats-stat-val">{stats.total}</span>
+                <span className="sp-congrats-stat-lbl">หน่วยกิตรวม</span>
+              </div>
+              <div className="sp-congrats-stat">
+                <span className="sp-congrats-stat-val">{stats.gpax.toFixed(2)}</span>
+                <span className="sp-congrats-stat-lbl">GPAX</span>
+              </div>
+            </div>
+            <p className="sp-congrats-note">คุณพร้อมสำหรับการสำเร็จการศึกษา</p>
+            <button className="sp-congrats-btn" onClick={() => setShowCongrats(false)}>
+              รับทราบ
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Detail overlay */}
       {selected && (

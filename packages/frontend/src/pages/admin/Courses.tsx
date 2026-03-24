@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import Portal from '../../components/ui/Portal';
 import { courseApi } from '../../api/course.api';
 import { facultyApi } from '../../api/faculty.api';
 import { departmentApi } from '../../api/department.api';
@@ -161,7 +162,8 @@ export default function AdminCourses() {
       )}
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <Portal>
+          <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
             <h3>{editingCourse ? 'Edit Course' : 'Add Course'}</h3>
             <div className="form-grid-2">
@@ -221,7 +223,8 @@ export default function AdminCourses() {
               <button className="btn btn-primary" onClick={submit}>Save</button>
             </div>
           </div>
-        </div>
+          </div>
+        </Portal>
       )}
     </div>
   );

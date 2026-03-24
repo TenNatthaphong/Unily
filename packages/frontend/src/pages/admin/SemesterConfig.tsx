@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Portal from '../../components/ui/Portal';
 import { adminApi } from '../../api/admin.api';
 import type { SemesterConfig } from '../../types';
 import { Settings, Plus, Pencil, Loader2, CheckCircle } from 'lucide-react';
@@ -108,7 +109,8 @@ export default function AdminSemesterConfig() {
       </div>
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <Portal>
+          <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
             <h3>{editing ? 'Edit Semester Config' : 'Add Semester Config'}</h3>
             <div className="form-grid-2">
@@ -152,7 +154,8 @@ export default function AdminSemesterConfig() {
               <button className="btn btn-primary" onClick={submit}>Save</button>
             </div>
           </div>
-        </div>
+          </div>
+        </Portal>
       )}
     </div>
   );

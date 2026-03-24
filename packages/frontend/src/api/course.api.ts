@@ -2,7 +2,7 @@ import api from './axios';
 import type { Course, PaginatedResponse } from '../types';
 
 export const courseApi = {
-  search: (params: { search?: string; facultyId?: string; deptId?: string; page?: number; limit?: number }) =>
+  search: (params: { search?: string; facultyId?: string; deptId?: string; category?: string; page?: number; limit?: number }) =>
     api.get<PaginatedResponse<Course>>('/courses', { params }),
 
   getById: (id: string) =>

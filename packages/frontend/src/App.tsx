@@ -13,7 +13,6 @@ import StudentSchedule from './pages/student/Schedule';
 import StudentRecords from './pages/student/Records';
 import Transcript from './pages/student/Transcript';
 import StudyPlan from './pages/student/StudyPlan';
-import GraduationCheck from './pages/student/GraduationCheck';
 // Professor
 import ProfessorDashboard from './pages/professor/Dashboard';
 import ProfessorSchedule from './pages/professor/Schedule';
@@ -71,9 +70,7 @@ function App() {
             <Route path="transcript" element={
               <ProtectedRoute allowedRoles={['STUDENT']}><Transcript /></ProtectedRoute>
             } />
-            <Route path="graduation" element={
-              <ProtectedRoute allowedRoles={['STUDENT']}><GraduationCheck /></ProtectedRoute>
-            } />
+            <Route path="graduation" element={<Navigate to="/student/curriculum/plan" replace />} />
             <Route path="curriculum/plan" element={
               <ProtectedRoute allowedRoles={['STUDENT']}><StudyPlan /></ProtectedRoute>
             } />

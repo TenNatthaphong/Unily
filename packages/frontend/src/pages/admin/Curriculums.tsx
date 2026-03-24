@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Portal from '../../components/ui/Portal';
 import { useNavigate } from 'react-router-dom';
 import { curriculumApi } from '../../api/curriculum.api';
 import { facultyApi } from '../../api/faculty.api';
@@ -103,7 +104,8 @@ export default function AdminCurriculums() {
       </div>
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <Portal>
+          <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
             <h3>{editing ? 'Edit Curriculum' : 'Add Curriculum'}</h3>
             <div className="form-grid-2">
@@ -147,7 +149,8 @@ export default function AdminCurriculums() {
               <button className="btn btn-primary" onClick={submit}>Save</button>
             </div>
           </div>
-        </div>
+          </div>
+        </Portal>
       )}
     </div>
   );

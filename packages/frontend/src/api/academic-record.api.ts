@@ -1,11 +1,21 @@
 import api from './axios';
-import type { AcademicRecord } from '../types';
+import type { AcademicRecord, StudentProfile } from '../types';
 
 export interface GpaxStats {
   gpax: number;
-  totalCredits: number;
-  passedCourses: number;
-  totalCourses: number;
+  totalCA: number;
+  totalCS: number;
+  totalGP: number;
+}
+
+export interface TranscriptResponse {
+  studentInfo: StudentProfile & { 
+    user: { firstName: string, lastName: string },
+    faculty: { nameTh: string, nameEn: string },
+    department: { nameTh: string, nameEn: string }
+  };
+  records: AcademicRecord[];
+  summary: GpaxStats;
 }
 
 export interface GraduationStatus {
@@ -16,14 +26,14 @@ export interface GraduationStatus {
     isEligible: boolean;
     missingCompulsory: number;
     creditsStatus: string;
-    electiveStats: Record<string, number>;
   };
+  electiveStats: Record<string, number>;
 }
 
 export const academicRecordApi = {
   // Student own records
   getMyTranscript: () =>
-    api.get<AcademicRecord[]>('/academic-records/my/transcript'),
+    api.get<TranscriptResponse>('/academic-records/my/transcript'),
 
   getMyStats: () =>
     api.get<GpaxStats>('/academic-records/my/gpax'),
@@ -33,7 +43,7 @@ export const academicRecordApi = {
 
   // Professor/Admin: view student records
   getStudentTranscript: (studentId: string) =>
-    api.get<AcademicRecord[]>(`/academic-records/student/${studentId}/transcript`),
+    api.get<TranscriptResponse>(`/academic-records/student/${studentId}/transcript`),
 
   getStudentStats: (studentId: string) =>
     api.get<GpaxStats>(`/academic-records/student/${studentId}/gpax`),

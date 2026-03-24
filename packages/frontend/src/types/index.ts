@@ -100,6 +100,7 @@ export interface Prerequisite {
   id: string;
   courseId: string;
   requiresCourseId: string;
+  requiresCourse?: Pick<Course, 'id' | 'courseCode' | 'nameTh'>;
 }
 
 export interface Curriculum {
@@ -107,6 +108,7 @@ export interface Curriculum {
   curriculumCode: string;
   name: string;
   description?: string;
+  note?: string;
   year: number;
   deptId: string;
   facultyId: string;
@@ -208,6 +210,7 @@ export interface Event {
   endDate: string;
   location?: string;
   category: EventCategory;
+  imgUrl?: string;
 }
 
 export interface AuditLog {

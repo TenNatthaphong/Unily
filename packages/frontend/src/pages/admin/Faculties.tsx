@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Portal from '../../components/ui/Portal';
 import { facultyApi } from '../../api/faculty.api';
 import { departmentApi } from '../../api/department.api';
 import type { Faculty, Department } from '../../types';
@@ -193,56 +194,60 @@ export default function AdminFaculties() {
 
       {/* Faculty Modal */}
       {showFacultyModal && (
-        <div className="modal-overlay" onClick={() => setShowFacultyModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>{editingFaculty ? 'Edit Faculty' : 'Add Faculty'}</h3>
-            <div className="form-group">
-              <label>Faculty Code</label>
-              <input value={facultyForm.facultyCode} onChange={e => setFacultyForm(p => ({ ...p, facultyCode: e.target.value }))} placeholder="e.g. SCI" />
-            </div>
-            <div className="form-group">
-              <label>Name (Thai)</label>
-              <input value={facultyForm.nameTh} onChange={e => setFacultyForm(p => ({ ...p, nameTh: e.target.value }))} />
-            </div>
-            <div className="form-group">
-              <label>Name (English)</label>
-              <input value={facultyForm.nameEn} onChange={e => setFacultyForm(p => ({ ...p, nameEn: e.target.value }))} />
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setShowFacultyModal(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={submitFaculty}>Save</button>
+        <Portal>
+          <div className="modal-overlay" onClick={() => setShowFacultyModal(false)}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <h3>{editingFaculty ? 'Edit Faculty' : 'Add Faculty'}</h3>
+              <div className="form-group">
+                <label>Faculty Code</label>
+                <input value={facultyForm.facultyCode} onChange={e => setFacultyForm(p => ({ ...p, facultyCode: e.target.value }))} placeholder="e.g. SCI" />
+              </div>
+              <div className="form-group">
+                <label>Name (Thai)</label>
+                <input value={facultyForm.nameTh} onChange={e => setFacultyForm(p => ({ ...p, nameTh: e.target.value }))} />
+              </div>
+              <div className="form-group">
+                <label>Name (English)</label>
+                <input value={facultyForm.nameEn} onChange={e => setFacultyForm(p => ({ ...p, nameEn: e.target.value }))} />
+              </div>
+              <div className="modal-actions">
+                <button className="btn btn-secondary" onClick={() => setShowFacultyModal(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={submitFaculty}>Save</button>
+              </div>
             </div>
           </div>
-        </div>
+        </Portal>
       )}
 
       {/* Dept Modal */}
       {showDeptModal && (
-        <div className="modal-overlay" onClick={() => setShowDeptModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h3>{editingDept ? 'Edit Department' : 'Add Department'}</h3>
-            <div className="form-group">
-              <label>Department Code</label>
-              <input value={deptForm.deptCode} onChange={e => setDeptForm(p => ({ ...p, deptCode: e.target.value }))} placeholder="e.g. CS" />
-            </div>
-            <div className="form-group">
-              <label>Short Name</label>
-              <input value={deptForm.shortName} onChange={e => setDeptForm(p => ({ ...p, shortName: e.target.value }))} placeholder="e.g. CS" />
-            </div>
-            <div className="form-group">
-              <label>Name (Thai)</label>
-              <input value={deptForm.nameTh} onChange={e => setDeptForm(p => ({ ...p, nameTh: e.target.value }))} />
-            </div>
-            <div className="form-group">
-              <label>Name (English)</label>
-              <input value={deptForm.nameEn} onChange={e => setDeptForm(p => ({ ...p, nameEn: e.target.value }))} />
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setShowDeptModal(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={submitDept}>Save</button>
+        <Portal>
+          <div className="modal-overlay" onClick={() => setShowDeptModal(false)}>
+            <div className="modal" onClick={e => e.stopPropagation()}>
+              <h3>{editingDept ? 'Edit Department' : 'Add Department'}</h3>
+              <div className="form-group">
+                <label>Department Code</label>
+                <input value={deptForm.deptCode} onChange={e => setDeptForm(p => ({ ...p, deptCode: e.target.value }))} placeholder="e.g. CS" />
+              </div>
+              <div className="form-group">
+                <label>Short Name</label>
+                <input value={deptForm.shortName} onChange={e => setDeptForm(p => ({ ...p, shortName: e.target.value }))} placeholder="e.g. CS" />
+              </div>
+              <div className="form-group">
+                <label>Name (Thai)</label>
+                <input value={deptForm.nameTh} onChange={e => setDeptForm(p => ({ ...p, nameTh: e.target.value }))} />
+              </div>
+              <div className="form-group">
+                <label>Name (English)</label>
+                <input value={deptForm.nameEn} onChange={e => setDeptForm(p => ({ ...p, nameEn: e.target.value }))} />
+              </div>
+              <div className="modal-actions">
+                <button className="btn btn-secondary" onClick={() => setShowDeptModal(false)}>Cancel</button>
+                <button className="btn btn-primary" onClick={submitDept}>Save</button>
+              </div>
             </div>
           </div>
-        </div>
+        </Portal>
       )}
     </div>
   );

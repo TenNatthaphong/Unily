@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCurriculumDto } from './dto/create-curriculum.dto';
 import { UpdateCurriculumDto } from './dto/update-curriculum.dto';
 import { Grade } from '@prisma/client';
+import csvParser = require('csv-parser');
+import { Readable } from 'stream';
 
 @Injectable()
 export class CurriculumService {
@@ -32,15 +34,99 @@ export class CurriculumService {
   // SEARCH & FILTER
   // ===========================================================================
 
-  async search(code?: string, facultyId?: string, deptId?: string) {
-    const where: any = {};
-    if (code) where.curriculumCode = code;
-    if (facultyId && deptId) Object.assign(where, { facultyId, deptId });
-
+  async findAll() {
     return this.prisma.curriculum.findMany({
-      where,
-      include: { _count: { select: { curriculumCourses: true } } }
+      include: { faculty: true, department: true, _count: { select: { curriculumCourses: true } } }
     });
+  }
+
+  async findOne(id: string) {
+    const curriculum = await this.prisma.curriculum.findUnique({
+      where: { id },
+      include: { 
+        faculty: true, 
+        department: true,
+        curriculumCourses: { include: { course: true }, orderBy: [{ year: 'asc' }, { semester: 'asc' }] } 
+      }
+    });
+    if (!curriculum) throw new NotFoundException('Curriculum not found');
+    return curriculum;
+  }
+
+  // ===========================================================================
+  // CSV IMPORT (HIGH PERFORMANCE)
+  // ===========================================================================
+
+  async importFromCsv(file: Express.Multer.File): Promise<any> {
+    const results: any[] = [];
+    const stream = Readable.from(file.buffer);
+
+    return new Promise((resolve, reject) => {
+      stream
+        .pipe(csvParser({ 
+          mapHeaders: ({ header }) => header.trim().replace(/^[\u200B-\uFEFF]/, ''),
+          mapValues: ({ value }) => value.trim()
+        }))
+        .on('data', (d) => results.push(d))
+        .on('end', () => this.processImport(results).then(resolve).catch(reject))
+        .on('error', (e) => reject(new BadRequestException(e.message)));
+    });
+  }
+
+  private async processImport(rows: any[]) {
+    const allFacs = await this.prisma.faculty.findMany();
+    const allDepts = await this.prisma.department.findMany({ include: { faculty_id: true } });
+    const allCourses = await this.prisma.course.findMany({ select: { id: true, courseCode: true } });
+    
+    const facMap = new Map(allFacs.map(f => [f.facultyCode, f.id]));
+    const deptMap = new Map(allDepts.map(d => [`${d.faculty_id.facultyCode}-${d.deptCode}`, d.id]));
+    const courseMap = new Map(allCourses.map(c => [c.courseCode, c.id]));
+
+    let count = 0;
+    const currs = new Map<string, any>();
+    
+    for (const row of rows) {
+      if (!row.curriculumCode || !row.facultyCode || !row.deptCode) continue;
+      
+      if (!currs.has(row.curriculumCode)) {
+        const fId = facMap.get(row.facultyCode);
+        const dId = deptMap.get(`${row.facultyCode}-${row.deptCode}`);
+        if (!fId || !dId) continue;
+
+        const curr = await this.prisma.curriculum.upsert({
+          where: { curriculumCode: row.curriculumCode },
+          update: {},
+          create: {
+            curriculumCode: row.curriculumCode,
+            name: row.curriculumNameTh || row.curriculumNameEn || row.curriculumCode,
+            facultyId: fId,
+            deptId: dId,
+            year: +row.curriculumYear || new Date().getFullYear(),
+            totalCredits: +row.totalCredits || 128
+          }
+        });
+        currs.set(row.curriculumCode, curr);
+        count++;
+      }
+
+      const curriculum = currs.get(row.curriculumCode);
+      const cId = courseMap.get(row.courseCode);
+      if (curriculum && cId) {
+        await this.prisma.curriculumCourse.upsert({
+          where: { curriculumId_courseId: { curriculumId: curriculum.id, courseId: cId } },
+          update: { year: +row.year, semester: +row.semester },
+          create: {
+            curriculumId: curriculum.id,
+            courseId: cId,
+            year: +row.year,
+            semester: +row.semester,
+            positionX: 0,
+            positionY: 0
+          }
+        });
+      }
+    }
+    return { count };
   }
 
   // ===========================================================================
@@ -54,7 +140,11 @@ export class CurriculumService {
         curriculum: { 
           include: { 
             curriculumCourses: {
-              include: { course: true },
+              include: {
+                course: {
+                  include: { prerequisites: { include: { requiresCourse: true } } }
+                }
+              },
               orderBy: [{ year: 'asc' }, { semester: 'asc' }]
             }
           } 
@@ -64,7 +154,6 @@ export class CurriculumService {
 
     if (!student?.curriculum) return null;
 
-    // Fetch all passed records with full course data (single query for both direct match and wildcard)
     const fullRecords = await this.prisma.academicRecord.findMany({
       where: { studentId, grade: { not: Grade.F } },
       include: { course: true },
@@ -73,13 +162,10 @@ export class CurriculumService {
     const passedCourseIds = new Set(fullRecords.map(r => r.courseId));
     const usedElectiveIds = new Set<string>();
 
-    // Map through curriculum courses and mark status
     const plan = student.curriculum.curriculumCourses.map(cc => {
-      // Direct match (non-wildcard)
       if (!cc.course?.isWildcard) {
         return { ...cc, status: passedCourseIds.has(cc.courseId) ? 'COMPLETED' : 'REMAINING' };
       }
-      // Wildcard: find a passed elective course of matching category that hasn't been claimed yet
       const match = fullRecords.find(
         r => r.course?.category === cc.course?.category && !usedElectiveIds.has(r.courseId)
       );

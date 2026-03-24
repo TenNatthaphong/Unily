@@ -3,8 +3,23 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* disable the default .card hover lift */
+  transform: none !important;
 }
 .timetable-container.compact { padding: 0; border-radius: var(--radius-md); }
+.timetable-container.compact .timetable-day-row { min-height: 48px; }
+.timetable-container.fit-width { overflow: visible; }
+
+/* Fit-width mode: no inner scroll, let content scale */
+.timetable-fit-area {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+.timetable-fit-area .timetable-grid-horizontal {
+  width: 100%;
+}
 
 /* --- Timetable Scroll Area --- */
 .timetable-scroll-area {

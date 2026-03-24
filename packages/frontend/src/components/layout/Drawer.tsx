@@ -20,11 +20,7 @@ const MENU_CONFIG: Record<Role, MenuItem[]> = {
     { icon: 'PenSquare', labelKey: 'nav.enrollment', route: '/student/enrollment' },
     { icon: 'Calendar', labelKey: 'nav.schedule', route: '/student/schedule' },
     { icon: 'BookOpen', labelKey: 'nav.curriculum', route: '/student/curriculum/plan' },
-    { icon: 'BarChart3', labelKey: 'nav.records', children: [
-      { labelKey: 'nav.records', route: '/student/records' },
-      { labelKey: 'nav.transcript', route: '/student/transcript' },
-      { labelKey: 'nav.graduation_check', route: '/student/graduation' },
-    ]},
+    { icon: 'BarChart3', labelKey: 'nav.records', route: '/student/transcript' },
   ],
   PROFESSOR: [
     { icon: 'LayoutDashboard', labelKey: 'nav.dashboard', route: '/dashboard' },

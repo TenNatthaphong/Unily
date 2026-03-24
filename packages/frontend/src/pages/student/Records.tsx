@@ -32,9 +32,9 @@ export default function StudentRecords() {
       academicRecordApi.getMyTranscript(),
       academicRecordApi.getMyStats(),
     ]).then(([tr, st]) => {
-      setRecords(tr.data);
+      setRecords(tr.data.records);
       setGpax(st.data.gpax);
-      setTotalCredits(st.data.totalCredits);
+      setTotalCredits(st.data.totalCS);
       setIsLoading(false);
     }).catch(() => { toast.error('Failed to load records'); setIsLoading(false); });
   }, []);
