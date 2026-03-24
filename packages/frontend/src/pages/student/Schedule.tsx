@@ -31,7 +31,6 @@ function SemDropdown({ semesters, value, onChange }: SemDropdownProps) {
   const ref = useRef<HTMLDivElement>(null);
   const selected = semesters.find(s => s.id === value);
 
-  // close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -86,12 +85,11 @@ function SemDropdown({ semesters, value, onChange }: SemDropdownProps) {
                 >
                   <span className="sem-item-label">
                     {s.isCurrent && <span className="sem-dot" />}
-                    ภาคเรียน {s.semester}/{s.academicYear}
+                    {/* ลบ "ภาคเรียน" ออก → ลดความซ้ำซ้อน */}
+                    {s.semester}/{s.academicYear}
                   </span>
                   <span className="sem-item-right">
-                    {s.isCurrent && (
-                      <span className="sem-current-pill">ปัจจุบัน</span>
-                    )}
+                    {s.isCurrent && <span className="sem-current-pill">ปัจจุบัน</span>}
                     {isActive && <Check size={13} className="sem-check" />}
                   </span>
                 </motion.button>
@@ -108,49 +106,95 @@ function SemDropdown({ semesters, value, onChange }: SemDropdownProps) {
 export default function StudentSchedule() {
   const [allSemesters, setAllSemesters] = useState<SemesterConfig[]>([]);
   const [selectedSemId, setSelectedSemId] = useState<string>('');
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  // map: semesterId → enrollments (only semesters that have ≥1 enrollment)
+  const [enrollmentMap, setEnrollmentMap] = useState<Map<string, Enrollment[]>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
 
-  // Sort: year desc, semester desc
-  const sortedSemesters = useMemo(() =>
-    [...allSemesters].sort((a, b) =>
-      b.academicYear !== a.academicYear
-        ? b.academicYear - a.academicYear
-        : b.semester - a.semester
-    ),
-    [allSemesters]
-  );
-
-  // Load semesters on mount
+  // ── Load all semesters → fetch enrollments concurrently → filter to non-empty ──
   useEffect(() => {
     configApi.getPublicSemesters()
-      .then(r => {
-        setAllSemesters(r.data);
-        const current = r.data.find((s: SemesterConfig) => s.isCurrent) || r.data[0];
-        if (current) setSelectedSemId(current.id);
+      .then(async r => {
+        const sems: SemesterConfig[] = r.data;
+        setAllSemesters(sems);
+
+        // Fetch all semesters' enrollments in parallel
+        const results = await Promise.allSettled(
+          sems.map(s =>
+            enrollmentApi.getMyEnrollments(s.academicYear, s.semester)
+              .then(res => ({
+                id: s.id,
+                enr: (res.data as Enrollment[]).filter(e => e.status !== 'DROPPED'),
+              }))
+          )
+        );
+
+        const map = new Map<string, Enrollment[]>();
+        results.forEach(r => {
+          if (r.status === 'fulfilled' && r.value.enr.length > 0) {
+            map.set(r.value.id, r.value.enr);
+          }
+        });
+        setEnrollmentMap(map);
+
+        // Default: current semester if it has enrollments, else first available
+        const sorted = [...sems].sort((a, b) =>
+          b.academicYear !== a.academicYear ? b.academicYear - a.academicYear : b.semester - a.semester
+        );
+        const first =
+          sorted.find(s => s.isCurrent && map.has(s.id)) ||
+          sorted.find(s => map.has(s.id));
+        if (first) setSelectedSemId(first.id);
+        setIsLoading(false);
       })
-      .catch(() => toast.error('โหลดภาคเรียนไม่สำเร็จ'));
+      .catch(() => {
+        toast.error('โหลดภาคเรียนไม่สำเร็จ');
+        setIsLoading(false);
+      });
   }, []);
 
-  // Load enrollments when semester changes
-  useEffect(() => {
-    if (!selectedSemId) return;
-    const sem = allSemesters.find(s => s.id === selectedSemId);
-    if (!sem) return;
-    setIsLoading(true);
-    enrollmentApi.getMyEnrollments(sem.academicYear, sem.semester)
-      .then(r => setEnrollments(r.data.filter((e: Enrollment) => e.status !== 'DROPPED')))
-      .catch(() => toast.error('โหลดตารางเรียนไม่สำเร็จ'))
-      .finally(() => setIsLoading(false));
-  }, [selectedSemId, allSemesters]);
+  // Only semesters where student has enrollments, sorted year/term desc
+  const validSemesters = useMemo(() =>
+    [...allSemesters]
+      .filter(s => enrollmentMap.has(s.id))
+      .sort((a, b) =>
+        b.academicYear !== a.academicYear
+          ? b.academicYear - a.academicYear
+          : b.semester - a.semester
+      ),
+    [allSemesters, enrollmentMap]
+  );
 
   const selectedSem = useMemo(
     () => allSemesters.find(s => s.id === selectedSemId),
     [allSemesters, selectedSemId]
   );
 
-  if (isLoading && !selectedSemId) {
-    return <div className="loading-state"><Loader2 className="spin" size={40} /></div>;
+  // Enrollments for selected semester — from cache (no extra fetch)
+  const enrollments = useMemo(
+    () => enrollmentMap.get(selectedSemId) || [],
+    [enrollmentMap, selectedSemId]
+  );
+
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loader2 className="spin" size={40} />
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: 8 }}>
+          กำลังโหลดประวัติการเรียน…
+        </p>
+      </div>
+    );
+  }
+
+  if (validSemesters.length === 0) {
+    return (
+      <div className="student-schedule">
+        <div className="card no-enroll-msg">
+          <CalendarDays size={36} style={{ opacity: 0.25, marginBottom: 8 }} />
+          <p>ยังไม่มีประวัติการลงทะเบียน</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -186,124 +230,87 @@ export default function StudentSchedule() {
           transition={{ delay: 0.08, duration: 0.38 }}
         >
           <SemDropdown
-            semesters={sortedSemesters}
+            semesters={validSemesters}
             value={selectedSemId}
             onChange={setSelectedSemId}
           />
         </motion.div>
       </div>
 
-      {/* ── Timetable ───────────────────────────────────── */}
+      {/* ── Content: timetable + table ──────────────────── */}
       <AnimatePresence mode="wait">
-        {isLoading ? (
-          <motion.div
-            key="loader"
-            className="loading-state"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <Loader2 className="spin" size={36} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key={selectedSemId}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
-          >
-            {/* fitWidth = true → auto-scale, no scroll */}
-            <Timetable enrollments={enrollments} fitWidth />
+        <motion.div
+          key={selectedSemId}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.28 }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
+        >
+          <Timetable enrollments={enrollments} fitWidth />
 
-            {/* ── Course list table ────────────────────── */}
-            {enrollments.length > 0 ? (
-              <div className="schedule-courses-section card">
-                <div className="scs-header">
-                  <BookOpen size={17} />
-                  <h3>วิชาที่ลงทะเบียน</h3>
-                  <span className="scs-count">{enrollments.length} วิชา</span>
-                </div>
-                <div className="scs-table-wrapper">
-                  <table className="scs-table">
-                    <thead>
-                      <tr>
-                        <th>รหัสวิชา</th>
-                        <th>ชื่อวิชา</th>
-                        <th className="text-center">หน่วยกิต</th>
-                        <th>หมวดหมู่</th>
-                        <th>วิชาบังคับก่อน</th>
-                        <th>อาจารย์ผู้สอน</th>
-                        <th className="text-center">Sec.</th>
-                        <th className="text-center">เกรด</th>
+          {/* ── Course list table ────────────────────────── */}
+          <div className="schedule-courses-section card">
+            <div className="scs-header">
+              <BookOpen size={17} />
+              <h3>วิชาที่ลงทะเบียน</h3>
+              <span className="scs-count">{enrollments.length} วิชา</span>
+            </div>
+            <div className="scs-table-wrapper">
+              <table className="scs-table">
+                <thead>
+                  <tr>
+                    <th>รหัสวิชา</th>
+                    <th>ชื่อวิชา</th>
+                    <th className="text-center">หน่วยกิต</th>
+                    <th>หมวดหมู่</th>
+                    <th>วิชาบังคับก่อน</th>
+                    <th>อาจารย์ผู้สอน</th>
+                    <th className="text-center">Sec.</th>
+                    <th className="text-center">เกรด</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {enrollments.map(enr => {
+                    const course  = enr.section?.course;
+                    const prof    = enr.section?.professor?.user;
+                    const prereqs = course?.prerequisites;
+                    const prereqText = prereqs?.length
+                      ? prereqs.map((p: any) => p.requiresCourse?.courseCode || p.requiresCourseId).join(', ')
+                      : null;
+                    return (
+                      <tr key={enr.id}>
+                        <td><span className="scs-code">{course?.courseCode || '—'}</span></td>
+                        <td>
+                          <p className="scs-name-th">{course?.nameTh || '—'}</p>
+                          {course?.nameEn && <p className="scs-name-en">{course.nameEn}</p>}
+                        </td>
+                        <td className="text-center">{course?.credits ?? '—'}</td>
+                        <td>
+                          {course?.category
+                            ? <span className="scs-category">{CATEGORY_TH[course.category] || course.category}</span>
+                            : '—'}
+                        </td>
+                        <td className="scs-prereq">{prereqText ?? <span className="scs-na">—</span>}</td>
+                        <td className="scs-prof">
+                          {prof
+                            ? <span className="prof-name"><User size={11} />{prof.firstName} {prof.lastName}</span>
+                            : '—'}
+                        </td>
+                        <td className="text-center scs-sec">{enr.section?.sectionNo}</td>
+                        <td className="text-center">
+                          {enr.grade
+                            ? <span className={`grade-pill grade-${enr.grade.replace('_', '')}`}>{GRADE_LABELS[enr.grade] ?? enr.grade}</span>
+                            : <span className="scs-na">—</span>}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {enrollments.map(enr => {
-                        const course   = enr.section?.course;
-                        const prof     = enr.section?.professor?.user;
-                        const prereqs  = course?.prerequisites;
-                        const prereqText = prereqs?.length
-                          ? prereqs.map((p: any) => p.requiresCourse?.courseCode || p.requiresCourseId).join(', ')
-                          : null;
-                        return (
-                          <motion.tr
-                            key={enr.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <td><span className="scs-code">{course?.courseCode || '—'}</span></td>
-                            <td>
-                              <p className="scs-name-th">{course?.nameTh || '—'}</p>
-                              {course?.nameEn && <p className="scs-name-en">{course.nameEn}</p>}
-                            </td>
-                            <td className="text-center">{course?.credits ?? '—'}</td>
-                            <td>
-                              {course?.category ? (
-                                <span className="scs-category">
-                                  {CATEGORY_TH[course.category] || course.category}
-                                </span>
-                              ) : '—'}
-                            </td>
-                            <td className="scs-prereq">
-                              {prereqText ?? <span className="scs-na">—</span>}
-                            </td>
-                            <td className="scs-prof">
-                              {prof ? (
-                                <span className="prof-name">
-                                  <User size={11} />
-                                  {prof.firstName} {prof.lastName}
-                                </span>
-                              ) : '—'}
-                            </td>
-                            <td className="text-center scs-sec">
-                              {enr.section?.sectionNo}
-                            </td>
-                            <td className="text-center">
-                              {enr.grade
-                                ? <span className={`grade-pill grade-${enr.grade.replace('_', '')}`}>
-                                    {GRADE_LABELS[enr.grade] ?? enr.grade}
-                                  </span>
-                                : <span className="scs-na">—</span>
-                              }
-                            </td>
-                          </motion.tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : (
-              <div className="card no-enroll-msg">
-                <CalendarDays size={32} style={{ opacity: 0.25, marginBottom: 8 }} />
-                <p>ไม่มีวิชาที่ลงทะเบียนในภาคเรียนนี้</p>
-              </div>
-            )}
-          </motion.div>
-        )}
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </motion.div>
       </AnimatePresence>
     </motion.div>
   );

@@ -17,8 +17,8 @@ const DAY_TH: Record<DayOfWeek, string> = {
 const BASE_MINUTE_WIDTH = 2.0; // default (non-fitWidth)
 const MIN_MINUTE_WIDTH   = 0.75; // minimum allowed in fitWidth mode
 const START_HOUR = 7;
-const END_HOUR   = 20;
-const TOTAL_MINUTES = (END_HOUR - START_HOUR) * 60; // 780 min (07:00–20:00)
+const END_HOUR   = 21;                                  // ถึง 21:00 (3 ทุ่ม)
+const TOTAL_MINUTES = (END_HOUR - START_HOUR) * 60;    // 840 min (07:00–21:00)
 const DAY_LABEL_W  = 44;
 
 export default function Timetable({ enrollments, compact = false, fitWidth = false }: TimetableProps) {
@@ -168,7 +168,7 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
                           {showName && (
                             <p className="course-name">{item.nameTh || item.nameEn}</p>
                           )}
-                          {!compact && item.professor && w > 80 && (
+                          {!compact && item.professor && (
                             <div className="item-footer">{item.professor}</div>
                           )}
                         </div>
