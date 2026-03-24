@@ -13,7 +13,7 @@ export const adminApi = {
     api.post<SemesterConfig>('/admin/settings/semester', data),
 
   closeSemester: (academicYear: number, semester: number) =>
-    api.post('/admin/sections/close-semester', { academicYear, semester }),
+    api.post('/admin/sections/close-semester', null, { params: { academicYear, semester } }),
 
   advanceStudentYears: () =>
     api.post('/admin/sections/advance-student-years'),
@@ -24,9 +24,6 @@ export const adminApi = {
 
   suspendUser: (userId: string) =>
     api.patch(`/admin/users/${userId}/suspend`),
-
-  activateUser: (userId: string) =>
-    api.patch(`/admin/users/${userId}/activate`),
 
   importUsersCsv: (file: File) => {
     const formData = new FormData();

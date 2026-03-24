@@ -3,14 +3,14 @@ import type { Enrollment, Section } from '../types';
 
 export const enrollmentApi = {
   getMyEnrollments: (academicYear?: number, semester?: number) =>
-    api.get<Enrollment[]>('/enrollments/my', { params: { academicYear, semester } }),
+    api.get<Enrollment[]>('/enrollment/my', { params: { academicYear, semester } }),
 
   getSectionsByCourse: (courseId: string, academicYear?: number, semester?: number) =>
-    api.get<Section[]>('/sections', { params: { courseId, academicYear, semester } }),
+    api.get<Section[]>('/section', { params: { courseId, academicYear, semester } }),
 
   enroll: (sectionId: string) =>
-    api.post<Enrollment>('/enrollments', { sectionId }),
+    api.post<Enrollment>('/enrollment', { sectionId }),
 
-  drop: (sectionId: string) =>
-    api.delete(`/enrollments/drop/${sectionId}`),
+  drop: (enrollmentId: string) =>
+    api.delete(`/enrollment/${enrollmentId}`),
 };

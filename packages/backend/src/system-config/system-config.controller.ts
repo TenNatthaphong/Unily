@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SectionService } from '../section/section.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -30,5 +30,57 @@ export class SystemConfigController {
   @ApiOperation({ summary: 'ปิดภาคเรียนและประมวลผลเกรดเฉลี่ยนิสิต' })
   async closeSemester(@Body() dto: { academicYear: number; semester: number }) {
     return this.sectionService.closeSemester(dto.academicYear, dto.semester);
+  }
+}
+
+// ─── Admin Semester Config CRUD ───────────────────────────────────────────────
+@ApiTags('admin-settings')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.ADMIN)
+@Controller('admin/settings/semester')
+export class AdminSemesterConfigController {
+  constructor(private readonly prisma: PrismaService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'List all semester configs' })
+  findAll() {
+    return this.prisma.semesterConfig.findMany({
+      orderBy: [{ academicYear: 'desc' }, { semester: 'asc' }]
+    });
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create a semester config' })
+  async create(@Body() dto: {
+    academicYear: number;
+    semester: number;
+    regStart: string;
+    regEnd: string;
+    withdrawStart: string;
+    withdrawEnd: string;
+    isCurrent?: boolean;
+  }) {
+    if (dto.isCurrent) {
+      await this.prisma.semesterConfig.updateMany({ data: { isCurrent: false } });
+    }
+    return this.prisma.semesterConfig.create({ data: dto });
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update a semester config' })
+  async update(@Param('id') id: string, @Body() dto: Partial<{
+    academicYear: number;
+    semester: number;
+    regStart: string;
+    regEnd: string;
+    withdrawStart: string;
+    withdrawEnd: string;
+    isCurrent: boolean;
+  }>) {
+    if (dto.isCurrent) {
+      await this.prisma.semesterConfig.updateMany({ data: { isCurrent: false } });
+    }
+    return this.prisma.semesterConfig.update({ where: { id }, data: dto });
   }
 }

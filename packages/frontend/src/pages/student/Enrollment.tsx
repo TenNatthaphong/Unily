@@ -40,7 +40,7 @@ interface SectionRowProps {
   period: EnrollPeriod;
   myEnrollments: Enrollment[];
   onEnroll: (sectionId: string) => void;
-  onDrop: (sectionId: string) => void;
+  onDrop: (enrollmentId: string) => void;
 }
 function SectionRow({ sec, period, myEnrollments, onEnroll, onDrop }: SectionRowProps) {
   const { t } = useTranslation();
@@ -70,7 +70,7 @@ function SectionRow({ sec, period, myEnrollments, onEnroll, onDrop }: SectionRow
       <div className="sec-col sec-action">
         {enrolled ? (
           period === 'reg_open' || period === 'withdraw_only' ? (
-            <button className="btn-enroll drop" onClick={() => onDrop(sec.id)}>{t('enrollment.drop')}</button>
+            <button className="btn-enroll drop" onClick={() => onDrop(enrolled.id)}>{t('enrollment.drop')}</button>
           ) : null
         ) : (
           period === 'reg_open' && sec.enrolledCount < sec.capacity ? (

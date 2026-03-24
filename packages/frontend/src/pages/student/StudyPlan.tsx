@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { curriculumApi } from '../../api/curriculum.api';
-import { curriculumItemApi } from '../../api/curriculum-item.api';
 import { useTranslation } from '../../i18n/useTranslation';
-import { Loader2, CheckCircle2, Circle, GraduationCap } from 'lucide-react';
+import { Loader2, CheckCircle2, Circle, GraduationCap, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { CurriculumCourse } from '../../types';
 import './StudyPlan.css';
 
-type PlanItem = CurriculumCourse & { status: 'COMPLETED' | 'REMAINING' };
+type PlanItem = CurriculumCourse & { status: 'COMPLETED' | 'REMAINING'; matchedCourseId?: string };
 
 interface SemGroup {
   year: number;
@@ -16,6 +15,15 @@ interface SemGroup {
   credits: number;
 }
 
+const CATEGORY_LABEL: Record<string, string> = {
+  GENERAL_EDUCATION: 'GE',
+  CORE_COURSE: 'Core',
+  REQUIRED_COURSE: 'Major',
+  MAJOR_ELECTIVE: 'Elective',
+  FREE_ELECTIVE: 'Free',
+  COOP_COURSE: 'Co-op',
+};
+
 export default function StudyPlan() {
   const { t } = useTranslation();
   const [items, setItems] = useState<PlanItem[]>([]);
@@ -23,6 +31,7 @@ export default function StudyPlan() {
   const [curriculumCode, setCurriculumCode] = useState('');
   const [stats, setStats] = useState({ total: 0, earned: 0, gpax: 0 });
   const [isLoading, setIsLoading] = useState(true);
+  const [selected, setSelected] = useState<PlanItem | null>(null);
 
   useEffect(() => {
     curriculumApi.getMyPlan()
@@ -75,31 +84,33 @@ export default function StudyPlan() {
         </div>
       </div>
 
-      {/* Flow grid */}
+      {/* Semester columns — horizontal scroll only if truly needed */}
       <div className="sp-flow-scroll">
-        <div className="sp-flow-track" style={{ gridTemplateColumns: `repeat(${semGroups.length}, 200px)` }}>
-          {semGroups.map((grp, gIdx) => (
+        <div className="sp-flow-track" style={{ gridTemplateColumns: `repeat(${semGroups.length}, 168px)` }}>
+          {semGroups.map(grp => (
             <div key={`${grp.year}-${grp.semester}`} className="sp-column">
               <div className="sp-col-header">
                 <span className="sp-col-year">ปีที่ {grp.year} เทอม {grp.semester}</span>
                 <span className="sp-col-cred">{grp.credits} cr</span>
               </div>
               <div className="sp-col-nodes">
-                {grp.items.map((item, iIdx) => (
-                  <div key={item.id} className="sp-node-wrapper">
-                    <div className={`sp-node ${item.status === 'COMPLETED' ? 'completed' : ''} ${item.course?.isWildcard ? 'wildcard' : ''}`}>
-                      <div className="sp-node-code">{item.course?.courseCode || '?'}</div>
-                      <div className="sp-node-name">{item.course?.nameTh || item.mappingPattern || '-'}</div>
-                      <div className="sp-node-credits">{item.course?.credits ?? '-'} cr</div>
-                      <div className="sp-node-status">
-                        {item.status === 'COMPLETED' ? <CheckCircle2 size={14} /> : <Circle size={14} />}
-                      </div>
+                {grp.items.map(item => (
+                  <button
+                    key={item.id}
+                    className={`sp-node ${item.status === 'COMPLETED' ? 'completed' : ''} ${item.course?.isWildcard && item.status !== 'COMPLETED' ? 'wildcard' : ''}`}
+                    onClick={() => setSelected(item)}
+                    title={item.course?.nameTh || item.mappingPattern || ''}
+                  >
+                    <div className="sp-node-code">
+                      {item.course?.isWildcard && item.status !== 'COMPLETED'
+                        ? (CATEGORY_LABEL[item.course.category] || 'Elective')
+                        : (item.course?.courseCode || '?')}
                     </div>
-                    {/* Connector arrow to next column */}
-                    {gIdx < semGroups.length - 1 && iIdx === 0 && (
-                      <div className="sp-connector" />
-                    )}
-                  </div>
+                    <div className="sp-node-credits">{item.course?.credits ?? '-'} cr</div>
+                    <div className="sp-node-status">
+                      {item.status === 'COMPLETED' ? <CheckCircle2 size={12} /> : <Circle size={12} />}
+                    </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -109,10 +120,52 @@ export default function StudyPlan() {
 
       {/* Legend */}
       <div className="sp-legend">
-        <div className="lg-item"><div className="sp-node mini completed"><CheckCircle2 size={10} /></div> ผ่านแล้ว</div>
-        <div className="lg-item"><div className="sp-node mini"><Circle size={10} /></div> ยังไม่ผ่าน</div>
-        <div className="lg-item"><div className="sp-node mini wildcard"><Circle size={10} /></div> วิชาเลือก</div>
+        <div className="lg-item"><CheckCircle2 size={14} color="var(--success)" /> ผ่านแล้ว</div>
+        <div className="lg-item"><Circle size={14} color="var(--text-muted)" /> ยังไม่ผ่าน</div>
+        <div className="lg-item"><span className="lg-wildcard-dot" /> วิชาเลือก (placeholder)</div>
       </div>
+
+      {/* Detail overlay */}
+      {selected && (
+        <div className="sp-overlay" onClick={() => setSelected(null)}>
+          <div className="sp-detail-card" onClick={e => e.stopPropagation()}>
+            <div className="sp-detail-header">
+              <div>
+                <div className="sp-detail-code">{selected.course?.courseCode || '?'}</div>
+                <div className="sp-detail-name">{selected.course?.nameTh || selected.mappingPattern || '-'}</div>
+                {selected.course?.nameEn && <div className="sp-detail-name-en">{selected.course.nameEn}</div>}
+              </div>
+              <button className="sp-detail-close" onClick={() => setSelected(null)}><X size={18} /></button>
+            </div>
+            <div className="sp-detail-grid">
+              <div className="sp-detail-row">
+                <span className="sp-detail-label">หน่วยกิต</span>
+                <span>{selected.course?.credits ?? '-'}</span>
+              </div>
+              <div className="sp-detail-row">
+                <span className="sp-detail-label">หมวดหมู่</span>
+                <span>{selected.course?.category ? CATEGORY_LABEL[selected.course.category] || selected.course.category : '-'}</span>
+              </div>
+              <div className="sp-detail-row">
+                <span className="sp-detail-label">ปี/เทอมที่กำหนด</span>
+                <span>ปีที่ {selected.year} เทอม {selected.semester}</span>
+              </div>
+              <div className="sp-detail-row">
+                <span className="sp-detail-label">สถานะ</span>
+                <span className={selected.status === 'COMPLETED' ? 'text-success' : 'text-muted'}>
+                  {selected.status === 'COMPLETED' ? '✓ ผ่านแล้ว' : '○ ยังไม่ผ่าน'}
+                </span>
+              </div>
+              {selected.course?.isWildcard && (
+                <div className="sp-detail-row">
+                  <span className="sp-detail-label">ประเภท</span>
+                  <span>วิชาเลือก (Elective Placeholder)</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,12 +9,15 @@ export interface GpaxStats {
 }
 
 export interface GraduationStatus {
-  eligible: boolean;
-  totalCredits: number;
-  requiredCredits: number;
+  studentCode: string;
   gpax: number;
-  minGpax: number;
-  missingRequirements: string[];
+  totalCredits: number;
+  graduationStatus: {
+    isEligible: boolean;
+    missingCompulsory: number;
+    creditsStatus: string;
+    electiveStats: Record<string, number>;
+  };
 }
 
 export const academicRecordApi = {

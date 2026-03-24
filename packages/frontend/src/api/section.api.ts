@@ -3,13 +3,13 @@ import type { Section, Enrollment, PaginatedResponse } from '../types';
 
 export const sectionApi = {
   getByCourse: (courseId: string, academicYear?: number, semester?: number) =>
-    api.get<Section[]>('/sections', { params: { courseId, academicYear, semester } }),
+    api.get<Section[]>('/section', { params: { courseId, academicYear, semester } }),
 
   getById: (id: string) =>
-    api.get<Section>(`/sections/${id}`),
+    api.get<Section>(`/section/${id}`),
 
-  getEnrollments: (sectionId: string) =>
-    api.get<Enrollment[]>(`/sections/${sectionId}/enrollments`),
+  getStudents: (sectionId: string) =>
+    api.get<Enrollment[]>(`/section/${sectionId}/students`),
 
   // Admin
   getAll: (params: { page?: number; limit?: number; academicYear?: number; semester?: number; search?: string }) =>
@@ -26,8 +26,8 @@ export const sectionApi = {
 
   // Professor
   getMyTeaching: (academicYear?: number, semester?: number) =>
-    api.get<Section[]>('/sections/my', { params: { academicYear, semester } }),
+    api.get<Section[]>('/section/my', { params: { academicYear, semester } }),
 
   submitGrades: (sectionId: string, grades: { enrollmentId: string; midtermScore: number; finalScore: number }[]) =>
-    api.patch(`/sections/${sectionId}/grades`, { grades }),
+    api.patch(`/section/${sectionId}/grades`, { grades }),
 };
