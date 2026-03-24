@@ -58,30 +58,30 @@
   background: rgba(45,116,224,0.1);
   border: 1px solid rgba(45,116,224,0.2);
   border-radius: var(--radius-md);
-  padding: 5px 8px;
+  padding: 6px 8px;
   text-align: center;
+  width: 180px;
 }
 .sp-col-year { font-size: 0.72rem; font-weight: 700; color: var(--primary); display: block; }
 .sp-col-cred { font-size: 0.65rem; color: var(--text-muted); }
 .sp-col-nodes { display: flex; flex-direction: column; gap: 4px; }
 
-/* Compact Node — button for click-to-detail */
-/* Width is fixed and uniform — all nodes in every column are same 160px */
+/* Compact Node — fixed uniform width, click to see detail */
 .sp-node {
-  background: rgba(30,41,59,0.9);
+  background: var(--node-bg);
   border: 1px solid rgba(45,116,224,0.3);
   border-radius: var(--radius-sm);
-  padding: 6px 8px;
-  width: 160px;
+  padding: 8px 10px;
+  width: 180px;
   box-sizing: border-box;
   cursor: pointer;
   text-align: left;
   transition: box-shadow 0.15s, border-color 0.15s;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
-.sp-node:hover { border-color: var(--primary); box-shadow: 0 0 8px rgba(45,116,224,0.25); }
+.sp-node:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(45,116,224,0.3); }
 .sp-node.completed {
   border-color: rgba(16,185,129,0.5);
   background: rgba(16,185,129,0.06);
@@ -90,10 +90,9 @@
   opacity: 0.55;
   border-style: dashed;
 }
-/* Course code — shown in full, no truncation for readability */
-.sp-node-code { font-size: 0.7rem; font-weight: 700; color: var(--primary); flex: 1; white-space: nowrap; }
+.sp-node-code { font-size: 0.78rem; font-weight: 700; color: var(--primary); flex: 1; white-space: nowrap; }
 .sp-node.completed .sp-node-code { color: var(--success); }
-.sp-node-credits { font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; }
+.sp-node-credits { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; }
 .sp-node-status { flex-shrink: 0; color: var(--text-muted); display: flex; }
 .sp-node.completed .sp-node-status { color: var(--success); }
 

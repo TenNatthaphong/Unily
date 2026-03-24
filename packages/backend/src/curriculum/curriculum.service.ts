@@ -64,21 +64,13 @@ export class CurriculumService {
 
     if (!student?.curriculum) return null;
 
-    const records = await this.prisma.academicRecord.findMany({
-      where: { 
-        studentId, 
-        grade: { not: Grade.F } // Only exclude F for now as W doesn't exist in enum
-      },
-      select: { courseId: true }
-    });
-
-    const passedCourseIds = new Set(records.map(r => r.courseId));
-
-    // For wildcard elective matching: track which passed elective courses have been used
+    // Fetch all passed records with full course data (single query for both direct match and wildcard)
     const fullRecords = await this.prisma.academicRecord.findMany({
       where: { studentId, grade: { not: Grade.F } },
-      select: { courseId: true, course: { select: { id: true, category: true } } }
+      include: { course: true },
     });
+
+    const passedCourseIds = new Set(fullRecords.map(r => r.courseId));
     const usedElectiveIds = new Set<string>();
 
     // Map through curriculum courses and mark status
@@ -87,13 +79,13 @@ export class CurriculumService {
       if (!cc.course?.isWildcard) {
         return { ...cc, status: passedCourseIds.has(cc.courseId) ? 'COMPLETED' : 'REMAINING' };
       }
-      // Wildcard: find a passed elective course of matching category that hasn't been used yet
+      // Wildcard: find a passed elective course of matching category that hasn't been claimed yet
       const match = fullRecords.find(
         r => r.course?.category === cc.course?.category && !usedElectiveIds.has(r.courseId)
       );
       if (match) {
         usedElectiveIds.add(match.courseId);
-        return { ...cc, status: 'COMPLETED', matchedCourseId: match.courseId };
+        return { ...cc, status: 'COMPLETED', matchedCourse: match.course };
       }
       return { ...cc, status: 'REMAINING' };
     });

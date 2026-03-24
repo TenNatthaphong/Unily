@@ -1,4 +1,4 @@
-import { Controller, Post, Patch, Delete, Param, Body, Query, UseInterceptors, UseGuards, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseInterceptors, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { SectionService } from './section.service';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AuditInterceptor } from '../common/interceptor/audit.interceptor';
@@ -16,6 +16,23 @@ import { Roles } from '../common/decorators/roles.decorator';
 @Controller('admin/sections')
 export class AdminSectionController {
   constructor(private readonly sectionService: SectionService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'รายการกลุ่มเรียนทั้งหมด (paginated)' })
+  findAll(
+    @Query('page') page = '1',
+    @Query('limit') limit = '20',
+    @Query('academicYear') academicYear?: string,
+    @Query('semester') semester?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.sectionService.findAllAdmin({
+      page: +page, limit: +limit,
+      academicYear: academicYear ? +academicYear : undefined,
+      semester: semester ? +semester : undefined,
+      search,
+    });
+  }
 
   @Post()
   create(@Body() createSectionDto: CreateSectionDto) {

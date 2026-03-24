@@ -6,7 +6,11 @@ import { toast } from 'react-hot-toast';
 import type { CurriculumCourse } from '../../types';
 import './StudyPlan.css';
 
-type PlanItem = CurriculumCourse & { status: 'COMPLETED' | 'REMAINING'; matchedCourseId?: string };
+type PlanItem = CurriculumCourse & {
+  status: 'COMPLETED' | 'REMAINING';
+  matchedCourseId?: string;
+  matchedCourse?: import('../../types').Course;
+};
 
 interface SemGroup {
   year: number;
@@ -86,7 +90,7 @@ export default function StudyPlan() {
 
       {/* Semester columns — horizontal scroll only if truly needed */}
       <div className="sp-flow-scroll">
-        <div className="sp-flow-track" style={{ gridTemplateColumns: `repeat(${semGroups.length}, 168px)` }}>
+        <div className="sp-flow-track" style={{ gridTemplateColumns: `repeat(${semGroups.length}, 190px)` }}>
           {semGroups.map(grp => (
             <div key={`${grp.year}-${grp.semester}`} className="sp-column">
               <div className="sp-col-header">
@@ -99,14 +103,21 @@ export default function StudyPlan() {
                     key={item.id}
                     className={`sp-node ${item.status === 'COMPLETED' ? 'completed' : ''} ${item.course?.isWildcard && item.status !== 'COMPLETED' ? 'wildcard' : ''}`}
                     onClick={() => setSelected(item)}
-                    title={item.course?.nameTh || item.mappingPattern || ''}
+                    title={item.matchedCourse?.nameTh || item.course?.nameTh || item.mappingPattern || ''}
                   >
                     <div className="sp-node-code">
-                      {item.course?.isWildcard && item.status !== 'COMPLETED'
+                      {/* Completed wildcard: show the actual course code */}
+                      {item.course?.isWildcard && item.status === 'COMPLETED' && item.matchedCourse
+                        ? item.matchedCourse.courseCode
+                        /* Uncompleted wildcard: show category label */
+                        : item.course?.isWildcard && item.status !== 'COMPLETED'
                         ? (CATEGORY_LABEL[item.course.category] || 'Elective')
+                        /* Normal course */
                         : (item.course?.courseCode || '?')}
                     </div>
-                    <div className="sp-node-credits">{item.course?.credits ?? '-'} cr</div>
+                    <div className="sp-node-credits">
+                      {(item.matchedCourse?.credits ?? item.course?.credits) ?? '-'} cr
+                    </div>
                     <div className="sp-node-status">
                       {item.status === 'COMPLETED' ? <CheckCircle2 size={12} /> : <Circle size={12} />}
                     </div>
@@ -131,9 +142,18 @@ export default function StudyPlan() {
           <div className="sp-detail-card" onClick={e => e.stopPropagation()}>
             <div className="sp-detail-header">
               <div>
-                <div className="sp-detail-code">{selected.course?.courseCode || '?'}</div>
-                <div className="sp-detail-name">{selected.course?.nameTh || selected.mappingPattern || '-'}</div>
-                {selected.course?.nameEn && <div className="sp-detail-name-en">{selected.course.nameEn}</div>}
+                {/* For completed wildcard slots, show the actual course taken */}
+                <div className="sp-detail-code">
+                  {selected.matchedCourse?.courseCode || selected.course?.courseCode || '?'}
+                </div>
+                <div className="sp-detail-name">
+                  {selected.matchedCourse?.nameTh || selected.course?.nameTh || selected.mappingPattern || '-'}
+                </div>
+                {(selected.matchedCourse?.nameEn || selected.course?.nameEn) && (
+                  <div className="sp-detail-name-en">
+                    {selected.matchedCourse?.nameEn || selected.course?.nameEn}
+                  </div>
+                )}
               </div>
               <button className="sp-detail-close" onClick={() => setSelected(null)}><X size={18} /></button>
             </div>
@@ -156,10 +176,18 @@ export default function StudyPlan() {
                   {selected.status === 'COMPLETED' ? '✓ ผ่านแล้ว' : '○ ยังไม่ผ่าน'}
                 </span>
               </div>
-              {selected.course?.isWildcard && (
+              {selected.course?.isWildcard && selected.status === 'COMPLETED' && selected.matchedCourse && (
+                <div className="sp-detail-row">
+                  <span className="sp-detail-label">วิชาที่เรียน</span>
+                  <span style={{ color: 'var(--success)', fontWeight: 600 }}>
+                    {selected.matchedCourse.courseCode} — {selected.matchedCourse.nameTh}
+                  </span>
+                </div>
+              )}
+              {selected.course?.isWildcard && selected.status !== 'COMPLETED' && (
                 <div className="sp-detail-row">
                   <span className="sp-detail-label">ประเภท</span>
-                  <span>วิชาเลือก (Elective Placeholder)</span>
+                  <span>วิชาเลือก (ยังไม่ได้เรียน)</span>
                 </div>
               )}
             </div>

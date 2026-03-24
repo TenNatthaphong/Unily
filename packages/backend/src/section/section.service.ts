@@ -80,6 +80,29 @@ export class SectionService {
     });
   }
 
+  async findAllAdmin(params: { page: number; limit: number; academicYear?: number; semester?: number; search?: string }) {
+    const { page, limit, academicYear, semester, search } = params;
+    const skip = (page - 1) * limit;
+    const where: any = {};
+    if (academicYear) where.academicYear = academicYear;
+    if (semester) where.semester = semester;
+    if (search) where.course = { courseCode: { contains: search, mode: 'insensitive' } };
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.section.findMany({
+        where, skip, take: limit,
+        include: {
+          course: { select: { courseCode: true, nameTh: true, credits: true } },
+          professor: { include: { user: { select: { firstName: true, lastName: true } } } },
+          schedules: true,
+        },
+        orderBy: [{ academicYear: 'desc' }, { semester: 'asc' }, { sectionNo: 'asc' }],
+      }),
+      this.prisma.section.count({ where }),
+    ]);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
   async findOne(id: string) {
     const sec = await this.prisma.section.findUnique({
       where: { id },

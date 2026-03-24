@@ -37,6 +37,32 @@ export class UserService {
     return this.prisma.user.findMany();
   }
 
+  async findAllPaginated(params: { page: number; limit: number; role?: any; search?: string }) {
+    const { page, limit, role, search } = params;
+    const skip = (page - 1) * limit;
+    const where: any = {};
+    if (role) where.role = role;
+    if (search) {
+      where.OR = [
+        { email: { contains: search, mode: 'insensitive' } },
+        { firstName: { contains: search, mode: 'insensitive' } },
+        { lastName: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        where, skip, take: limit,
+        include: {
+          studentProfile: { select: { studentCode: true, year: true, status: true } },
+          professorProfile: { select: { deptId: true } },
+        },
+        orderBy: { role: 'asc' },
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
   async suspendUser(adminId: string, targetId: string) {
     const target = await this.prisma.user.findUnique({ where: { id: targetId } });
     if (!target) throw new NotFoundException('User not found');
