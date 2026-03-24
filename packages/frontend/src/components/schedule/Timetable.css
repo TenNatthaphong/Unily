@@ -1,44 +1,10 @@
 .timetable-container {
-  padding: var(--space-lg);
+  padding: var(--space-sm);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-
-.timetable-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-lg);
-}
-
-.timetable-title {
-  font-size: 1.125rem;
-  font-weight: 800;
-  margin: 0;
-}
-
-.timetable-legend {
-  display: flex;
-  gap: var(--space-md);
-  color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.dot.study { background: var(--primary); }
-.dot.exam { background: var(--danger); }
+.timetable-container.compact { padding: 0; border-radius: var(--radius-md); }
 
 /* --- Timetable Scroll Area --- */
 .timetable-scroll-area {
@@ -62,13 +28,14 @@
 }
 
 .day-label-column {
-  width: 100px;
-  min-width: 100px;
+  width: 44px;
+  min-width: 44px;
   border-right: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
@@ -94,7 +61,7 @@
 .timetable-day-row {
   display: flex;
   border-bottom: 1px solid var(--border);
-  min-height: 100px;
+  min-height: 64px;
 }
 
 .day-name {

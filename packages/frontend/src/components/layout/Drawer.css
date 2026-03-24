@@ -99,7 +99,4 @@
   margin-top: auto;
 }
 .drawer-logout:hover { background: rgba(239, 68, 68, 0.1); }
-@media (min-width: 1025px) {
-  .drawer { transform: translateX(0); position: sticky; height: 100vh; }
-  .drawer-backdrop { display: none; }
-}
+/* Always overlay — no desktop sidebar */

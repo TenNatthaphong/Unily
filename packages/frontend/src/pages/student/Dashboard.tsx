@@ -101,7 +101,7 @@ export default function StudentDashboard() {
       <div className="dashboard-grid">
         {/* ── Left Column: Timetable ── */}
         <div className="column-timetable">
-          <Timetable enrollments={enrollments} />
+          <Timetable enrollments={enrollments} compact />
         </div>
 
         {/* ── Right Column: Info & Events ── */}

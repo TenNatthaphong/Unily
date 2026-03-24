@@ -2,19 +2,15 @@ import api from './axios';
 import type { Enrollment, Section } from '../types';
 
 export const enrollmentApi = {
-  // Get my enrollments for current semester
   getMyEnrollments: (academicYear?: number, semester?: number) =>
-    api.get<Enrollment[]>('/enrollment/my', { params: { academicYear, semester } }),
+    api.get<Enrollment[]>('/enrollments/my', { params: { academicYear, semester } }),
 
-  // Search sections/courses
-  searchSections: (params: { q?: string; facultyId?: string; deptId?: string; academicYear?: number; semester?: number }) =>
-    api.get<Section[]>('/enrollment/search', { params }),
+  getSectionsByCourse: (courseId: string, academicYear?: number, semester?: number) =>
+    api.get<Section[]>('/sections', { params: { courseId, academicYear, semester } }),
 
-  // Enroll in a section
   enroll: (sectionId: string) =>
-    api.post<Enrollment>('/enrollment', { sectionId }),
+    api.post<Enrollment>('/enrollments', { sectionId }),
 
-  // Drop a section
-  drop: (enrollmentId: string) =>
-    api.delete(`/enrollment/${enrollmentId}`),
+  drop: (sectionId: string) =>
+    api.delete(`/enrollments/drop/${sectionId}`),
 };

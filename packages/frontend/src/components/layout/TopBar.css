@@ -4,44 +4,69 @@
   left: 0;
   right: 0;
   height: var(--topbar-height);
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.92);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-md);
+  padding: 0 var(--space-lg);
   z-index: 100;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  gap: var(--space-md);
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  flex-shrink: 0;
 }
 
 .topbar-hamburger {
   background: transparent;
-  color: var(--text-primary);
-  width: 40px;
-  height: 40px;
+  border: none;
+  color: var(--text-secondary);
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
 }
 .topbar-hamburger:hover {
-  background: var(--bg-elevated);
+  background: rgba(255,255,255,0.07);
+  color: var(--text-primary);
 }
 
 .topbar-logo {
   cursor: pointer;
   user-select: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #2D74E0, #4A90E8);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.75rem;
+  color: white;
+  letter-spacing: -0.05em;
 }
 .logo-text {
-  font-family: var(--font-en);
-  font-size: 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #2D74E0, #4A90E8);
+  background: linear-gradient(135deg, #fff 30%, #94a3b8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -51,11 +76,13 @@
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .topbar-action {
   background: transparent;
+  border: none;
   color: var(--text-secondary);
   width: 36px;
   height: 36px;
@@ -63,104 +90,106 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
   position: relative;
 }
 .topbar-action:hover {
-  background: var(--bg-elevated);
+  background: rgba(255,255,255,0.07);
   color: var(--text-primary);
 }
 
-.locale-label {
-  font-size: 0.625rem;
+.locale-pill {
+  font-size: 0.7rem;
   font-weight: 700;
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  line-height: 1;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: rgba(59,130,246,0.15);
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+  white-space: nowrap;
 }
+.locale-pill:hover { background: rgba(59,130,246,0.25); }
 
 .topbar-profile-wrapper {
   position: relative;
-  margin-left: var(--space-xs);
+  margin-left: 4px;
 }
-
 .topbar-profile-btn {
   background: transparent;
   border: none;
   padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
-
 .topbar-avatar {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, #2D74E0, #1d4ed8);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.875rem;
-  transition: all var(--transition-fast);
+  font-size: 0.8rem;
+  transition: box-shadow 0.2s;
 }
 .topbar-profile-btn:hover .topbar-avatar {
-  box-shadow: var(--shadow-glow);
-  transform: scale(1.05);
+  box-shadow: 0 0 0 2px rgba(45,116,224,0.5);
+}
+.topbar-profile-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* Dropdown */
 .topbar-profile-menu {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 220px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  min-width: 200px;
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: var(--space-sm);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+  padding: var(--space-xs);
   z-index: 200;
 }
-
 .profile-menu-header {
   padding: var(--space-sm) var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
-.profile-name {
-  font-weight: 600;
-  font-size: 0.9375rem;
-}
-.profile-role {
-  align-self: flex-start;
-}
-
-.profile-menu-divider {
-  height: 1px;
-  background: var(--border);
-  margin: var(--space-xs) 0;
-}
-
+.profile-name { font-weight: 600; font-size: 0.875rem; color: var(--text-primary); }
+.profile-role { font-size: 0.7rem; color: var(--text-muted); }
+.profile-menu-divider { height: 1px; background: rgba(255,255,255,0.07); margin: var(--space-xs) 0; }
 .profile-menu-item {
   width: 100%;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
+  padding: 8px var(--space-md);
   font-size: 0.875rem;
   color: var(--text-secondary);
   background: transparent;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.15s;
 }
-.profile-menu-item:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-.profile-menu-item.danger:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--danger);
-}
+.profile-menu-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.profile-menu-item.danger:hover { background: rgba(239,68,68,0.1); color: var(--danger); }

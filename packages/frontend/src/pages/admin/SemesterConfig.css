@@ -1,0 +1,11 @@
+.sem-config-list { display: flex; flex-direction: column; gap: var(--space-md); }
+.sem-config-card { padding: var(--space-lg); }
+.sem-config-card.current { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.03); }
+.sem-config-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-md); }
+.sem-config-title { display: flex; align-items: center; gap: var(--space-sm); }
+.sem-badge { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+.live-badge { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; font-weight: 700; color: var(--success); padding: 2px 10px; background: rgba(16,185,129,0.15); border-radius: var(--radius-full); }
+.sem-config-dates { display: flex; flex-direction: column; gap: var(--space-sm); }
+.date-row { display: flex; align-items: center; gap: var(--space-md); font-size: 0.85rem; }
+.date-label { color: var(--text-muted); min-width: 110px; font-weight: 500; }
+.date-range { color: var(--text-secondary); }

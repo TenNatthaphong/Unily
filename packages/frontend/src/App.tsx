@@ -28,6 +28,7 @@ import CurriculumFlowPage from './pages/admin/CurriculumFlow';
 import AdminSections from './pages/admin/Sections';
 import AdminUsers from './pages/admin/Users';
 import AuditLogPage from './pages/admin/AuditLog';
+import AdminSemesterConfig from './pages/admin/SemesterConfig';
 
 function DashboardRedirect() {
   const { user } = useAuthStore();
@@ -119,6 +120,9 @@ function App() {
             } />
             <Route path="audit-log" element={
               <ProtectedRoute allowedRoles={['ADMIN']}><AuditLogPage /></ProtectedRoute>
+            } />
+            <Route path="settings/semester" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}><AdminSemesterConfig /></ProtectedRoute>
             } />
           </Route>
 

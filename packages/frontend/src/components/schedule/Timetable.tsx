@@ -1,124 +1,95 @@
 import { useMemo } from 'react';
-import { useTranslation } from '../../i18n/useTranslation';
+import { useLocaleStore } from '../../stores/locale.store';
 import type { DayOfWeek, Enrollment } from '../../types';
 import './Timetable.css';
 
 interface TimetableProps {
   enrollments: Enrollment[];
+  compact?: boolean;
 }
 
 const DAYS: DayOfWeek[] = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-const START_HOUR = 8;
-const END_HOUR = 21;
-const MINUTE_WIDTH = 2; // 2px per minute = 120px per hour
+const DAY_TH: Record<DayOfWeek, string> = {
+  MON: 'จ', TUE: 'อ', WED: 'พ', THU: 'พฤ', FRI: 'ศ', SAT: 'ส', SUN: 'อา',
+};
+const DAY_EN: Record<DayOfWeek, string> = {
+  MON: 'Mon', TUE: 'Tue', WED: 'Wed', THU: 'Thu', FRI: 'Fri', SAT: 'Sat', SUN: 'Sun',
+};
+
+const START_HOUR = 7;
+const END_HOUR = 20;
+const MINUTE_WIDTH = 1.5; // px per minute
 const HOUR_WIDTH = 60 * MINUTE_WIDTH;
 
-export default function Timetable({ enrollments }: TimetableProps) {
-  const { t } = useTranslation();
+export default function Timetable({ enrollments, compact = false }: TimetableProps) {
+  const { locale } = useLocaleStore();
 
-  const timeToMinutes = (time: string) => {
-    const [h, m] = time.split(':').map(Number);
+  const timeToMinutes = (t: string) => {
+    const [h, m] = t.split(':').map(Number);
     return h * 60 + m;
   };
+  const getX = (t: string) => (timeToMinutes(t) - START_HOUR * 60) * MINUTE_WIDTH;
+  const getW = (s: string, e: string) => (timeToMinutes(e) - timeToMinutes(s)) * MINUTE_WIDTH;
 
-  const getPositionX = (time: string) => {
-    const totalMinutes = timeToMinutes(time);
-    const startOffset = START_HOUR * 60;
-    return (totalMinutes - startOffset) * MINUTE_WIDTH;
-  };
-
-  const getWidth = (start: string, end: string) => {
-    return (timeToMinutes(end) - timeToMinutes(start)) * MINUTE_WIDTH;
-  };
-
-  // Pre-process schedules from enrollments
   const schedulesByDay = useMemo(() => {
-    const map: Partial<Record<DayOfWeek, any[]>> = {};
-    
+    const map: Partial<Record<DayOfWeek, { schedule: { startTime: string; endTime: string }; courseCode: string; nameTh: string; nameEn: string; professor: string; sectionNo: number }[]>> = {};
     enrollments.forEach(enr => {
       const sec = enr.section;
-      if (!sec || !sec.schedules) return;
-
+      if (!sec?.schedules) return;
       sec.schedules.forEach(sch => {
         if (!map[sch.dayOfWeek]) map[sch.dayOfWeek] = [];
         map[sch.dayOfWeek]!.push({
           schedule: sch,
+          courseCode: sec.course?.courseCode || '',
+          nameTh: sec.course?.nameTh || '',
+          nameEn: sec.course?.nameEn || '',
+          professor: sec.professor?.user ? `${sec.professor.user.firstName}` : '',
           sectionNo: sec.sectionNo,
-          courseCode: sec.course?.courseCode || 'N/A',
-          courseName: sec.course?.nameTh || 'N/A',
-          professor: sec.professor?.user?.firstName || 'N/A'
         });
       });
     });
-
     return map;
   }, [enrollments]);
 
   const hours = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => START_HOUR + i);
+  const rowH = compact ? 56 : 72;
 
   return (
-    <div className="timetable-container card animate-fade-in">
-      <div className="timetable-header">
-        <h3 className="timetable-title">{t('dashboard.weekly_schedule')}</h3>
-        <div className="timetable-legend">
-          <span className="legend-item"><div className="dot study"></div> {t('common.study')}</span>
-          <span className="legend-item"><div className="dot exam"></div> {t('common.exam')}</span>
-        </div>
-      </div>
-
+    <div className={`timetable-container card ${compact ? 'compact' : ''}`}>
       <div className="timetable-scroll-area">
-        <div className="timetable-grid-horizontal" style={{ minWidth: (END_HOUR - START_HOUR + 1) * HOUR_WIDTH + 100 }}>
-          
-          {/* Top Time Labels */}
+        <div className="timetable-grid-horizontal" style={{ minWidth: hours.length * HOUR_WIDTH + 60 }}>
+          {/* Time header */}
           <div className="timetable-time-header">
-            <div className="day-label-column spacer"></div>
+            <div className="day-label-column spacer" />
             {hours.map(h => (
               <div key={h} className="time-column-header" style={{ width: HOUR_WIDTH }}>
                 {String(h).padStart(2, '0')}:00
               </div>
             ))}
           </div>
-
-          {/* Table Body (Rows per Day) */}
+          {/* Rows */}
           <div className="timetable-rows">
             {DAYS.map(day => (
-              <div key={day} className="timetable-day-row">
+              <div key={day} className="timetable-day-row" style={{ minHeight: rowH }}>
                 <div className="day-label-column">
-                  <span className="day-name">{day}</span>
+                  <span className="day-name">{locale === 'th' ? DAY_TH[day] : DAY_EN[day]}</span>
                 </div>
-                
                 <div className="day-content-area">
-                  {/* Grid background lines */}
                   <div className="grid-lines-overlay">
-                    {hours.map(h => (
-                      <div key={h} className="grid-line" style={{ width: HOUR_WIDTH }}></div>
-                    ))}
-                    {/* Lunch Highlight (12:00) */}
-                    <div 
-                      className="lunch-marker" 
-                      style={{ left: getPositionX('12:00'), width: HOUR_WIDTH }}
-                    ></div>
+                    {hours.map(h => <div key={h} className="grid-line" style={{ width: HOUR_WIDTH }} />)}
                   </div>
-
-                  {/* Course Items */}
                   {schedulesByDay[day]?.map((item, idx) => (
-                    <div
-                      key={`${day}-${idx}`}
-                      className={`timetable-item h-mode day-${day.toLowerCase()}`}
-                      style={{
-                        left: getPositionX(item.schedule.startTime),
-                        width: getWidth(item.schedule.startTime, item.schedule.endTime),
-                      }}
-                    >
+                    <div key={idx} className={`timetable-item h-mode day-${day.toLowerCase()}`}
+                      style={{ left: getX(item.schedule.startTime), width: Math.max(getW(item.schedule.startTime, item.schedule.endTime) - 4, 40) }}>
                       <div className="timetable-item-inner">
                         <div className="item-header">
                           <span className="course-code">{item.courseCode}</span>
-                          <span className="course-time">{item.schedule.startTime}-{item.schedule.endTime}</span>
+                          <span className="course-time">{item.schedule.startTime}–{item.schedule.endTime}</span>
                         </div>
-                        <p className="course-name">{item.courseName}</p>
+                        <p className="course-name">
+                          {locale === 'th' ? item.nameTh : (item.nameEn || item.nameTh)}
+                        </p>
                         <div className="item-footer">
-                          <span>Sec {item.sectionNo}</span>
-                          <span>•</span>
                           <span>{item.professor}</span>
                         </div>
                       </div>

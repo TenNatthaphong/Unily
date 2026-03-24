@@ -1,72 +1,204 @@
-.enrollment-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-}
+.enrollment-page { padding: var(--space-xl); display: flex; flex-direction: column; gap: var(--space-md); }
 
 .enrollment-header {
-  margin-bottom: var(--space-lg);
-}
-.enrollment-header h1 { font-size: 2.5rem; font-weight: 900; letter-spacing: -0.05em; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.enrollment-header p { color: var(--text-secondary); font-weight: 500; font-size: 1rem; }
-
-.enrollment-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: var(--space-xl);
-  align-items: start;
-}
-
-.filters-sidebar {
-  position: sticky;
-  top: calc(var(--top-bar-height) + var(--space-lg));
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
 }
+.enrollment-header h1 { font-size: 1.4rem; }
+.enrollment-sub { font-size: 0.85rem; color: var(--text-secondary); margin-top: 2px; }
 
-.sections-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: var(--space-lg);
+.period-banner {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 4px;
 }
+.banner-info { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.banner-success { background: rgba(16,185,129,0.15); color: #34d399; }
+.banner-warning { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.banner-danger { background: rgba(239,68,68,0.15); color: #f87171; }
 
-/* --- Section Card Phase 5 --- */
-.section-card {
+.enroll-filters {
   display: flex;
-  flex-direction: column;
-  background: var(--bg-card);
-  border: 1px solid var(--bg-card-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  align-items: center;
 }
-.section-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: var(--shadow-xl), var(--shadow-glow); border-color: var(--primary); }
+.enroll-filters .search-box { flex: 1; min-width: 220px; max-width: 360px; }
 
-.sc-header { padding: 24px; border-bottom: 1px solid var(--bg-card-border); background: linear-gradient(to bottom, rgba(255,255,255,0.02), transparent); }
-.sc-code { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.05em; }
-.sc-title { font-size: 1.125rem; font-weight: 800; color: var(--text-primary); margin: 0; line-height: 1.4; }
+.enroll-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
 
-.sc-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
+/* Course accordion */
+.courses-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+.course-card-enroll { padding: 0; overflow: hidden; transition: box-shadow 0.2s; }
+.course-card-enroll:hover { transform: none; box-shadow: var(--shadow-md); }
+.course-card-enroll.expanded { border-color: rgba(59,130,246,0.3); }
 
-.sc-stats-row { display: flex; align-items: center; justify-content: space-between; }
-.sc-stat-item { display: flex; gap: 8px; align-items: center; font-size: 0.8125rem; font-weight: 700; color: var(--text-secondary); }
-.sc-stat-item.primary-stat { color: var(--primary); }
+.course-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  cursor: pointer;
+  transition: background 0.15s;
+  gap: var(--space-md);
+}
+.course-card-header:hover { background: rgba(59,130,246,0.04); }
 
-.capacity-container { display: flex; flex-direction: column; gap: 8px; }
-.capacity-label { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-.capacity-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
-.capacity-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
-.cap-green { background: linear-gradient(90deg, #10b981, #059669); }
-.cap-yellow { background: linear-gradient(90deg, #f59e0b, #d97706); }
-.cap-red { background: linear-gradient(90deg, #ef4444, #dc2626); }
+.course-info { flex: 1; min-width: 0; }
+.course-main-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  margin-bottom: 3px;
+}
+.course-code-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: rgba(59,130,246,0.15);
+  color: var(--primary);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.course-name-th { font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
+.course-credits { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+.course-sub-row { display: flex; gap: var(--space-lg); align-items: center; flex-wrap: wrap; }
+.course-name-en { font-size: 0.8rem; color: var(--text-secondary); }
+.prereq-label { color: var(--text-muted); }
+.course-prereqs { font-size: 0.78rem; color: var(--text-secondary); }
 
-.sc-schedules { display: flex; flex-wrap: wrap; gap: 8px; }
-.sched-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.15); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; color: var(--primary); }
+.expand-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
 
-.sc-footer { padding: 24px; background: rgba(255,255,255,0.01); border-top: 1px solid var(--bg-card-border); }
+/* Sections table */
+.course-sections {
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.08);
+}
+.sections-table-header {
+  display: flex;
+  align-items: center;
+  padding: 6px var(--space-lg);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.section-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+  font-size: 0.85rem;
+}
+.section-row:last-child { border-bottom: none; }
+.section-row:hover { background: rgba(255,255,255,0.03); }
+.section-row.is-enrolled { background: rgba(16,185,129,0.04); }
 
-@media (max-width: 1024px) {
-  .enrollment-layout { grid-template-columns: 1fr; }
-  .filters-sidebar { position: static; }
+.sec-col { overflow: hidden; }
+.sec-no { width: 60px; flex-shrink: 0; font-weight: 600; color: var(--text-primary); }
+.sec-prof { flex: 1.2; color: var(--text-secondary); font-size: 0.82rem; }
+.sec-schedule { flex: 2; display: flex; flex-wrap: wrap; gap: 4px; }
+.sched-tag {
+  font-size: 0.72rem;
+  padding: 1px 7px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.sec-cap { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.cap-text { font-size: 0.8rem; font-weight: 600; }
+.cap-text.avail { color: var(--success); }
+.cap-text.warn { color: var(--warning); }
+.cap-text.full { color: var(--danger); }
+.cap-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+.cap-fill { height: 100%; border-radius: 2px; }
+.cap-fill.avail { background: var(--success); }
+.cap-fill.warn { background: var(--warning); }
+.cap-fill.full { background: var(--danger); }
+.sec-status { flex: 0.7; display: flex; align-items: center; gap: var(--space-xs); }
+.cap-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.cap-dot.avail { background: var(--success); }
+.cap-dot.warn { background: var(--warning); }
+.cap-dot.full { background: var(--danger); }
+.enrolled-tag { font-size: 0.68rem; color: var(--success); font-weight: 600; }
+.sec-action { flex: 0.8; display: flex; justify-content: flex-end; }
+
+.btn-enroll {
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-enroll.enroll {
+  background: linear-gradient(135deg, #2D74E0, #1d4ed8);
+  color: white;
+  box-shadow: 0 3px 10px rgba(45,116,224,0.35);
+}
+.btn-enroll.enroll:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(45,116,224,0.5); }
+.btn-enroll.drop {
+  background: rgba(239,68,68,0.1);
+  color: var(--danger);
+  border: 1px solid rgba(239,68,68,0.25);
+}
+.btn-enroll.drop:hover { background: var(--danger); color: white; }
+
+.sec-loading { padding: var(--space-lg); display: flex; justify-content: center; }
+.no-sections { padding: var(--space-md) var(--space-lg); font-size: 0.85rem; color: var(--text-muted); text-align: center; }
+.empty-courses { padding: var(--space-xl); text-align: center; color: var(--text-muted); }
+
+/* Select wrapper */
+.select-wrapper { position: relative; display: inline-flex; }
+.select-wrapper select {
+  appearance: none;
+  background: rgba(15,23,42,0.8);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 8px 36px 8px 14px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  min-width: 160px;
+}
+.select-wrapper select:focus { outline: none; border-color: var(--primary); }
+.select-wrapper select:disabled { opacity: 0.5; cursor: not-allowed; }
+.select-wrapper::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-60%);
+  border: 5px solid transparent;
+  border-top-color: var(--text-muted);
 }

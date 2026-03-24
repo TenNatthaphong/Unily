@@ -43,7 +43,9 @@ const MENU_CONFIG: Record<Role, MenuItem[]> = {
     { icon: 'PenSquare', labelKey: 'nav.sections', route: '/admin/sections' },
     { icon: 'Users', labelKey: 'nav.users', route: '/admin/users' },
     { icon: 'FileText', labelKey: 'nav.audit_log', route: '/admin/audit-log' },
-    { icon: 'Settings', labelKey: 'nav.settings', route: '/dashboard' },
+    { icon: 'Settings', labelKey: 'nav.settings', children: [
+      { labelKey: 'nav.semester_config', route: '/admin/settings/semester' },
+    ]},
   ],
 };
 
