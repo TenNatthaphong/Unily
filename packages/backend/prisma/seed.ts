@@ -23,19 +23,6 @@ async function main() {
   const deptMap = new Map<string, string>();    // [facCode-deptCode]: uuid
   const courseCodeToUuid = new Map<string, string>(); // [courseCode]: uuid
 
-  // --- STEP 0: Delete Existing Data ---
-  console.log('🗑️ Deleting existing data...');
-  await prisma.curriculumCourse.deleteMany({});
-  await prisma.curriculum.deleteMany({});
-  await prisma.prerequisite.deleteMany({});
-  await prisma.course.deleteMany({});
-  await prisma.professorProfile.deleteMany({});
-  await prisma.studentProfile.deleteMany({});
-  await prisma.adminProfile.deleteMany({});
-  await prisma.user.deleteMany({});
-  await prisma.department.deleteMany({});
-  await prisma.faculty.deleteMany({});
-  
   // --- STEP 1: Faculty & Department ---
   console.log('📦 Seeding Faculties and Departments...');
   for (const f of facDeptData) {
@@ -235,19 +222,19 @@ async function main() {
   const csDeptId = deptMap.get('04-06');
 
   if (csFacultyId && csDeptId) {
+    const profPassword = await bcrypt.hash("professor12345", 10);
     for (let i = 0; i < professorsData.length; i++) {
       const prof = professorsData[i];
       const email = `professor${i + 1}@unily.ac.th`;
-      const hashPassword = await bcrypt.hash("professor12345", 10);
       const user = await prisma.user.upsert({
         where: { email },
         update: {},
         create: {
           email,
-          password: hashPassword,
+          password: profPassword,
           firstName: prof.firstName,
           lastName: prof.lastName,
-          role: "PROFESSOR", // หรือ Enum ของคุณ
+          role: "PROFESSOR",
           status: "ACTIVE"
         }
       });
@@ -328,6 +315,7 @@ async function main() {
         // แต่ถ้าต้องการแยกกันก็ตามนี้ครับ:
         const hashPassword = await bcrypt.hash(`unily${stdId}`, 10);
       
+        if (i % 50 === 0) console.log(`      ... ${i}/${config.count} students seeded for Batch ${config.prefix}`);
         // 1. จัดการข้อมูล User
         const user = await prisma.user.upsert({
           where: { email },

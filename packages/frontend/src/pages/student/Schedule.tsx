@@ -20,87 +20,7 @@ const CATEGORY_TH: Record<string, string> = {
   COOP_COURSE: 'สหกิจศึกษา',
 };
 
-// ── Custom semester dropdown ────────────────────────────────────────────────
-interface SemDropdownProps {
-  semesters: SemesterConfig[];
-  value: string;
-  onChange: (id: string) => void;
-}
-function SemDropdown({ semesters, value, onChange }: SemDropdownProps) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const selected = semesters.find(s => s.id === value);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  return (
-    <div className="sem-dropdown" ref={ref}>
-      <motion.button
-        className="sem-dropdown-trigger"
-        onClick={() => setOpen(v => !v)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.97 }}
-        aria-expanded={open}
-      >
-        <CalendarDays size={14} className="sem-trigger-icon" />
-        <span className="sem-trigger-label">
-          {selected
-            ? `ภาคเรียน ${selected.semester}/${selected.academicYear}${selected.isCurrent ? ' ★' : ''}`
-            : 'เลือกภาคเรียน'}
-        </span>
-        <motion.span
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.22, ease: 'easeInOut' }}
-          style={{ display: 'flex', alignItems: 'center' }}
-        >
-          <ChevronDown size={14} className="sem-trigger-chevron" />
-        </motion.span>
-      </motion.button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="sem-dropdown-menu"
-            initial={{ opacity: 0, y: -6, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -6, scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-          >
-            {semesters.map(s => {
-              const isActive = s.id === value;
-              return (
-                <motion.button
-                  key={s.id}
-                  className={`sem-dropdown-item ${isActive ? 'is-active' : ''}`}
-                  onClick={() => { onChange(s.id); setOpen(false); }}
-                  whileHover={{ x: 3 }}
-                  transition={{ duration: 0.12 }}
-                >
-                  <span className="sem-item-label">
-                    {s.isCurrent && <span className="sem-dot" />}
-                    {/* ลบ "ภาคเรียน" ออก → ลดความซ้ำซ้อน */}
-                    {s.semester}/{s.academicYear}
-                  </span>
-                  <span className="sem-item-right">
-                    {s.isCurrent && <span className="sem-current-pill">ปัจจุบัน</span>}
-                    {isActive && <Check size={13} className="sem-check" />}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
+import { Select } from '../../components/ui/Select';
 
 // ── Main page ───────────────────────────────────────────────────────────────
 export default function StudentSchedule() {
@@ -229,11 +149,16 @@ export default function StudentSchedule() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.08, duration: 0.38 }}
         >
-          <SemDropdown
-            semesters={validSemesters}
-            value={selectedSemId}
-            onChange={setSelectedSemId}
-          />
+          <div style={{ minWidth: 220 }}>
+            <Select
+              value={selectedSemId}
+              onChange={setSelectedSemId}
+              options={validSemesters.map(s => ({
+                value: s.id,
+                label: `ภาคเรียน ${s.semester}/${s.academicYear}${s.isCurrent ? ' (ปัจจุบัน)' : ''}`
+              }))}
+            />
+          </div>
         </motion.div>
       </div>
 
@@ -247,7 +172,7 @@ export default function StudentSchedule() {
           transition={{ duration: 0.28 }}
           style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
         >
-          <Timetable enrollments={enrollments} fitWidth />
+          <Timetable enrollments={enrollments} compact fitWidth />
 
           {/* ── Course list table ────────────────────────── */}
           <div className="schedule-courses-section card">

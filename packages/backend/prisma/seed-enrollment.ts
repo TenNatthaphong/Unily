@@ -2,6 +2,7 @@ import "dotenv/config";
 import { PrismaClient, Grade, DayOfWeek, StudentStatus, EnrollmentStatus } from '@prisma/client';
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
+import * as bcrypt from "bcrypt";
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
@@ -66,8 +67,7 @@ async function main() {
     console.log('\n🚀 [FINAL MASTER SEED: DIAGNOSTIC MODE]');
     console.time("⏱️  Total Execution Time");
     
-    process.stdout.write('   🧹 Cleaning database... ');
-    await prisma.$executeRaw`TRUNCATE TABLE "Enrollment", "AcademicRecord", "Schedule", "Section", "SemesterConfig" CASCADE`;
+    process.stdout.write('   🚀 Starting Enrollment Seed Process... \n');
     // Reset studentProfile ให้กลับค่าเริ่มต้น (กรณีรัน seed-enrollment ซ้ำโดยไม่ได้รัน seed ก่อน)
     const regularCurric = await prisma.curriculum.findUnique({ where: { curriculumCode: "CS64-REGULAR" } });
     if (regularCurric) {
@@ -77,8 +77,86 @@ async function main() {
     }
     console.log('Done.');
 
+    // Generate Batch 69 students (200 accounts)
+    const batch69Exists = await prisma.studentProfile.findFirst({ where: { entryYear: 2569 } });
+    if (!batch69Exists && regularCurric) {
+        process.stdout.write('   🎓 Syncing 200 Students for Batch 69... ');
+        const csFaculty = await prisma.faculty.findUnique({ where: { facultyCode: '04' } });
+        const csDept = await prisma.department.findUnique({ where: { facultyId_deptCode: { facultyId: csFaculty!.id, deptCode: '06' } } });
+        const sharedPassword = await bcrypt.hash("unily69", 10);
+        for (let i = 1; i <= 200; i++) {
+            if (i % 50 === 0) console.log(`      ... ${i}/200 student accounts created for Batch 69`);
+            const studentCode = `690406${i.toString().padStart(5, '0')}`;
+            const email = `u${studentCode}@unily.ac.th`;
+            const user = await prisma.user.upsert({
+                where: { email },
+                update: {},
+                create: {
+                    email, password: sharedPassword,
+                    firstName: `Student69`, lastName: `No${i.toString().padStart(5, '0')}`,
+                    role: 'STUDENT', status: 'ACTIVE'
+                }
+            });
+            await prisma.studentProfile.upsert({
+                where: { userId: user.id },
+                update: { status: StudentStatus.STUDYING, year: 1, gpax: 0, ca: 0, cs: 0, entryYear: 2569, curriculumId: regularCurric.id },
+                create: {
+                    userId: user.id, studentCode, entryYear: 2569, year: 1,
+                    facultyId: csFaculty!.id, deptId: csDept!.id, curriculumId: regularCurric.id,
+                    status: StudentStatus.STUDYING, gpax: 0, ca: 0, cs: 0
+                }
+            });
+        }
+        console.log('Done.');
+    }
+
     const allStudents = await prisma.studentProfile.findMany();
-    const professors = await prisma.professorProfile.findMany();
+    let professors = await prisma.professorProfile.findMany();
+    
+    // Add 80 more professors if we have too few to prevent heavy overlaps
+    if (professors.length < 100) {
+        process.stdout.write('   👨‍🏫 Adding 80 more professors... ');
+        const hash = await bcrypt.hash('password123', 10);
+        const newProfs: any[] = [];
+        const firstNames = [
+            "กิตติภพ", "ธนัชชา", "ปิยบุตร", "วรัญญา", "ชลสิทธิ์", "ณัฐพงศ์", "ทศพล", "นรินทร์", "เบญจมาศ", "ปกรณ์",
+            "พรพิมล", "มงคล", "ยุทธนา", "รพีพรรณ", "ศิริชัย", "อภิชาติ", "กมลวรรณ", "ขวัญชัย", "จตุพร", "ฉัตรชัย",
+            "ชยานนท์", "ญาณิศา", "ฐิติมา", "ณรงค์เดช", "ดนัย", "ทรงพล", "นันทวัฒน์", "บวร", "ปวริศา", "พงศธร",
+            "สมชาย", "สมพงษ์", "สมจิต", "อุไร", "จินตนา", "วันชัย", "วิเชียร", "ประสิทธิ์", "พรชัย", "มานะ",
+            "มาลี", "ปราณี", "ประเสริฐ", "สมนึก", "สมคิด", "อนุชา", "เพ็ญศรี", "สมบูรณ์", "วิบูลย์", "อำนวย"
+        ];
+        const lastNames = [
+            "รัตนโชติ", "แสงสว่าง", "เอื้อเฟื้อ", "ปรีดากุล", "ดีเลิศ", "พงษ์สุวรรณ", "เจริญผล", "รัตนวิจิตร", "งามขำ", "มณีรัตน์",
+            "สวัสดิ์ดี", "ทองคำ", "รุ่งเรือง", "ปัญญาดี", "สุวรรณรัตน์", "ศิริโชติ", "บุญมี", "พาณิชย์", "วงศ์สวัสดิ์", "ธรรมะ",
+            "แซ่ตั้ง", "ดีประเสริฐ", "ใจดี", "แซ่ลิ้ม", "ประเสริฐผล", "เจริญราษฎร์", "สุขุม", "มีทรัพย์", "ศรีสุข", "พิทักษ์",
+            "โพธิ์แก้ว", "สุขสวัสดิ์", "ทรัพย์เจริญ", "บุญกอบ", "เจริญชัย", "สิงห์ทอง", "มั่นคง", "ชูศิลป์", "รักษา", "ชูชัย"
+        ];
+        for (let i = 0; i < 80; i++) {
+            const fname = firstNames[Math.floor(Math.random() * firstNames.length)];
+            const lname = lastNames[Math.floor(Math.random() * lastNames.length)];
+            const email = `prof.bulk${i + 1}@unily.ac.th`;
+            const user = await prisma.user.upsert({
+                where: { email },
+                update: {},
+                create: {
+                    email, password: hash,
+                    firstName: fname, lastName: lname + i,
+                    role: 'PROFESSOR', status: 'ACTIVE'
+                }
+            });
+            const profile = await prisma.professorProfile.upsert({
+                where: { userId: user.id },
+                update: {},
+                create: { userId: user.id, facultyId: '04', deptId: '06' }
+            });
+            newProfs.push(profile);
+        }
+        professors.push(...newProfs);
+        console.log('Done.');
+    }
+
+    let globalProfIndex = 0;
+
     const coopCurric = await prisma.curriculum.findUnique({ where: { curriculumCode: "CS64-COOP" } });
     const allCourses = await prisma.course.findMany();
     const allCurriculumCourses = await prisma.curriculumCourse.findMany({ include: { course: true } });
@@ -103,8 +181,8 @@ async function main() {
 
     const requiredCoreFull = allCurriculumCourses.filter(c => !c.mappingPattern);
 
-    const TARGET_YEAR = 2568;
-    const TARGET_SEM = 3;
+    const TARGET_YEAR = 2569;
+    const TARGET_SEM = 1;
 
     // semester config dates (ISO string -> Date)
     const SEMESTER_DATES: Record<string, { regStart: Date; regEnd: Date; withdrawStart: Date; withdrawEnd: Date; isCurrent: boolean }> = {
@@ -119,10 +197,11 @@ async function main() {
         "2567-3": { regStart: new Date("2025-04-07T08:00:00+07:00"), regEnd: new Date("2025-04-14T16:00:00+07:00"), withdrawStart: new Date("2025-04-07T08:00:00+07:00"), withdrawEnd: new Date("2025-05-19T16:00:00+07:00"), isCurrent: false },
         "2568-1": { regStart: new Date("2025-07-07T08:00:00+07:00"), regEnd: new Date("2025-07-21T16:00:00+07:00"), withdrawStart: new Date("2025-07-07T08:00:00+07:00"), withdrawEnd: new Date("2025-09-01T16:00:00+07:00"), isCurrent: false },
         "2568-2": { regStart: new Date("2025-11-03T08:00:00+07:00"), regEnd: new Date("2025-11-17T16:00:00+07:00"), withdrawStart: new Date("2025-11-03T08:00:00+07:00"), withdrawEnd: new Date("2025-12-29T16:00:00+07:00"), isCurrent: false },
-        "2568-3": { regStart: new Date("2026-04-06T08:00:00+07:00"), regEnd: new Date("2026-04-13T16:00:00+07:00"), withdrawStart: new Date("2026-04-06T08:00:00+07:00"), withdrawEnd: new Date("2026-05-18T16:00:00+07:00"), isCurrent: true },
+        "2568-3": { regStart: new Date("2026-04-06T08:00:00+07:00"), regEnd: new Date("2026-04-13T16:00:00+07:00"), withdrawStart: new Date("2026-04-06T08:00:00+07:00"), withdrawEnd: new Date("2026-05-18T16:00:00+07:00"), isCurrent: false },
+        "2569-1": { regStart: new Date("2026-03-23T18:00:00+07:00"), regEnd: new Date("2026-04-07T09:00:00+07:00"), withdrawStart: new Date("2026-03-23T18:00:00+07:00"), withdrawEnd: new Date("2026-05-19T02:00:00+07:00"), isCurrent: true },
     };
 
-    for (const year of [2565, 2566, 2567, 2568]) {
+    for (const year of [2565, 2566, 2567, 2568, 2569]) {
         console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━ Year: ${year} ━━━━━━━━━━━━━━━━━━━━━━━━`);
         for (const semester of [1, 2, 3]) {
             if (year === TARGET_YEAR && semester > TARGET_SEM) continue;
@@ -163,8 +242,8 @@ async function main() {
                     const matches = allCourses.filter(c => {
                         if (!c.courseCode.startsWith(p)) return false;
                         if (isSci && c.courseCode.startsWith("0406")) return false;
-                        // Simplified Lock: Exclude only courses core in the SAME term
-                        return !plannedCourses.some(pl => !pl.mappingPattern && pl.courseId === c.id);
+                        // Exclude locked core courses globally to prevent core courses filling elective slots
+                        return !allLockedCourseIds.has(c.id);
                     });
 
                     targets = isCS ? matches.sort(() => 0.5 - Math.random()).slice(0, 30) : matches.sort(() => 0.5 - Math.random()).slice(0, 15);
@@ -182,7 +261,7 @@ async function main() {
                         const combo = combos[(s - 1) % combos.length]; // วน combos กระจายครบทุก slot
                         const sec = await prisma.section.create({
                             data: {
-                                courseId: tc.id, professorId: professors[Math.floor(Math.random() * professors.length)].userId,
+                                courseId: tc.id, professorId: professors[globalProfIndex++ % professors.length].userId,
                                 academicYear: year, semester, sectionNo: s, capacity: cap, enrolledCount: 0
                             }
                         });
@@ -234,6 +313,12 @@ async function main() {
             
             for (const std of allStudents) {
                 if ((std as any)._graduated) continue; // จบแล้วไม่ต้องลงทะเบียน
+                
+                if (isLastOfAll) {
+                    const suffix = parseInt(std.studentCode.slice(-5), 10);
+                    if (suffix >= 1 && suffix <= 10) continue; // Skipped Test Cases 00001-00010 for manual testing in active term
+                }
+
                 const stdRecords = allRecordsAtStart.filter(r => r.studentId === std.userId);
                 const passedIds = new Set(stdRecords.filter(r => r.grade !== Grade.F).map(r => r.courseId));
                 const studyYear = (year - std.entryYear) + 1;

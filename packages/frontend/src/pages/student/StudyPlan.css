@@ -51,67 +51,99 @@
 }
 .sp-note-icon { font-size: 1rem; flex-shrink: 0; line-height: 1.5; }
 
-/* Horizontal scroll flow — only scrolls if content wider than container */
-/* Extra top padding gives room for the orthogonal arrow routing lane (y=-32) */
+/* Horizontal scroll flow */
 .sp-flow-scroll {
   overflow-x: auto;
-  overflow-y: visible;
-  padding: 56px 20px 40px;
+  overflow-y: hidden;
+  padding: 20px 20px 40px;
 }
 .sp-flow-track {
   display: grid;
-  gap: 32px;
+  gap: 52px;
   width: max-content;
   align-items: start;
+  /* clip the SVG so arrows can't paint outside the track area */
+  overflow: hidden;
 }
 
-/* Column */
+/* Column — big bordered box that contains header + all cards */
 .sp-column {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  border: 1px solid rgba(45,116,224,0.22);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: rgba(45,116,224,0.025);
 }
 .sp-col-header {
   background: rgba(45,116,224,0.1);
-  border: 1px solid rgba(45,116,224,0.2);
-  border-radius: var(--radius-md);
-  padding: 6px 8px;
+  border-bottom: 1px solid rgba(45,116,224,0.18);
+  padding: 8px 10px;
   text-align: center;
-  width: 200px;
 }
 .sp-col-year { font-size: 0.72rem; font-weight: 700; color: var(--primary); display: block; }
 .sp-col-cred { font-size: 0.65rem; color: var(--text-muted); }
-.sp-col-nodes { display: flex; flex-direction: column; gap: 4px; }
 
-/* Compact Node — fixed uniform width, click to see detail */
+/* Cards inside the box with padding + spacing */
+.sp-col-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* bottom padding reserves room for the bypass lane used by non-adjacent arrows */
+  padding: 10px 10px 60px;
+}
+
+/* Node — two-row layout: code/credits/status on top, Thai name below */
 .sp-node {
-  background: var(--node-bg);
+  background: var(--bg-card, rgba(15,23,42,0.6));
   border: 1px solid rgba(45,116,224,0.3);
   border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  width: 200px;
+  padding: 7px 10px;
+  width: 100%;
   box-sizing: border-box;
   cursor: pointer;
   text-align: left;
   transition: box-shadow 0.15s, border-color 0.15s;
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 3px;
 }
 .sp-node:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(45,116,224,0.3); }
 .sp-node.completed {
   border-color: rgba(16,185,129,0.5);
   background: rgba(16,185,129,0.06);
 }
+.sp-node.studying {
+  border-color: rgba(245,158,11,0.5);
+  background: rgba(245,158,11,0.06);
+}
 .sp-node.wildcard {
   opacity: 0.55;
   border-style: dashed;
 }
-.sp-node-code { font-size: 0.78rem; font-weight: 700; color: var(--primary); flex: 1; white-space: nowrap; }
+/* Top row: code + credits + status */
+.sp-node-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sp-node-code { font-size: 0.78rem; font-weight: 700; color: var(--primary); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sp-node.completed .sp-node-code { color: var(--success); }
-.sp-node-credits { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; }
+.sp-node.studying .sp-node-code { color: var(--warning); }
+.sp-node-credits { font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; white-space: nowrap; }
 .sp-node-status { flex-shrink: 0; color: var(--text-muted); display: flex; }
 .sp-node.completed .sp-node-status { color: var(--success); }
+.sp-node.studying .sp-node-status { color: var(--warning); }
+/* Thai name row */
+.sp-node-name {
+  font-size: 0.64rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+  opacity: 0.85;
+}
 
 /* Legend */
 .sp-legend {
@@ -274,3 +306,13 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(59,130,246,0.4);
 }
+
+/* ── Light-mode overrides ────────────────────────────── */
+[data-theme="light"] .sp-node { background: #ffffff; border-color: rgba(59,130,246,0.2); }
+[data-theme="light"] .sp-node:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(59,130,246,0.15); }
+[data-theme="light"] .sp-node.completed { background: rgba(16,185,129,0.05); border-color: rgba(16,185,129,0.35); }
+[data-theme="light"] .sp-node.studying { background: rgba(245,158,11,0.05); border-color: rgba(245,158,11,0.35); }
+[data-theme="light"] .sp-column { background: rgba(59,130,246,0.02); border-color: rgba(59,130,246,0.15); }
+[data-theme="light"] .sp-col-header { background: rgba(59,130,246,0.06); }
+[data-theme="light"] .sp-note-banner { background: rgba(245,158,11,0.06); }
+[data-theme="light"] .sp-progress-card { background: rgba(255,255,255,0.9); }

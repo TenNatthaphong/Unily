@@ -159,20 +159,50 @@ export class CurriculumService {
       include: { course: true },
     });
 
+    const enrollments = await this.prisma.enrollment.findMany({
+      where: { studentId, status: { not: 'DROPPED' } },
+      include: { section: { include: { course: true } } }
+    });
+
     const passedCourseIds = new Set(fullRecords.map(r => r.courseId));
+    const enrolledCourseIds = new Set(enrollments.map(e => e.section.courseId));
     const usedElectiveIds = new Set<string>();
+    const usedEnrolledElectives = new Set<string>();
+
+    const coreCourseIds = new Set(
+      student.curriculum.curriculumCourses
+        .filter(c => !c.course?.isWildcard && !c.mappingPattern)
+        .map(c => c.courseId)
+    );
 
     const plan = student.curriculum.curriculumCourses.map(cc => {
-      if (!cc.course?.isWildcard) {
-        return { ...cc, status: passedCourseIds.has(cc.courseId) ? 'COMPLETED' : 'REMAINING' };
+      if (!cc.course?.isWildcard && !cc.mappingPattern) {
+        if (passedCourseIds.has(cc.courseId)) return { ...cc, status: 'COMPLETED' };
+        if (enrolledCourseIds.has(cc.courseId)) return { ...cc, status: 'STUDYING' };
+        return { ...cc, status: 'REMAINING' };
       }
+      const pattern = cc.mappingPattern ? cc.mappingPattern.replace('%', '') : '';
+      
+      // Match passed
       const match = fullRecords.find(
-        r => r.course?.category === cc.course?.category && !usedElectiveIds.has(r.courseId)
+        r => !coreCourseIds.has(r.courseId) && !usedElectiveIds.has(r.courseId) && 
+             (pattern ? r.course.courseCode.startsWith(pattern) : r.course?.category === cc.course?.category)
       );
       if (match) {
         usedElectiveIds.add(match.courseId);
         return { ...cc, status: 'COMPLETED', matchedCourse: match.course };
       }
+
+      // Match studying
+      const studyingMatch = enrollments.find(
+        e => !coreCourseIds.has(e.section.courseId) && !usedEnrolledElectives.has(e.section.courseId) && 
+             (pattern ? e.section.course.courseCode.startsWith(pattern) : e.section.course?.category === cc.course?.category)
+      );
+      if (studyingMatch) {
+        usedEnrolledElectives.add(studyingMatch.section.courseId);
+        return { ...cc, status: 'STUDYING', matchedCourse: studyingMatch.section.course };
+      }
+
       return { ...cc, status: 'REMAINING' };
     });
 

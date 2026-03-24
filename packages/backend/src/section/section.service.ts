@@ -82,11 +82,12 @@ export class SectionService {
         ...(yr && { academicYear: yr }),
         ...(sem && { semester: sem })
       },
-      include: { 
-        course: true, 
-        schedules: true, 
-        professor: { include: { user: { select: { firstName: true, lastName: true } } } } 
-      }
+      include: {
+        course: true,
+        schedules: true,
+        professor: { include: { user: { select: { firstName: true, lastName: true } } } }
+      },
+      orderBy: { sectionNo: 'desc' },
     });
   }
 

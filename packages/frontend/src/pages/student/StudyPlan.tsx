@@ -2,13 +2,13 @@ import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { curriculumApi } from '../../api/curriculum.api';
 import { useTranslation } from '../../i18n/useTranslation';
-import { Loader2, CheckCircle2, Circle, GraduationCap, X, PartyPopper } from 'lucide-react';
+import { Loader2, CheckCircle2, Circle, Clock, GraduationCap, X, PartyPopper } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import type { CurriculumCourse } from '../../types';
 import './StudyPlan.css';
 
 type PlanItem = CurriculumCourse & {
-  status: 'COMPLETED' | 'REMAINING';
+  status: 'COMPLETED' | 'REMAINING' | 'STUDYING';
   matchedCourseId?: string;
   matchedCourse?: import('../../types').Course;
 };
@@ -21,12 +21,12 @@ interface SemGroup {
 }
 
 const CATEGORY_LABEL: Record<string, string> = {
-  GENERAL_EDUCATION: 'GE',
-  CORE_COURSE: 'Core',
-  REQUIRED_COURSE: 'Major',
-  MAJOR_ELECTIVE: 'Elective',
-  FREE_ELECTIVE: 'Free',
-  COOP_COURSE: 'Co-op',
+  GENERAL_EDUCATION: 'ศึกษาทั่วไป',
+  CORE_COURSE:       'วิชาแกน',
+  REQUIRED_COURSE:   'วิชาเอกบังคับ',
+  MAJOR_ELECTIVE:    'วิชาเอกเลือก',
+  FREE_ELECTIVE:     'วิชาเสรี',
+  COOP_COURSE:       'สหกิจศึกษา',
 };
 
 export default function StudyPlan() {
@@ -153,7 +153,7 @@ export default function StudyPlan() {
         <div
           className="sp-flow-track"
           ref={trackRef}
-          style={{ gridTemplateColumns: `repeat(${semGroups.length}, 200px)`, position: 'relative' }}
+          style={{ gridTemplateColumns: `repeat(${semGroups.length}, 244px)`, position: 'relative' }}
         >
           <svg
             style={{
@@ -163,78 +163,108 @@ export default function StudyPlan() {
               height: '100%',
               pointerEvents: 'none',
               zIndex: 0,
-              overflow: 'visible',
+              overflow: 'hidden',
             }}
           >
             <defs>
+              <clipPath id="sp-track-clip">
+                <rect x="0" y="0" width="100%" height="100%" />
+              </clipPath>
               <marker id="arrow-head" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="rgba(59,130,246,0.5)" />
+                <path d="M0,0 L0,6 L6,3 z" fill="rgba(59,130,246,0.75)" />
               </marker>
               <marker id="arrow-head-done" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="rgba(16,185,129,0.6)" />
+                <path d="M0,0 L0,6 L6,3 z" fill="rgba(16,185,129,0.85)" />
               </marker>
             </defs>
-            {arrows.map(a => {
-              // Orthogonal routing: exit right → up to routing lane → across → down → enter left
-              // This keeps arrows inside column gaps and never crossing node areas.
-              const rx1 = a.x1 + 16;  // mid-point of gap after source column
-              const rx2 = a.x2 - 16;  // mid-point of gap before target column
-              const routeY = -32;      // routing lane above all column headers (SVG overflow:visible)
-              // If adjacent columns (rx1 ≈ rx2), simplify to avoid tiny zigzag at top
-              const d = Math.abs(rx1 - rx2) < 8
-                ? `M${a.x1},${a.y1} H${rx1} V${a.y2} H${a.x2}`
-                : `M${a.x1},${a.y1} H${rx1} V${routeY} H${rx2} V${a.y2} H${a.x2}`;
-              return (
-                <path
-                  key={a.key}
-                  d={d}
-                  stroke={a.completed ? 'rgba(16,185,129,0.5)' : 'rgba(59,130,246,0.35)'}
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeLinejoin="round"
-                  markerEnd={a.completed ? 'url(#arrow-head-done)' : 'url(#arrow-head)'}
-                  strokeDasharray={a.completed ? undefined : '4,3'}
-                />
-              );
-            })}
+            <g clipPath="url(#sp-track-clip)">
+            {(() => {
+              // ── Gap-only routing ────────────────────────────────────────────
+              // HALF_GAP: half the 52 px column gap — the mid-lane inside each gap.
+              const HALF_GAP = 26;
+              // bypassY: a horizontal lane BELOW the lowest node so non-adjacent
+              // arrows travel underneath all cards without crossing any column body.
+              const bypassY = arrows.length > 0
+                ? Math.max(...arrows.map(a => Math.max(a.y1, a.y2))) + 48
+                : 0;
+
+              return arrows.map(a => {
+                // gap1: midpoint of the gap immediately after the source column
+                // gapN: midpoint of the gap immediately before the target column
+                const gap1 = Math.round(a.x1 + HALF_GAP);
+                const gapN = Math.round(a.x2 - HALF_GAP);
+                // "adjacent" = both gap references land in the same 52 px corridor
+                const adjacent = gapN - gap1 < 10;
+                const d = adjacent
+                  // Normal Z-path: source → gap mid → vertical → gap mid → target
+                  ? `M${a.x1},${a.y1} H${gap1} V${a.y2} H${a.x2}`
+                  // Bypass path: drop to the bypass lane through gap1, travel
+                  // horizontally under all intermediate columns, rise to y2 through gapN
+                  : `M${a.x1},${a.y1} H${gap1} V${bypassY} H${gapN} V${a.y2} H${a.x2}`;
+                return (
+                  <path
+                    key={a.key}
+                    d={d}
+                    stroke={a.completed ? 'rgba(16,185,129,0.75)' : 'rgba(59,130,246,0.65)'}
+                    strokeWidth="2"
+                    fill="none"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    markerEnd={a.completed ? 'url(#arrow-head-done)' : 'url(#arrow-head)'}
+                    strokeDasharray={a.completed ? undefined : '4,3'}
+                  />
+                );
+              });
+            })()}
+            </g>
           </svg>
           {semGroups.map(grp => (
             <div key={`${grp.year}-${grp.semester}`} className="sp-column">
               <div className="sp-col-header">
                 <span className="sp-col-year">ปีที่ {grp.year} เทอม {grp.semester}</span>
-                <span className="sp-col-cred">{grp.credits} cr</span>
+                <span className="sp-col-cred">{grp.credits} หน่วยกิต</span>
               </div>
               <div className="sp-col-nodes">
-                {grp.items.map(item => (
-                  <button
-                    key={item.id}
-                    ref={el => {
-                      if (el) nodeRefs.current.set(item.courseId, el);
-                      else nodeRefs.current.delete(item.courseId);
-                    }}
-                    className={`sp-node ${item.status === 'COMPLETED' ? 'completed' : ''} ${item.course?.isWildcard && item.status !== 'COMPLETED' ? 'wildcard' : ''}`}
-                    onClick={() => setSelected(item)}
-                    title={item.matchedCourse?.nameTh || item.course?.nameTh || item.mappingPattern || ''}
-                    style={{ position: 'relative', zIndex: 1 }}
-                  >
-                    <div className="sp-node-code">
-                      {/* Completed wildcard: show the actual course code */}
-                      {item.course?.isWildcard && item.status === 'COMPLETED' && item.matchedCourse
-                        ? item.matchedCourse.courseCode
-                        /* Uncompleted wildcard: show category label */
-                        : item.course?.isWildcard && item.status !== 'COMPLETED'
-                        ? (CATEGORY_LABEL[item.course.category] || 'Elective')
-                        /* Normal course */
-                        : (item.course?.courseCode || '?')}
-                    </div>
-                    <div className="sp-node-credits">
-                      {(item.matchedCourse?.credits ?? item.course?.credits) ?? '-'} cr
-                    </div>
-                    <div className="sp-node-status">
-                      {item.status === 'COMPLETED' ? <CheckCircle2 size={12} /> : <Circle size={12} />}
-                    </div>
-                  </button>
-                ))}
+                {grp.items.map(item => {
+                  const c = item.matchedCourse ?? item.course;
+                  const credits = c?.credits ?? '-';
+                  const hasHours = c && !c.isWildcard &&
+                    (c.lectureHours != null || c.labHours != null || c.selfStudyHours != null);
+                  const hoursStr = hasHours
+                    ? `(${c!.lectureHours ?? 0}-${c!.labHours ?? 0}-${c!.selfStudyHours ?? 0})`
+                    : '';
+                  return (
+                    <button
+                      key={item.id}
+                      ref={el => {
+                        if (el) nodeRefs.current.set(item.courseId, el);
+                        else nodeRefs.current.delete(item.courseId);
+                      }}
+                      className={`sp-node ${item.status === 'COMPLETED' ? 'completed' : item.status === 'STUDYING' ? 'studying' : ''} ${item.course?.isWildcard && item.status !== 'COMPLETED' ? 'wildcard' : ''}`}
+                      onClick={() => setSelected(item)}
+                      title={item.matchedCourse?.nameTh || item.course?.nameTh || item.mappingPattern || ''}
+                      style={{ position: 'relative', zIndex: 1 }}
+                    >
+                      <div className="sp-node-top">
+                        <div className="sp-node-code">
+                          {item.course?.isWildcard && item.status === 'COMPLETED' && item.matchedCourse
+                            ? item.matchedCourse.courseCode
+                            : item.course?.isWildcard && item.status !== 'COMPLETED'
+                            ? (CATEGORY_LABEL[item.course.category] || 'วิชาเลือก')
+                            : (item.course?.courseCode || '?')}
+                        </div>
+                        <div className="sp-node-credits">{credits}{hoursStr}</div>
+                        <div className="sp-node-status">
+                          {item.status === 'COMPLETED' ? <CheckCircle2 size={12} /> : item.status === 'STUDYING' ? <Clock size={12} /> : <Circle size={12} />}
+                        </div>
+                      </div>
+                      {(() => {
+                        const nameTh = item.matchedCourse?.nameTh || item.course?.nameTh || '';
+                        return nameTh ? <div className="sp-node-name">{nameTh}</div> : null;
+                      })()}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -244,6 +274,7 @@ export default function StudyPlan() {
       {/* Legend */}
       <div className="sp-legend">
         <div className="lg-item"><CheckCircle2 size={14} color="var(--success)" /> ผ่านแล้ว</div>
+        <div className="lg-item"><Clock size={14} color="var(--warning)" /> กำลังเรียน</div>
         <div className="lg-item"><Circle size={14} color="var(--text-muted)" /> ยังไม่ผ่าน</div>
         <div className="lg-item"><span className="lg-wildcard-dot" /> วิชาเลือก (placeholder)</div>
       </div>
@@ -312,19 +343,19 @@ export default function StudyPlan() {
               </div>
               <div className="sp-detail-row">
                 <span className="sp-detail-label">สถานะ</span>
-                <span className={selected.status === 'COMPLETED' ? 'text-success' : 'text-muted'}>
-                  {selected.status === 'COMPLETED' ? '✓ ผ่านแล้ว' : '○ ยังไม่ผ่าน'}
+                <span className={selected.status === 'COMPLETED' ? 'text-success' : selected.status === 'STUDYING' ? 'text-warning' : 'text-muted'}>
+                  {selected.status === 'COMPLETED' ? '✓ ผ่านแล้ว' : selected.status === 'STUDYING' ? '⏳ กำลังเรียน' : '○ ยังไม่ผ่าน'}
                 </span>
               </div>
-              {selected.course?.isWildcard && selected.status === 'COMPLETED' && selected.matchedCourse && (
+              {selected.course?.isWildcard && (selected.status === 'COMPLETED' || selected.status === 'STUDYING') && selected.matchedCourse && (
                 <div className="sp-detail-row">
-                  <span className="sp-detail-label">วิชาที่เรียน</span>
-                  <span style={{ color: 'var(--success)', fontWeight: 600 }}>
+                  <span className="sp-detail-label">วิชาที่ลงเรียน</span>
+                  <span style={{ color: selected.status === 'COMPLETED' ? 'var(--success)' : 'var(--warning)', fontWeight: 600 }}>
                     {selected.matchedCourse.courseCode} — {selected.matchedCourse.nameTh}
                   </span>
                 </div>
               )}
-              {selected.course?.isWildcard && selected.status !== 'COMPLETED' && (
+              {selected.course?.isWildcard && selected.status === 'REMAINING' && (
                 <div className="sp-detail-row">
                   <span className="sp-detail-label">ประเภท</span>
                   <span>วิชาเลือก (ยังไม่ได้เรียน)</span>

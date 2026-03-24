@@ -91,7 +91,6 @@ export default function Login() {
       <div className="login-form-panel">
         <div className="login-form-inner">
           <h2 className="login-form-title">{t('login.title') || 'ยินดีต้อนรับ'}</h2>
-          <p className="login-form-sub">{t('login.subtitle') || 'เข้าสู่ระบบด้วยบัญชีมหาวิทยาลัย'}</p>
 
           <form onSubmit={handleSubmit}>
             {/* Email */}

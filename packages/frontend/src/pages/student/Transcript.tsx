@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from '../../i18n/useTranslation';
 import { academicRecordApi, type TranscriptResponse } from '../../api/academic-record.api';
-import { GraduationCap, Loader2, Award, FileCheck, ChevronDown } from 'lucide-react';
+import { GraduationCap, Loader2, Award, FileCheck } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { Select } from '../../components/ui/Select';
 import './Transcript.css';
 
 const GRADE_LABELS: Record<string, string> = {
@@ -20,7 +21,8 @@ export default function Transcript() {
   const { t } = useTranslation();
   const [data, setData] = useState<TranscriptResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTerm, setSelectedTerm] = useState<string>('ALL');
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedSem, setSelectedSem] = useState<number | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -47,14 +49,43 @@ export default function Transcript() {
     return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
   }, [data]);
 
-  // All distinct terms for dropdown
-  const termOptions = useMemo(() => groupedRecords.map(([term]) => term), [groupedRecords]);
+  // Distinct academic years, sorted desc
+  const yearOptions = useMemo(() => {
+    const years = new Set<number>();
+    groupedRecords.forEach(([term]) => {
+      const yr = parseInt(term.split('/')[0], 10);
+      if (!isNaN(yr)) years.add(yr);
+    });
+    return Array.from(years).sort((a, b) => b - a);
+  }, [groupedRecords]);
 
-  // Filter by selected term
+  // Semesters available for the selected year
+  const semOptions = useMemo(() => {
+    if (selectedYear === null) return [];
+    const sems = new Set<number>();
+    groupedRecords.forEach(([term]) => {
+      const [yr, sem] = term.split('/').map(Number);
+      if (yr === selectedYear) sems.add(sem);
+    });
+    return Array.from(sems).sort((a, b) => a - b);
+  }, [groupedRecords, selectedYear]);
+
+  // When year changes, reset sem if no longer valid
+  const handleYearChange = (yr: number | null) => {
+    setSelectedYear(yr);
+    setSelectedSem(null);
+  };
+
+  // Filter visible groups
   const visibleGroups = useMemo(() => {
-    if (selectedTerm === 'ALL') return groupedRecords;
-    return groupedRecords.filter(([term]) => term === selectedTerm);
-  }, [groupedRecords, selectedTerm]);
+    if (selectedYear === null) return groupedRecords;
+    return groupedRecords.filter(([term]) => {
+      const [yr, sem] = term.split('/').map(Number);
+      if (yr !== selectedYear) return false;
+      if (selectedSem !== null && sem !== selectedSem) return false;
+      return true;
+    });
+  }, [groupedRecords, selectedYear, selectedSem]);
 
   if (isLoading) {
     return (
@@ -106,22 +137,51 @@ export default function Transcript() {
         </div>
       </div>
 
-      {/* Term Filter */}
+      {/* ── Term Filter: year dropdown + semester pills ───────────────────── */}
       <div className="transcript-filter-row">
-        <label className="filter-label">ภาคเรียน</label>
-        <div className="filter-select-wrap">
-          <select
-            className="filter-select"
-            value={selectedTerm}
-            onChange={e => setSelectedTerm(e.target.value)}
-          >
-            <option value="ALL">ทุกภาคเรียน</option>
-            {termOptions.map(term => (
-              <option key={term} value={term}>ภาคเรียน {term}</option>
-            ))}
-          </select>
-          <ChevronDown size={14} className="filter-select-icon" />
+        <label className="filter-label">ปีการศึกษา</label>
+
+        {/* Year select */}
+        <div className="filter-select-wrap" style={{ minWidth: 180 }}>
+          <Select
+            value={selectedYear ? String(selectedYear) : ''}
+            onChange={val => handleYearChange(val === '' ? null : Number(val))}
+            options={[
+              { value: '', label: 'ทุกปีการศึกษา' },
+              ...yearOptions.map(yr => ({ value: String(yr), label: String(yr) }))
+            ]}
+          />
         </div>
+
+        {/* Semester pill buttons — only when a year is selected */}
+        <AnimatePresence>
+          {selectedYear !== null && (
+            <motion.div
+              className="filter-sem-group"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -8 }}
+              transition={{ duration: 0.18 }}
+            >
+              <button
+                className={`filter-sem-btn ${selectedSem === null ? 'active' : ''}`}
+                onClick={() => setSelectedSem(null)}
+              >
+                ทั้งหมด
+              </button>
+              {[1, 2, 3].map(s => (
+                <button
+                  key={s}
+                  className={`filter-sem-btn ${selectedSem === s ? 'active' : ''} ${!semOptions.includes(s) ? 'disabled' : ''}`}
+                  onClick={() => semOptions.includes(s) && setSelectedSem(s === selectedSem ? null : s)}
+                  disabled={!semOptions.includes(s)}
+                >
+                  {s}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <div className="transcript-history">
@@ -133,7 +193,7 @@ export default function Transcript() {
           return (
             <div key={term} className="term-block card animate-fade-in">
               <div className="term-header">
-                <h3>Semester {term}</h3>
+                <h3>ภาคเรียน {term}</h3>
                 <div className="term-summary-stats">
                   <div className="term-stat">
                     <Award size={14} />
@@ -177,7 +237,7 @@ export default function Transcript() {
         })}
 
         {visibleGroups.length === 0 && (
-          <div className="no-data-msg">ไม่พบข้อมูลในภาคเรียนนี้</div>
+          <div className="no-data-msg">ไม่พบข้อมูลในภาคเรียนที่เลือก</div>
         )}
       </div>
     </motion.div>

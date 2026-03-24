@@ -7,6 +7,8 @@ interface TimetableProps {
   compact?: boolean;
   /** Auto-scale to fit container width — no horizontal scroll */
   fitWidth?: boolean;
+  /** Section IDs to mark as "pending" (cart preview — dashed style) */
+  pendingSectionIds?: Set<string>;
 }
 
 const DAYS: DayOfWeek[] = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
@@ -14,19 +16,24 @@ const DAY_TH: Record<DayOfWeek, string> = {
   MON: 'จ', TUE: 'อ', WED: 'พ', THU: 'พฤ', FRI: 'ศ', SAT: 'ส', SUN: 'อา',
 };
 
-const BASE_MINUTE_WIDTH = 2.0; // default (non-fitWidth)
+const BASE_MINUTE_WIDTH = 1.45; // compressed so 08:00–21:00 fits in most viewports
 const MIN_MINUTE_WIDTH   = 0.75; // minimum allowed in fitWidth mode
-const START_HOUR = 7;
+const START_HOUR = 8;
 const END_HOUR   = 21;                                  // ถึง 21:00 (3 ทุ่ม)
-const TOTAL_MINUTES = (END_HOUR - START_HOUR) * 60;    // 840 min (07:00–21:00)
+const TOTAL_MINUTES = (END_HOUR - START_HOUR) * 60;    // 780 min (08:00–21:00)
 const DAY_LABEL_W  = 44;
 
-export default function Timetable({ enrollments, compact = false, fitWidth = false }: TimetableProps) {
+export default function Timetable({ enrollments, compact = false, fitWidth = false, pendingSectionIds }: TimetableProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [minuteWidth, setMinuteWidth] = useState(BASE_MINUTE_WIDTH);
 
   const hours = useMemo(
     () => Array.from({ length: END_HOUR - START_HOUR }, (_, i) => START_HOUR + i),
+    []
+  );
+  // Extra boundary tick at END_HOUR (21:00) so the last column gets a closing line
+  const hourBoundaries = useMemo(
+    () => Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => START_HOUR + i),
     []
   );
 
@@ -63,6 +70,7 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
       nameEn: string;
       professor: string;
       sectionNo: number;
+      pending: boolean;
     }[]>> = {};
     enrollments.forEach(enr => {
       const sec = enr.section;
@@ -76,6 +84,7 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
           nameEn:     sec.course?.nameEn    || '',
           professor:  sec.professor?.user ? `${sec.professor.user.firstName}` : '',
           sectionNo:  sec.sectionNo,
+          pending:    pendingSectionIds?.has(enr.sectionId) ?? false,
         });
       });
     });
@@ -93,7 +102,8 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
     });
   }, [schedulesByDay]);
 
-  const rowH    = compact ? 44 : 58;
+  // compact = dashboard-style fill; non-compact = hug content, taller row
+  const rowH      = compact ? 44 : 68;
   const veryTight = minuteWidth < 1.1; // squeeze label text
 
   // ── Choose how many hour-tick labels to show based on zoom ───────────────
@@ -113,13 +123,14 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
           <div className="timetable-time-header">
             <div className="day-label-column spacer" style={{ width: DAY_LABEL_W, minWidth: DAY_LABEL_W }} />
             <div className="time-header-track" style={{ flex: 1, position: 'relative', height: 32 }}>
-              {hours.map((h, i) => {
-                if (i % hourStep !== 0) return null;
+              {hourBoundaries.map((h, i) => {
+                const isEnd = i === hourBoundaries.length - 1;
+                if (!isEnd && i % hourStep !== 0) return null;
                 return (
                   <div
                     key={h}
                     className="time-tick"
-                    style={{ left: i * HOUR_WIDTH, width: HOUR_WIDTH * hourStep }}
+                    style={{ left: i * HOUR_WIDTH, width: isEnd ? 0 : HOUR_WIDTH * hourStep }}
                   >
                     <span className={veryTight ? 'time-tick-label tight' : 'time-tick-label'}>
                       {String(h).padStart(2, '0')}
@@ -138,9 +149,9 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
                   <span className="day-name">{DAY_TH[day]}</span>
                 </div>
                 <div className="day-content-area">
-                  {/* grid lines */}
+                  {/* grid lines — hourBoundaries includes END_HOUR to close the last column */}
                   <div className="grid-lines-overlay" aria-hidden>
-                    {hours.map((_, i) => (
+                    {hourBoundaries.map((_, i) => (
                       <div key={i} className="grid-line" style={{ left: i * HOUR_WIDTH, width: HOUR_WIDTH }} />
                     ))}
                   </div>
@@ -149,12 +160,13 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
                   {schedulesByDay[day]?.map((item, idx) => {
                     const x = getX(item.schedule.startTime);
                     const w = Math.max(getW(item.schedule.startTime, item.schedule.endTime) - 3, 24);
-                    const showName = !compact && minuteWidth >= 0.9 && w > 60;
+                    const showName = !compact && w > 48;
                     const showTime = w > 50;
+                    const showProf = !compact && !!item.professor && w > 64;
                     return (
                       <div
                         key={idx}
-                        className={`timetable-item h-mode day-${day.toLowerCase()}`}
+                        className={`timetable-item h-mode ${compact ? 'fill' : 'hug'} day-${day.toLowerCase()} ${item.pending ? 'pending' : ''}`}
                         style={{ left: x, width: w }}
                         title={`${item.courseCode} — ${item.nameTh} | ${item.schedule.startTime}–${item.schedule.endTime}`}
                       >
@@ -168,7 +180,7 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
                           {showName && (
                             <p className="course-name">{item.nameTh || item.nameEn}</p>
                           )}
-                          {!compact && item.professor && (
+                          {showProf && (
                             <div className="item-footer">{item.professor}</div>
                           )}
                         </div>
