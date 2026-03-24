@@ -18,7 +18,7 @@ const DAY_EN: Record<DayOfWeek, string> = {
   MON: 'Mon', TUE: 'Tue', WED: 'Wed', THU: 'Thu', FRI: 'Fri', SAT: 'Sat', SUN: 'Sun',
 };
 
-const BASE_MINUTE_WIDTH = 1.5; // px per minute (default)
+const BASE_MINUTE_WIDTH = 2.5; // px per minute (default)
 const START_HOUR = 7;
 const END_HOUR = 20;
 
@@ -42,7 +42,7 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
       const available = containerW - 44 - 8;
       const hoursCount = END_HOUR - START_HOUR + 1; // 14
       const desiredMW = available / (hoursCount * 60);
-      setMinuteWidth(Math.max(0.4, desiredMW));
+      setMinuteWidth(Math.max(2.5, desiredMW));
     };
     measure();
     const ro = new ResizeObserver(measure);

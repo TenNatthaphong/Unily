@@ -204,7 +204,7 @@ export default function EnrollmentPage() {
   const [deptId, setDeptId] = useState('');
   const [category, setCategory] = useState('');
   const [prereqFilter, setPrereqFilter] = useState('');
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     Promise.all([configApi.getCurrentSemester(), facultyApi.getAll()]).then(([cfgRes, facRes]) => {
@@ -227,7 +227,7 @@ export default function EnrollmentPage() {
     setIsLoading(true);
     try {
       const [coursesRes, enrRes] = await Promise.all([
-        courseApi.search({ search: search || undefined, facultyId: facultyId || undefined, deptId: deptId || undefined, category: category || undefined, page, limit: 12 }),
+        courseApi.search({ search: search || undefined, facultyId: facultyId || undefined, deptId: deptId || undefined, category: category || undefined, page, limit: 5 }),
         enrollmentApi.getMyEnrollments(config.academicYear, config.semester),
       ]);
       setCourses(coursesRes.data.data);

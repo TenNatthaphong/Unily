@@ -23,7 +23,7 @@ export class CourseController {
   @ApiQuery({ name: 'category', required: false })
   async findAll(
     @Query('page') page = '1',
-    @Query('limit') limit = '10',
+    @Query('limit') limit = '5',
     @Query('search') search?: string,
     @Query('facultyId') facultyId?: string,
     @Query('deptId') deptId?: string,

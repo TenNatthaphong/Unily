@@ -377,7 +377,10 @@ async function main() {
                     const allCorePassedForCurric = requiredCoreFull
                         .filter(c => c.curriculumId === cId)
                         .every(c => rs.some(r => r.courseId === c.courseId && r.grade !== Grade.F));
-                    const isG = tCS >= 128 && gpax >= 2.0 && allCorePassedForCurric;
+                    
+                    const minCurric = cId ? (await prisma.curriculum.findUnique({ where: { id: cId } })) : null;
+                    const minCredits = minCurric?.totalCredits || 128;
+                    const isG = tCS >= minCredits && gpax >= 2.0 && allCorePassedForCurric;
                     if (isG) grads++;
                     // sync in-memory
                     std.curriculumId = cId;

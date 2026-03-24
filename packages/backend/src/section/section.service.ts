@@ -6,6 +6,8 @@ import { BulkGradeDto } from './dto/grading.dto';
 import { Grade, StudentStatus } from '@prisma/client';
 import { isTimeOverlapping } from '../common/utils/time.util';
 import { calculateGrade, getGradePoint, calculateGPAX } from '../common/utils/grade.util';
+import csvParser = require('csv-parser');
+import { Readable } from 'stream';
 
 @Injectable()
 export class SectionService {
@@ -73,10 +75,18 @@ export class SectionService {
     });
   }
 
-  async findByCourse(courseId: string) {
+  async findByCourse(courseId: string, yr?: number, sem?: number) {
     return this.prisma.section.findMany({
-      where: { courseId },
-      include: { course: true, schedules: true, professor: { include: { user: { select: { firstName: true, lastName: true } } } } }
+      where: { 
+        courseId,
+        ...(yr && { academicYear: yr }),
+        ...(sem && { semester: sem })
+      },
+      include: { 
+        course: true, 
+        schedules: true, 
+        professor: { include: { user: { select: { firstName: true, lastName: true } } } } 
+      }
     });
   }
 
@@ -140,8 +150,8 @@ export class SectionService {
     return Promise.all(dto.grades.map(async g => {
       const enr = await this.prisma.enrollment.findUnique({ where: { studentId_sectionId: { studentId: g.studentId, sectionId: id } } });
       if (!enr) return null;
-      const mid = g.midtermScore ?? enr.midtermScore;
-      const fin = g.finalScore ?? enr.finalScore;
+      const mid = g.midtermScore || enr.midtermScore;
+      const fin = g.finalScore || enr.finalScore;
       const total = mid + fin;
       return this.prisma.enrollment.update({
         where: { id: enr.id },
@@ -190,5 +200,59 @@ export class SectionService {
       data: { year: { increment: 1 } }
     });
     return { count: result.count };
+  }
+
+  // ===========================================================================
+  // CSV IMPORT
+  // ===========================================================================
+
+  async importSectionsFromCsv(file: Express.Multer.File): Promise<any> {
+    const results: any[] = [];
+    const stream = Readable.from(file.buffer);
+
+    return new Promise((resolve, reject) => {
+      stream
+        .pipe(csvParser({ 
+          mapHeaders: ({ header }) => header.trim().replace(/^[\u200B-\uFEFF]/, ''),
+          mapValues: ({ value }) => value.trim()
+        }))
+        .on('data', (d) => results.push(d))
+        .on('end', () => this.processSectionImport(results).then(resolve).catch(reject))
+        .on('error', (e) => reject(new BadRequestException(e.message)));
+    });
+  }
+
+  private async processSectionImport(rows: any[]) {
+    const allCourses = await this.prisma.course.findMany();
+    const allProfs = await this.prisma.user.findMany({ where: { role: 'PROFESSOR' } });
+    
+    const courseMap = new Map(allCourses.map(c => [c.courseCode, c.id]));
+    const profMap = new Map(allProfs.map(u => [u.email, u.id]));
+
+    let count = 0;
+    for (const row of rows) {
+      const cId = courseMap.get(row.courseCode);
+      const pId = profMap.get(row.professorEmail);
+      if (!cId || !pId) continue;
+
+      const schedules = row.schedules?.split(';').map(s => {
+        const [day, start, end] = s.split('|');
+        return { dayOfWeek: day as any, startTime: start, endTime: end };
+      }).filter(s => s.dayOfWeek) || [];
+
+      await this.prisma.section.create({
+        data: {
+          courseId: cId,
+          professorId: pId,
+          sectionNo: +row.sectionNo,
+          capacity: +row.capacity,
+          academicYear: +row.academicYear,
+          semester: +row.semester,
+          schedules: { create: schedules }
+        }
+      });
+      count++;
+    }
+    return { count };
   }
 }

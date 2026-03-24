@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SectionService } from '../section/section.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -82,6 +82,12 @@ export class AdminSemesterConfigController {
       await this.prisma.semesterConfig.updateMany({ data: { isCurrent: false } });
     }
     return this.prisma.semesterConfig.update({ where: { id }, data: dto });
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete a semester config' })
+  async delete(@Param('id') id: string) {
+    return this.prisma.semesterConfig.delete({ where: { id } });
   }
 }
 
