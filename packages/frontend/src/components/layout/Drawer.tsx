@@ -18,54 +18,29 @@ const MENU_CONFIG: Record<Role, MenuItem[]> = {
   STUDENT: [
     { icon: 'LayoutDashboard', labelKey: 'nav.dashboard', route: '/dashboard' },
     { icon: 'PenSquare', labelKey: 'nav.enrollment', route: '/student/enrollment' },
-    { icon: 'Calendar', labelKey: 'nav.schedule', route: '/schedule' },
+    { icon: 'Calendar', labelKey: 'nav.schedule', route: '/student/schedule' },
     { icon: 'BookOpen', labelKey: 'nav.curriculum', route: '/student/curriculum/plan' },
-    { icon: 'BarChart3', labelKey: 'nav.records', children: [
-      { labelKey: 'nav.transcript', route: '/student/transcript' },
-    ]},
-    { icon: 'CalendarDays', labelKey: 'nav.calendar', route: '/calendar' },
-    { icon: 'Settings', labelKey: 'nav.settings', children: [
-      { labelKey: 'nav.profile', route: '/settings/profile' },
-    ]},
+    { icon: 'BarChart3', labelKey: 'nav.records', route: '/student/transcript' },
   ],
   PROFESSOR: [
     { icon: 'LayoutDashboard', labelKey: 'nav.dashboard', route: '/dashboard' },
-    { icon: 'Calendar', labelKey: 'nav.teaching_schedule', route: '/schedule' },
-    { icon: 'PenSquare', labelKey: 'nav.sections', children: [
-      { labelKey: 'nav.dashboard', route: '/professor/dashboard' },
-    ]},
-    { icon: 'GraduationCap', labelKey: 'nav.students', children: [
-      { labelKey: 'nav.search_students', route: '/students/search' },
-      { labelKey: 'nav.student_records', route: '/students/records' },
-    ]},
-    { icon: 'CalendarDays', labelKey: 'nav.calendar', route: '/calendar' },
-    { icon: 'Settings', labelKey: 'nav.settings', children: [
-      { labelKey: 'nav.profile', route: '/settings/profile' },
-    ]},
+    { icon: 'Calendar', labelKey: 'nav.teaching_schedule', route: '/professor/schedule' },
+    { icon: 'PenSquare', labelKey: 'nav.sections', route: '/professor/sections' },
   ],
   ADMIN: [
     { icon: 'LayoutDashboard', labelKey: 'nav.dashboard', route: '/dashboard' },
     { icon: 'Building2', labelKey: 'nav.organization', children: [
-      { labelKey: 'nav.faculties', route: '/org/faculties' },
-      { labelKey: 'nav.departments', route: '/org/departments' },
+      { labelKey: 'nav.faculties', route: '/admin/org/faculties' },
     ]},
     { icon: 'BookOpen', labelKey: 'nav.curriculum', children: [
-      { labelKey: 'nav.curriculum', route: '/curriculums' },
-      { labelKey: 'nav.curriculum_flow', route: '/curriculums/flow' },
+      { labelKey: 'nav.curriculum', route: '/admin/curriculums' },
     ]},
-    { icon: 'Book', labelKey: 'nav.courses', route: '/courses' },
-    { icon: 'PenSquare', labelKey: 'nav.sections', children: [
-      { labelKey: 'nav.sections', route: '/sections' },
-      { labelKey: 'nav.semester_close', route: '/semester/close' },
-    ]},
-    { icon: 'Users', labelKey: 'nav.users', children: [
-      { labelKey: 'nav.user_management', route: '/users' },
-      { labelKey: 'nav.import_csv', route: '/users/import' },
-    ]},
-    { icon: 'CalendarDays', labelKey: 'nav.events', route: '/events' },
-    { icon: 'FileText', labelKey: 'nav.audit_log', route: '/audit-log' },
+    { icon: 'Book', labelKey: 'nav.courses', route: '/admin/courses' },
+    { icon: 'PenSquare', labelKey: 'nav.sections', route: '/admin/sections' },
+    { icon: 'Users', labelKey: 'nav.users', route: '/admin/users' },
+    { icon: 'FileText', labelKey: 'nav.audit_log', route: '/admin/audit-log' },
     { icon: 'Settings', labelKey: 'nav.settings', children: [
-      { labelKey: 'nav.semester_config', route: '/settings/semester' },
+      { labelKey: 'nav.semester_config', route: '/admin/settings/semester' },
     ]},
   ],
 };

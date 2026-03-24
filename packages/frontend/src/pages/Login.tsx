@@ -26,7 +26,6 @@ export default function Login() {
       const authRes = await authApi.login(email, password);
       const { accessToken, refreshToken } = authRes.data;
 
-      // Temporarily set tokens to fetch profile
       useAuthStore.getState().setTokens(accessToken, refreshToken);
       const profileRes = await userApi.getProfile();
       const user = profileRes.data;
@@ -41,79 +40,129 @@ export default function Login() {
   };
 
   return (
-    <div className="login-page">
-      {/* Animated background */}
-      <div className="login-bg">
-        <div className="login-bg-orb login-bg-orb-1" />
-        <div className="login-bg-orb login-bg-orb-2" />
-        <div className="login-bg-orb login-bg-orb-3" />
+    <div className="login-root">
+      {/* ── Left: Branded Panel ── */}
+      <div className="login-brand">
+        {/* Floating geometric shapes */}
+        <div className="brand-shapes">
+          <div className="brand-shape" />
+          <div className="brand-shape" />
+          <div className="brand-shape" />
+          <div className="brand-shape" />
+          <div className="brand-shape" />
+        </div>
+
+        <div className="brand-content">
+          <div className="brand-logo-mark">U</div>
+
+          <h1 className="brand-title">
+            Unily<br />
+            <span>University</span>
+          </h1>
+          <p className="brand-tagline">Registration System</p>
+
+          <div className="brand-features">
+            <div className="brand-feature">
+              <span className="brand-feature-dot" />
+              ลงทะเบียนวิชาเรียนออนไลน์
+            </div>
+            <div className="brand-feature">
+              <span className="brand-feature-dot" />
+              ตรวจสอบผลการเรียน & ทรานสคริปต์
+            </div>
+            <div className="brand-feature">
+              <span className="brand-feature-dot" />
+              วางแผนการศึกษาครบหลักสูตร
+            </div>
+            <div className="brand-feature">
+              <span className="brand-feature-dot" />
+              จัดการตารางเรียน-สอน
+            </div>
+          </div>
+        </div>
+
+        <div className="brand-bottom">
+          <span className="brand-bottom-text">© 2026 UNILY UNIVERSITY</span>
+          <span className="brand-bottom-text">v2.0</span>
+        </div>
       </div>
 
-      <div className="login-container animate-fade-in">
-        <div className="login-card">
-          {/* Logo */}
-          <div className="login-logo">
-            <span className="login-logo-text">Unily</span>
-            <span className="login-logo-sub">University Registration System</span>
-          </div>
+      {/* ── Right: Form Panel ── */}
+      <div className="login-form-panel">
+        <div className="login-form-inner">
+          <h2 className="login-form-title">{t('login.title') || 'ยินดีต้อนรับ'}</h2>
 
-          {/* Form */}
-          <form className="login-form" onSubmit={handleSubmit}>
-            <div className="input-with-icon">
-              <Mail size={18} className="input-icon" />
-              <input
-                id="login-email"
-                type="email"
-                className="input"
-                placeholder={t('login.email')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                autoFocus
-              />
+          <form onSubmit={handleSubmit}>
+            {/* Email */}
+            <div className="login-field">
+              <label className="login-field-label" htmlFor="login-email">
+                {t('login.email') || 'อีเมล'}
+              </label>
+              <div className="login-field-wrap">
+                <Mail size={16} className="login-field-icon" />
+                <input
+                  id="login-email"
+                  type="email"
+                  className="login-field-input"
+                  placeholder="example@university.ac.th"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  autoComplete="email"
+                  autoFocus
+                />
+              </div>
             </div>
 
-            <div className="input-with-icon">
-              <Lock size={18} className="input-icon" />
-              <input
-                id="login-password"
-                type={showPassword ? 'text' : 'password'}
-                className="input"
-                placeholder={t('login.password')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-              <button
-                type="button"
-                className="login-eye-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+            {/* Password */}
+            <div className="login-field">
+              <label className="login-field-label" htmlFor="login-password">
+                {t('login.password') || 'รหัสผ่าน'}
+              </label>
+              <div className="login-field-wrap">
+                <Lock size={16} className="login-field-icon" />
+                <input
+                  id="login-password"
+                  type={showPassword ? 'text' : 'password'}
+                  className="login-field-input"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  className="login-eye-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
 
+            {/* Error */}
             {error && (
-              <div className="login-error animate-fade-in">
+              <div className="login-error">
                 {error}
               </div>
             )}
 
+            {/* Submit */}
             <button
               type="submit"
-              className="btn btn-high-impact login-submit"
+              className="login-submit-btn"
               disabled={isLoading || !email || !password}
             >
               {isLoading ? (
                 <>
-                  <Loader2 size={20} className="spin" />
-                  {t('login.logging_in')}
+                  <Loader2 size={18} className="spin" />
+                  {t('login.logging_in') || 'กำลังเข้าสู่ระบบ…'}
                 </>
               ) : (
-                t('login.submit')
+                t('login.submit') || 'เข้าสู่ระบบ'
               )}
             </button>
           </form>

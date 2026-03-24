@@ -1,0 +1,21 @@
+.graduation-page { padding: var(--space-lg); }
+.graduation-status {
+  text-align: center; padding: var(--space-xl); margin-bottom: var(--space-lg);
+  border: 2px solid transparent;
+}
+.graduation-status.eligible { border-color: var(--success); background: rgba(16,185,129,0.05); }
+.graduation-status.eligible .status-icon { color: var(--success); }
+.graduation-status.not-eligible { border-color: var(--danger); background: rgba(239,68,68,0.05); }
+.graduation-status.not-eligible .status-icon { color: var(--danger); }
+.status-icon { margin-bottom: var(--space-md); }
+.graduation-status h2 { margin-bottom: var(--space-sm); }
+.graduation-status p { color: var(--text-secondary); }
+.graduation-details { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-md); }
+.detail-card { padding: var(--space-lg); }
+.detail-card h4 { margin-bottom: var(--space-md); font-size: 0.9rem; color: var(--text-secondary); }
+.detail-rows { display: flex; flex-direction: column; gap: var(--space-sm); }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) 0; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+.missing-card ul { list-style: none; display: flex; flex-direction: column; gap: var(--space-sm); }
+.missing-card li { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.875rem; color: var(--danger); }
+.text-success { color: var(--success); font-weight: 600; }
+.text-danger { color: var(--danger); font-weight: 600; }

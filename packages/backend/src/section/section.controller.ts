@@ -1,11 +1,12 @@
-import { Controller, Get, Param, Query, Patch, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Param, Query, Patch, Post, Body, UseGuards, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { SectionService } from './section.service';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { BulkGradeDto } from './dto/grading.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('section')
 @ApiBearerAuth()
@@ -30,8 +31,12 @@ export class SectionController {
 
   @Get()
   @ApiOperation({ summary: 'ดูรายการกลุ่มเรียนทั้งหมดในรายวิชานั้น' })
-  findByCourse(@Query('courseId') courseId: string) {
-    return this.sectionService.findByCourse(courseId);
+  findByCourse(
+    @Query('courseId') courseId: string,
+    @Query('academicYear') yr?: string,
+    @Query('semester') sem?: string
+  ) {
+    return this.sectionService.findByCourse(courseId, yr ? +yr : undefined, sem ? +sem : undefined);
   }
 
   @Get(':id')
@@ -49,5 +54,20 @@ export class SectionController {
     @Request() req
   ) {
     return this.sectionService.updateGrades(id, req.user.id, bulkGradeDto);
+  }
+
+  @Post('import')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'นำเข้ากลุ่มเรียนจากไฟล์ CSV' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async import(@UploadedFile() file: Express.Multer.File) {
+    return this.sectionService.importSectionsFromCsv(file);
   }
 }

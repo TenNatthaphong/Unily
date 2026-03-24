@@ -12,11 +12,28 @@ export interface CurriculumPlanResponse {
 }
 
 export const curriculumApi = {
-  // Get all curriculums with optional filtering
-  search: (code?: string, facultyId?: string, deptId?: string) =>
-    api.get<Curriculum[]>('/curriculums', { params: { code, facultyId, deptId } }),
+  // Public
+  search: (params: { code?: string; facultyId?: string; deptId?: string }) =>
+    api.get<Curriculum[]>('/curriculums', { params }),
 
-  // Get current student's curriculum plan and progress
+  getById: (id: string) =>
+    api.get<Curriculum>(`/curriculums/${id}`),
+
+  // Student
   getMyPlan: () =>
     api.get<CurriculumPlanResponse>('/curriculums/my/plan'),
+
+  // Admin CRUD
+  create: (data: Partial<Curriculum>) =>
+    api.post<Curriculum>('/admin/curriculums', data),
+
+  update: (id: string, data: Partial<Curriculum>) =>
+    api.patch<Curriculum>(`/admin/curriculums/${id}`, data),
+
+  delete: (id: string) =>
+    api.delete(`/admin/curriculums/${id}`),
+
+  // Admin: get curriculum with all items
+  getWithItems: (id: string) =>
+    api.get<Curriculum>(`/curriculums/${id}`),
 };

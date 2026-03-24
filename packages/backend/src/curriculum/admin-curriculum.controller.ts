@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Delete, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Delete, Param, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
 import { CreateCurriculumDto } from './dto/create-curriculum.dto';
 import { UpdateCurriculumDto } from './dto/update-curriculum.dto';
@@ -20,13 +20,13 @@ export class AdminCurriculumController {
     return this.curriculumService.create(body);
   }
 
-  @Patch()
-  update(@Query('id') id: string,@Body() updateCurriculumDto: UpdateCurriculumDto) {
-    return this.curriculumService.update(id,updateCurriculumDto);
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateCurriculumDto: UpdateCurriculumDto) {
+    return this.curriculumService.update(id, updateCurriculumDto);
   }
 
-  @Delete()
-  delete(@Query('id') id: string) {
+  @Delete(':id')
+  delete(@Param('id') id: string) {
     return this.curriculumService.delete(id);
   }
 }

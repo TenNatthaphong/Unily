@@ -131,14 +131,38 @@ export class EnrollmentService {
   async findByStudent(studentId: string) {
     return this.prisma.enrollment.findMany({
       where: { studentId },
-      include: { section: { include: { course: true, schedules: true } } }
+      include: {
+        section: {
+          include: {
+            course: {
+              include: {
+                prerequisites: { include: { requiresCourse: true } },
+              },
+            },
+            schedules: true,
+            professor: { include: { user: { select: { firstName: true, lastName: true } } } },
+          },
+        },
+      },
     });
   }
 
   async findByStudentAndTerm(studentId: string, yr: number, sem: number) {
     return this.prisma.enrollment.findMany({
       where: { studentId, academicYear: yr, semester: sem },
-      include: { section: { include: { course: true, schedules: true } } }
+      include: {
+        section: {
+          include: {
+            course: {
+              include: {
+                prerequisites: { include: { requiresCourse: true } },
+              },
+            },
+            schedules: true,
+            professor: { include: { user: { select: { firstName: true, lastName: true } } } },
+          },
+        },
+      },
     });
   }
 }

@@ -1,24 +1,30 @@
+:root {
+  --topbar-height: 60px;
+}
+
 .main-layout {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 
 .main-content {
   flex: 1;
   min-width: 0;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  padding-top: var(--topbar-height);
 }
 
 .main-content-inner {
-  padding: 40px;
-  max-width: 1600px;
+  padding: var(--space-xl) var(--space-xl);
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
 }
 
-@media (max-width: 1024px) {
-  .main-layout { display: block; }
-  .main-content { padding-top: var(--top-bar-height); }
-  .main-content-inner { padding: 24px; }
+@media (max-width: 768px) {
+  .main-content-inner { padding: var(--space-md); }
 }

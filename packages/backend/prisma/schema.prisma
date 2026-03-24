@@ -153,6 +153,7 @@ model CurriculumCourse {
   curriculum     Curriculum @relation(fields: [curriculumId], references: [id])
 
   @@unique([curriculumId, positionX, positionY])
+  @@unique([curriculumId, courseId])
 }
 
 model Section {

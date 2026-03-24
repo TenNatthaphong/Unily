@@ -1,4 +1,4 @@
-import { Controller, Post, Patch, Param, Body, Req, UseGuards, ForbiddenException, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, Query, Req, UseGuards, ForbiddenException, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from '@prisma/client';
 import { ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -14,6 +14,21 @@ import { UpdateProfessorDto } from './dto/update-professor.dto';
 // @Roles(Role.ADMIN)
 export class AdminUserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get()
+  async getUsers(
+    @Query('page') page = '1',
+    @Query('limit') limit = '20',
+    @Query('role') role?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.userService.findAllPaginated({
+      page: +page,
+      limit: +limit,
+      role: role as any,
+      search,
+    });
+  }
 
   @Post('import')
   @ApiConsumes('multipart/form-data')

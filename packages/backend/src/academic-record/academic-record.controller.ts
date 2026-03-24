@@ -16,22 +16,29 @@ export class AcademicRecordController {
   @Get('my')
   @Roles(Role.STUDENT)
   @ApiOperation({ summary: 'ดูผลการเรียนของตนเอง' })
-  getMyRecords(@Request() req) {
-    return this.academicRecordService.findByStudent(req.user.userId);
+  getMyRecords(@Request() req: any) {
+    return this.academicRecordService.findByStudent(req.user.id);
   }
 
   @Get('my/gpax')
   @Roles(Role.STUDENT)
   @ApiOperation({ summary: 'ดู GPAX สะสมของตนเอง' })
-  getMyGPAX(@Request() req) {
-    return this.academicRecordService.getGPAX(req.user.userId);
+  getMyGPAX(@Request() req: any) {
+    return this.academicRecordService.getGPAX(req.user.id);
   }
 
   @Get('my/transcript')
   @Roles(Role.STUDENT)
   @ApiOperation({ summary: 'ดู Transcript รายเทอมของตนเอง' })
-  getMyTranscript(@Request() req) {
-    return this.academicRecordService.getTranscript(req.user.userId);
+  getMyTranscript(@Request() req: any) {
+    return this.academicRecordService.getTranscript(req.user.id);
+  }
+
+  @Get('my/graduation')
+  @Roles(Role.STUDENT)
+  @ApiOperation({ summary: 'ตรวจสอบสภาพการสำเร็จการศึกษา' })
+  getMyGraduation(@Request() req: any) {
+    return this.academicRecordService.checkGraduationRequirement(req.user.id);
   }
 
   @Get('student/:studentId')

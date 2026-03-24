@@ -1,34 +1,52 @@
-import { Controller, Get, Post, Patch, Delete, Body, Query, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Query, UseGuards, Request, UseInterceptors, UploadedFile, Param } from '@nestjs/common';
 import { CurriculumService } from './curriculum.service';
-import { ApiQuery, ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiQuery, ApiTags, ApiBearerAuth, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('curriculums')
 @Controller('curriculums')
 export class CurriculumController {
   constructor(private readonly curriculumService: CurriculumService) {}
 
-  @ApiQuery({ name: 'code', required: false })
-  @ApiQuery({ name: 'facultyId', required: false })
-  @ApiQuery({ name: 'deptId', required: false })
   @Get()
-  search(
-    @Query('code') code?: string,
-    @Query('facultyId') facultyId?: string,
-    @Query('deptId') deptId?: string
-  ) {
-    return this.curriculumService.search(code, facultyId, deptId);
+  @ApiOperation({ summary: 'List all curriculums' })
+  findAll() {
+    return this.curriculumService.findAll();
   }
 
   @Get('my/plan')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.STUDENT)
-  @ApiOperation({ summary: 'ดูแผนการเรียนและความคืบหน้าของนักศึกษา' })
+  @ApiOperation({ summary: 'View academic progress and future study plan' })
   getMyPlan(@Request() req: any) {
     return this.curriculumService.getMyCurriculumPlan(req.user.id);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get details of a specific curriculum' })
+  findOne(@Param('id') id: string) {
+    return this.curriculumService.findOne(id);
+  }
+
+  @Post('import')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Import curriculum data from CSV file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async import(@UploadedFile() file: Express.Multer.File) {
+    return this.curriculumService.importFromCsv(file);
   }
 }

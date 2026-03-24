@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { SystemConfigController } from './system-config.controller';
+import { SystemConfigController, AdminSemesterConfigController, AdminAuditLogController } from './system-config.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { SectionModule } from '../section/section.module';
 
 @Module({
   imports: [PrismaModule, SectionModule],
-  controllers: [SystemConfigController],
+  controllers: [SystemConfigController, AdminSemesterConfigController, AdminAuditLogController],
 })
 export class SystemConfigModule {}

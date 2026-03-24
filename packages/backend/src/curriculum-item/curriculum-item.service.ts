@@ -34,18 +34,16 @@ async syncFlow(curriculumId: string, items: CurriculumItemWithoutIdDto[]) {
     }
 
     async findById(code: string) {
-      return this.prisma.curriculum.findMany({
-        where: {
-          curriculumCode: code,
-        },
+      return this.prisma.curriculumCourse.findMany({
+        where: { curriculum: { curriculumCode: code } },
         include: {
-          curriculumCourses: {
-            orderBy: [
-              { positionX: 'asc' },
-              { positionY: 'asc' }
-            ]
+          course: {
+            include: {
+              prerequisites: { include: { requiresCourse: true } }
+            }
           }
         },
+        orderBy: [{ positionX: 'asc' }, { positionY: 'asc' }],
       });
     }
 }
