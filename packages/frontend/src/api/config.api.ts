@@ -9,6 +9,10 @@ export const configApi = {
   getEvents: () =>
     api.get<Event[]>('/events'),
 
+  // Public semester list (used by Student Schedule page)
+  getPublicSemesters: () =>
+    api.get<SemesterConfig[]>('/config/semesters'),
+
   // --- Admin Settings (Semester Config) ---
   getAllSemesters: () =>
     api.get<SemesterConfig[]>('/admin/settings/semester'),

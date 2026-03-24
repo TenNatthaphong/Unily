@@ -28,7 +28,7 @@ export default function StudentSchedule() {
 
   // Load all semesters on mount
   useEffect(() => {
-    configApi.getAllSemesters().then(r => {
+    configApi.getPublicSemesters().then(r => {
       const sems = r.data;
       setAllSemesters(sems);
       const current = sems.find(s => s.isCurrent) || sems[0];

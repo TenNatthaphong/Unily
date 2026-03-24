@@ -52,10 +52,11 @@
 .sp-note-icon { font-size: 1rem; flex-shrink: 0; line-height: 1.5; }
 
 /* Horizontal scroll flow — only scrolls if content wider than container */
+/* Extra top padding gives room for the orthogonal arrow routing lane (y=-32) */
 .sp-flow-scroll {
   overflow-x: auto;
   overflow-y: visible;
-  padding: 24px 20px 40px;
+  padding: 56px 20px 40px;
 }
 .sp-flow-track {
   display: grid;

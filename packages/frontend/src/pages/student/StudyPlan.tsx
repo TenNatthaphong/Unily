@@ -168,17 +168,29 @@ export default function StudyPlan() {
                 <path d="M0,0 L0,6 L6,3 z" fill="rgba(16,185,129,0.6)" />
               </marker>
             </defs>
-            {arrows.map(a => (
-              <path
-                key={a.key}
-                d={`M${a.x1},${a.y1} C${a.x1 + 50},${a.y1} ${a.x2 - 50},${a.y2} ${a.x2},${a.y2}`}
-                stroke={a.completed ? 'rgba(16,185,129,0.5)' : 'rgba(59,130,246,0.35)'}
-                strokeWidth="1.5"
-                fill="none"
-                markerEnd={a.completed ? 'url(#arrow-head-done)' : 'url(#arrow-head)'}
-                strokeDasharray={a.completed ? undefined : '4,3'}
-              />
-            ))}
+            {arrows.map(a => {
+              // Orthogonal routing: exit right → up to routing lane → across → down → enter left
+              // This keeps arrows inside column gaps and never crossing node areas.
+              const rx1 = a.x1 + 16;  // mid-point of gap after source column
+              const rx2 = a.x2 - 16;  // mid-point of gap before target column
+              const routeY = -32;      // routing lane above all column headers (SVG overflow:visible)
+              // If adjacent columns (rx1 ≈ rx2), simplify to avoid tiny zigzag at top
+              const d = Math.abs(rx1 - rx2) < 8
+                ? `M${a.x1},${a.y1} H${rx1} V${a.y2} H${a.x2}`
+                : `M${a.x1},${a.y1} H${rx1} V${routeY} H${rx2} V${a.y2} H${a.x2}`;
+              return (
+                <path
+                  key={a.key}
+                  d={d}
+                  stroke={a.completed ? 'rgba(16,185,129,0.5)' : 'rgba(59,130,246,0.35)'}
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinejoin="round"
+                  markerEnd={a.completed ? 'url(#arrow-head-done)' : 'url(#arrow-head)'}
+                  strokeDasharray={a.completed ? undefined : '4,3'}
+                />
+              );
+            })}
           </svg>
           {semGroups.map(grp => (
             <div key={`${grp.year}-${grp.semester}`} className="sp-column">

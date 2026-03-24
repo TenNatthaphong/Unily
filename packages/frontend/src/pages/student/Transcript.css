@@ -28,14 +28,14 @@
 .stat-group .label { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
 .stat-group .value { font-size: 2rem; font-weight: 950; font-family: 'Outfit', sans-serif; letter-spacing: -0.04em; }
 
-.term-block { border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; }
-.term-header { padding: 24px 32px; background: rgba(255, 255, 255, 0.02); display: flex; justify-content: space-between; align-items: center; }
+.term-block { border: 1px solid var(--border); overflow: hidden; }
+.term-header { padding: 24px 32px; background: var(--bg-elevated, rgba(255,255,255,0.02)); display: flex; justify-content: space-between; align-items: center; }
 .term-header h3 { font-size: 1.25rem; font-weight: 800; margin: 0; }
 .term-stats { display: flex; gap: 24px; font-weight: 700; font-size: 0.875rem; }
 
 .transcript-table { width: 100%; border-collapse: collapse; }
-.transcript-table th { text-align: left; padding: 12px 32px; font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-.transcript-table td { padding: 20px 32px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.9375rem; }
+.transcript-table th { text-align: left; padding: 12px 32px; font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.transcript-table td { padding: 20px 32px; border-bottom: 1px solid var(--border); font-size: 0.9375rem; }
 .grade-pill { font-family: 'Outfit', sans-serif; font-size: 0.8125rem; }
 
 /* Term filter row */

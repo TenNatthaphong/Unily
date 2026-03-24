@@ -9,6 +9,12 @@ const GRADE_LABELS: Record<string, string> = {
   A: 'A', B_PLUS: 'B+', B: 'B', C_PLUS: 'C+', C: 'C', D_PLUS: 'D+', D: 'D', F: 'F',
 };
 
+const STATUS_TH: Record<string, string> = {
+  STUDYING: 'กำลังศึกษา',
+  GRADUATED: 'สำเร็จการศึกษา',
+  RETIRED: 'พักการศึกษา',
+};
+
 export default function Transcript() {
   const { t } = useTranslation();
   const [data, setData] = useState<TranscriptResponse | null>(null);
@@ -90,7 +96,7 @@ export default function Transcript() {
         </div>
         <div className="stat-group">
           <span className="label">Status</span>
-          <span className="value status-pill">{studentInfo.status}</span>
+          <span className="value status-pill">{STATUS_TH[studentInfo.status] ?? studentInfo.status}</span>
         </div>
       </div>
 

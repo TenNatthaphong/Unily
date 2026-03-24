@@ -23,6 +23,14 @@ export class SystemConfigController {
     });
   }
 
+  /** Public endpoint — no auth required, used by students on the Schedule page */
+  @Get('semesters')
+  async getAllSemesters() {
+    return this.prisma.semesterConfig.findMany({
+      orderBy: [{ academicYear: 'desc' }, { semester: 'asc' }]
+    });
+  }
+
   @Post('semester/close')
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'), RolesGuard)

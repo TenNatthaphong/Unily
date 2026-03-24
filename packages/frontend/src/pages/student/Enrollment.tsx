@@ -207,10 +207,12 @@ export default function EnrollmentPage() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
-    Promise.all([configApi.getCurrentSemester(), facultyApi.getAll()]).then(([cfgRes, facRes]) => {
-      setConfig(cfgRes.data);
-      setFaculties(facRes.data);
-    });
+    configApi.getCurrentSemester()
+      .then(r => setConfig(r.data))
+      .catch(() => { toast.error('Failed to load semester config'); setIsLoading(false); });
+    facultyApi.getAll()
+      .then(r => setFaculties(r.data))
+      .catch(() => { /* filter degrades gracefully */ });
   }, []);
 
   useEffect(() => {
@@ -320,13 +322,13 @@ export default function EnrollmentPage() {
           <div className="select-wrapper">
             <select value={facultyId} onChange={e => { setFacultyId(e.target.value); setDeptId(''); setPage(1); }}>
               <option value="">All Faculties</option>
-              {faculties.map(f => <option key={f.id} value={f.id}>{f.nameEn}</option>)}
+              {faculties.map(f => <option key={f.id} value={f.id}>{f.nameTh || f.nameEn}</option>)}
             </select>
           </div>
           <div className="select-wrapper">
             <select value={deptId} onChange={e => { setDeptId(e.target.value); setPage(1); }} disabled={!facultyId}>
               <option value="">All Departments</option>
-              {departments.map(d => <option key={d.id} value={d.id}>{d.nameEn}</option>)}
+              {departments.map(d => <option key={d.id} value={d.id}>{d.nameTh || d.nameEn}</option>)}
             </select>
           </div>
           <div className="select-wrapper">
