@@ -3,25 +3,21 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  /* disable the default .card hover lift */
-  transform: none !important;
+  transform: none !important; /* disable .card lift */
 }
 .timetable-container.compact { padding: 0; border-radius: var(--radius-md); }
-.timetable-container.compact .timetable-day-row { min-height: 48px; }
 .timetable-container.fit-width { overflow: visible; }
 
-/* Fit-width mode: no inner scroll, let content scale */
+/* ── Fit-width wrapper — no x-scroll ───────────────────────────────────── */
 .timetable-fit-area {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--bg-surface);
   overflow: hidden;
-}
-.timetable-fit-area .timetable-grid-horizontal {
   width: 100%;
 }
 
-/* --- Timetable Scroll Area --- */
+/* ── Scroll wrapper (non-fitWidth) ──────────────────────────────────────── */
 .timetable-scroll-area {
   overflow-x: auto;
   overflow-y: hidden;
@@ -35,39 +31,58 @@
   flex-direction: column;
 }
 
-/* --- Top Time Labels --- */
+/* ── Time header ──────────────────────────────────────────────────────────── */
 .timetable-time-header {
   display: flex;
+  align-items: stretch;
   border-bottom: 2px solid var(--border);
   background: var(--bg-elevated);
 }
 
 .day-label-column {
-  width: 44px;
-  min-width: 44px;
-  border-right: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
 }
+.day-label-column.spacer { background: transparent; }
 
-.day-label-column.spacer {
-  background: transparent;
-}
+/* Absolute-positioned tick marks */
+.time-header-track { position: relative; }
 
-.time-column-header {
+.time-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   display: flex;
-  justify-content: flex-start;
-  padding: 8px 4px;
-  font-size: 0.75rem;
+  align-items: center;
+}
+.time-tick-label {
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-muted);
+  padding-left: 4px;
+  white-space: nowrap;
+  line-height: 1;
+}
+.time-tick-label.tight { font-size: 0.6rem; }
+
+/* vertical separator between hours */
+.time-tick::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 30%;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
 }
 
-/* --- Row-based Table Body --- */
+/* ── Rows ─────────────────────────────────────────────────────────────────── */
 .timetable-rows {
   display: flex;
   flex-direction: column;
@@ -76,61 +91,57 @@
 .timetable-day-row {
   display: flex;
   border-bottom: 1px solid var(--border);
-  min-height: 64px;
+  position: relative;
 }
+.timetable-day-row:last-child { border-bottom: none; }
 
 .day-name {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
 .day-content-area {
   position: relative;
   flex: 1;
-  display: flex;
+  overflow: hidden;
 }
 
+/* grid lines */
 .grid-lines-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
+  inset: 0;
   pointer-events: none;
 }
-
 .grid-line {
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.lunch-marker {
   position: absolute;
   top: 0;
   bottom: 0;
-  background: rgba(245, 158, 11, 0.05); /* Soft lunch highlight */
-  border-left: 1px dashed rgba(245, 158, 11, 0.3);
-  border-right: 1px dashed rgba(245, 158, 11, 0.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+}
+[data-theme="light"] .grid-line {
+  border-right-color: rgba(0, 0, 0, 0.05);
 }
 
-/* --- Course Items (Horizontal Mode) --- */
+/* ── Course Items (absolute positioned) ─────────────────────────────────── */
 .timetable-item.h-mode {
   position: absolute;
-  top: 10px;
-  height: calc(100% - 20px);
-  padding: 4px;
+  top: 5px;
+  height: calc(100% - 10px);
+  padding: 2px;
   z-index: 2;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.15s, z-index 0s;
+  cursor: default;
 }
 
 .timetable-item-inner {
   height: 100%;
-  border-radius: var(--radius-sm);
-  padding: 8px;
+  border-radius: var(--radius-xs);
+  padding: 5px 6px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
@@ -139,51 +150,68 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 2px;
 }
 
 .course-code {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .course-time {
-  font-size: 0.625rem;
+  font-size: 0.58rem;
   font-weight: 700;
-  opacity: 0.8;
+  opacity: 0.75;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .course-name {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  margin: 4px 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin: 2px 0 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .item-footer {
-  font-size: 0.6875rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  display: flex;
-  gap: 4px;
-  opacity: 0.8;
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* --- Day Coloring (Horizontal) --- */
-.day-mon .timetable-item-inner { background: rgba(234, 179, 8, 0.15); border-left: 4px solid #eab308; color: #eab308; }
-.day-tue .timetable-item-inner { background: rgba(236, 72, 153, 0.15); border-left: 4px solid #ec4899; color: #ec4899; }
-.day-wed .timetable-item-inner { background: rgba(34, 197, 94, 0.15); border-left: 4px solid #22c55e; color: #22c55e; }
-.day-thu .timetable-item-inner { background: rgba(249, 115, 22, 0.15); border-left: 4px solid #f97316; color: #f97316; }
-.day-fri .timetable-item-inner { background: rgba(59, 130, 246, 0.15); border-left: 4px solid #3b82f6; color: #3b82f6; }
-.day-sat .timetable-item-inner { background: rgba(168, 85, 247, 0.15); border-left: 4px solid #a855f7; color: #a855f7; }
-.day-sun .timetable-item-inner { background: rgba(239, 68, 68, 0.15); border-left: 4px solid #ef4444; color: #ef4444; }
+/* ── Day colour palette ──────────────────────────────────────────────────── */
+.day-mon .timetable-item-inner { background: rgba(234,179,8,0.13);   border-left: 3px solid #eab308; color: #ca8a04; }
+.day-tue .timetable-item-inner { background: rgba(236,72,153,0.13);  border-left: 3px solid #ec4899; color: #db2777; }
+.day-wed .timetable-item-inner { background: rgba(34,197,94,0.13);   border-left: 3px solid #22c55e; color: #16a34a; }
+.day-thu .timetable-item-inner { background: rgba(249,115,22,0.13);  border-left: 3px solid #f97316; color: #ea580c; }
+.day-fri .timetable-item-inner { background: rgba(59,130,246,0.13);  border-left: 3px solid #3b82f6; color: #2563eb; }
+.day-sat .timetable-item-inner { background: rgba(168,85,247,0.13);  border-left: 3px solid #a855f7; color: #9333ea; }
+.day-sun .timetable-item-inner { background: rgba(239,68,68,0.13);   border-left: 3px solid #ef4444; color: #dc2626; }
+
+/* Light mode text */
+[data-theme="light"] .day-mon .timetable-item-inner { color: #92400e; }
+[data-theme="light"] .day-tue .timetable-item-inner { color: #9d174d; }
+[data-theme="light"] .day-wed .timetable-item-inner { color: #14532d; }
+[data-theme="light"] .day-thu .timetable-item-inner { color: #7c2d12; }
+[data-theme="light"] .day-fri .timetable-item-inner { color: #1e3a8a; }
+[data-theme="light"] .day-sat .timetable-item-inner { color: #581c87; }
+[data-theme="light"] .day-sun .timetable-item-inner { color: #7f1d1d; }
 
 .timetable-item.h-mode:hover {
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-1px) scale(1.015);
   z-index: 10;
 }
 .timetable-item.h-mode:hover .timetable-item-inner {
   box-shadow: var(--shadow-md);
-  background: var(--bg-surface);
 }
