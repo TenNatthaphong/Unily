@@ -153,6 +153,7 @@ export default function StudentSchedule() {
             <Select
               value={selectedSemId}
               onChange={setSelectedSemId}
+              icon={<CalendarDays size={15} />}
               options={validSemesters.map(s => ({
                 value: s.id,
                 label: `ภาคเรียน ${s.semester}/${s.academicYear}${s.isCurrent ? ' (ปัจจุบัน)' : ''}`

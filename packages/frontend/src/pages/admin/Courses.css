@@ -4,3 +4,11 @@
 .cat-MAJOR_ELECTIVE { background: rgba(245,158,11,0.15); color: #fbbf24; }
 .cat-FREE_ELECTIVE { background: rgba(107,114,128,0.15); color: #9ca3af; }
 .cat-COOP_COURSE { background: rgba(239,68,68,0.15); color: #f87171; }
+
+/* ── Light mode overrides ── */
+[data-theme="light"] .cat-GENERAL_EDUCATION { color: #2563eb; }
+[data-theme="light"] .cat-CORE_COURSE { color: #7c3aed; }
+[data-theme="light"] .cat-REQUIRED_COURSE { color: #059669; }
+[data-theme="light"] .cat-MAJOR_ELECTIVE { color: #d97706; }
+[data-theme="light"] .cat-FREE_ELECTIVE { color: #4b5563; }
+[data-theme="light"] .cat-COOP_COURSE { color: #dc2626; }

@@ -160,7 +160,7 @@ export class CurriculumService {
     });
 
     const enrollments = await this.prisma.enrollment.findMany({
-      where: { studentId, status: { not: 'DROPPED' } },
+      where: { studentId, status: 'ENROLLED' },
       include: { section: { include: { course: true } } }
     });
 
@@ -195,7 +195,10 @@ export class CurriculumService {
 
       // Match studying
       const studyingMatch = enrollments.find(
-        e => !coreCourseIds.has(e.section.courseId) && !usedEnrolledElectives.has(e.section.courseId) && 
+        e => !coreCourseIds.has(e.section.courseId) &&
+             !usedEnrolledElectives.has(e.section.courseId) &&
+             !passedCourseIds.has(e.section.courseId) &&
+             !usedElectiveIds.has(e.section.courseId) &&
              (pattern ? e.section.course.courseCode.startsWith(pattern) : e.section.course?.category === cc.course?.category)
       );
       if (studyingMatch) {

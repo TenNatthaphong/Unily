@@ -3,3 +3,8 @@
 .badge-admin { background: rgba(168,85,247,0.15); color: #a78bfa; }
 .status-badge.suspended { background: rgba(239,68,68,0.15); color: var(--danger); }
 .row-suspended td { opacity: 0.5; }
+
+/* ── Light mode overrides ── */
+[data-theme="light"] .badge-student { color: #059669; }
+[data-theme="light"] .badge-professor { color: #2563eb; }
+[data-theme="light"] .badge-admin { color: #7c3aed; }

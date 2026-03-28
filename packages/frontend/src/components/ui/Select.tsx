@@ -16,9 +16,10 @@ interface SelectProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  icon?: ReactNode;
 }
 
-export function Select({ value, onChange, options, placeholder = "Select...", className = "", disabled }: SelectProps) {
+export function Select({ value, onChange, options, placeholder = "Select...", className = "", disabled, icon }: SelectProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   
@@ -51,7 +52,10 @@ export function Select({ value, onChange, options, placeholder = "Select...", cl
           transition: 'all 0.2s ease'
         }}
       >
-        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{selectedTitle}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, overflow: 'hidden' }}>
+          {icon && <span style={{ color: 'var(--primary)', flexShrink: 0, display: 'flex', alignItems: 'center' }}>{icon}</span>}
+          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{selectedTitle}</span>
+        </span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown size={16} color="var(--text-muted)" />
         </motion.span>

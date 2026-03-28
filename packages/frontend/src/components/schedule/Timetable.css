@@ -236,6 +236,16 @@
 .timetable-item.pending .timetable-item-inner { opacity: 0.75; border-style: dashed; border-width: 2px; }
 
 /* ── Light-mode fixes ─────────────────────────────────── */
+[data-theme="light"] .timetable-time-header {
+  background: #f8fafc;
+}
+[data-theme="light"] .timetable-fit-area,
+[data-theme="light"] .timetable-scroll-area {
+  background: #ffffff;
+}
+[data-theme="light"] .timetable-day-row:nth-child(even) {
+  background: rgba(0, 0, 0, 0.015);
+}
 [data-theme="light"] .timetable-item-inner {
   border-color: rgba(0,0,0,0.13);
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
