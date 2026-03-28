@@ -1,5 +1,111 @@
-.badge-student { background: rgba(16,185,129,0.15); color: #34d399; }
-.badge-professor { background: rgba(59,130,246,0.15); color: #60a5fa; }
-.badge-admin { background: rgba(168,85,247,0.15); color: #a78bfa; }
-.status-badge.suspended { background: rgba(239,68,68,0.15); color: var(--danger); }
-.row-suspended td { opacity: 0.5; }
+.user-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.user-table-container {
+  padding: 0 !important;
+  overflow: hidden;
+  border-bottom: none;
+  border-radius: var(--radius-lg);
+}
+
+.user-table th {
+  padding: 16px 20px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+.user-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.user-table tr:last-child td { border-bottom: none; }
+.user-table tr:hover { background: rgba(128,128,128,0.02); }
+
+.user-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  background: var(--bg-elevated);
+  border: 1.5px solid var(--border);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.user-avatar.student { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-color: rgba(59, 130, 246, 0.2); }
+.user-avatar.professor { background: rgba(168, 85, 247, 0.1); color: #a855f7; border-color: rgba(168, 85, 247, 0.2); }
+.user-avatar.admin { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+
+.user-name-stack { display: flex; flex-direction: column; gap: 2px; }
+.user-fullname { font-weight: 700; color: var(--text-primary); font-size: 0.9375rem; }
+.user-subrole { font-size: 0.7125rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+
+.contact-item { display: flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--text-secondary); }
+.contact-item svg { opacity: 0.5; }
+
+.user-id-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--bg-input);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-mild);
+}
+
+.badge-student { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.badge-professor { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+.badge-admin { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.status-tag {
+  font-size: 0.7125rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+}
+.st-active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.st-suspended { background: rgba(107, 114, 128, 0.1); color: #6b7280; }
+.st-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+.row-suspended { opacity: 0.6; filter: grayscale(0.5); }
+
+.role-filters select {
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.empty-state-full {
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-muted);
+}
+.justify-end { justify-content: flex-end; }

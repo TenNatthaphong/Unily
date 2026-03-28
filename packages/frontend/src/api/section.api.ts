@@ -28,6 +28,6 @@ export const sectionApi = {
   getMyTeaching: (academicYear?: number, semester?: number) =>
     api.get<Section[]>('/section/my', { params: { academicYear, semester } }),
 
-  submitGrades: (sectionId: string, grades: { enrollmentId: string; midtermScore: number; finalScore: number }[]) =>
+  submitGrades: (sectionId: string, grades: { studentId: string; midtermScore: number; finalScore: number }[]) =>
     api.patch(`/section/${sectionId}/grades`, { grades }),
 };

@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { paginate } from '../common/utils/pagination.util';
 
 @ApiTags('config')
 @Controller('config')
@@ -72,7 +73,13 @@ export class AdminSemesterConfigController {
     if (dto.isCurrent) {
       await this.prisma.semesterConfig.updateMany({ data: { isCurrent: false } });
     }
-    return this.prisma.semesterConfig.create({ data: dto });
+    return this.prisma.semesterConfig.create({ data: {
+      ...dto,
+      regStart: new Date(dto.regStart),
+      regEnd: new Date(dto.regEnd),
+      withdrawStart: new Date(dto.withdrawStart),
+      withdrawEnd: new Date(dto.withdrawEnd),
+    } });
   }
 
   @Patch(':id')
@@ -89,7 +96,13 @@ export class AdminSemesterConfigController {
     if (dto.isCurrent) {
       await this.prisma.semesterConfig.updateMany({ data: { isCurrent: false } });
     }
-    return this.prisma.semesterConfig.update({ where: { id }, data: dto });
+    const updateData: any = { ...dto };
+    if (dto.regStart) updateData.regStart = new Date(dto.regStart);
+    if (dto.regEnd) updateData.regEnd = new Date(dto.regEnd);
+    if (dto.withdrawStart) updateData.withdrawStart = new Date(dto.withdrawStart);
+    if (dto.withdrawEnd) updateData.withdrawEnd = new Date(dto.withdrawEnd);
+
+    return this.prisma.semesterConfig.update({ where: { id }, data: updateData });
   }
 
   @Delete(':id')
@@ -127,9 +140,6 @@ export class AdminAuditLogController {
         orderBy: { createdAt: 'desc' },
       }),
       this.prisma.auditLog.count({ where }),
-    ]).then(([data, total]) => ({
-      data, total, page: +page, limit: +limit,
-      totalPages: Math.ceil(total / +limit),
-    }));
+    ]).then(([data, total]) => paginate(data, total, +page, +limit));
   }
 }

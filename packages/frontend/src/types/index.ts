@@ -63,7 +63,7 @@ export interface Faculty {
   facultyCode: string;
   nameTh: string;
   nameEn: string;
-  _count?: { departments: number };
+  _count?: { departments: number, curriculums: number };
 }
 
 export interface Department {
@@ -74,6 +74,7 @@ export interface Department {
   nameTh: string;
   nameEn: string;
   facultyId: string;
+  _count?: { curriculums: number };
 }
 
 // ================================================================
@@ -115,6 +116,8 @@ export interface Curriculum {
   status: CurriculumStatus;
   totalCredits: number;
   curriculumCourses?: CurriculumCourse[];
+  faculty?: Pick<Faculty, 'id' | 'nameTh' | 'nameEn' | 'facultyCode'>;
+  department?: Pick<Department, 'id' | 'nameTh' | 'nameEn' | 'deptCode'>;
   _count?: { curriculumCourses: number };
 }
 

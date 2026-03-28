@@ -10,7 +10,7 @@ export const professorApi = {
   getSectionStudents: (sectionId: string) =>
     api.get<Enrollment[]>(`/section/${sectionId}/students`),
 
-  // Submit/Update grade for a student
-  updateGrade: (enrollmentId: string, totalScore: number) =>
-    api.patch(`/enrollment/${enrollmentId}/grade`, { totalScore }),
+  // Bulk update scores for all students in a section
+  updateSectionGrades: (sectionId: string, grades: { studentId: string; midtermScore?: number; finalScore?: number }[]) =>
+    api.patch(`/section/${sectionId}/grades`, { grades }),
 };

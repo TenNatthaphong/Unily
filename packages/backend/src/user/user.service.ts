@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import csvParser = require('csv-parser');
 import { Readable } from 'stream';
 import { randomUUID } from 'crypto';
+import { paginate } from '../common/utils/pagination.util';
 
 @Injectable()
 export class UserService {
@@ -60,7 +61,7 @@ export class UserService {
       }),
       this.prisma.user.count({ where }),
     ]);
-    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+    return paginate(data, total, page, limit);
   }
 
   async suspendUser(adminId: string, targetId: string) {

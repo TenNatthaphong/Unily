@@ -24,8 +24,6 @@ const MENU_CONFIG: Record<Role, MenuItem[]> = {
   ],
   PROFESSOR: [
     { icon: 'LayoutDashboard', labelKey: 'nav.dashboard', route: '/dashboard' },
-    { icon: 'Calendar', labelKey: 'nav.teaching_schedule', route: '/professor/schedule' },
-    { icon: 'PenSquare', labelKey: 'nav.sections', route: '/professor/sections' },
   ],
   ADMIN: [
     { icon: 'LayoutDashboard', labelKey: 'nav.dashboard', route: '/dashboard' },

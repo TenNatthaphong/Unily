@@ -12,9 +12,9 @@ export interface CurriculumPlanResponse {
 }
 
 export const curriculumApi = {
-  // Public
-  search: (params: { code?: string; facultyId?: string; deptId?: string }) =>
-    api.get<Curriculum[]>('/curriculums', { params }),
+  // Public / paginated list
+  search: (params: { page?: number; limit?: number; search?: string; code?: string; facultyId?: string; deptId?: string }) =>
+    api.get<any>('/curriculums', { params }),
 
   getById: (id: string) =>
     api.get<Curriculum>(`/curriculums/${id}`),
@@ -36,4 +36,11 @@ export const curriculumApi = {
   // Admin: get curriculum with all items
   getWithItems: (id: string) =>
     api.get<Curriculum>(`/curriculums/${id}`),
+
+  // Admin: bulk CSV import
+  importCsv: (file: File) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return api.post('/curriculums/import', fd);
+  },
 };

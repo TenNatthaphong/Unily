@@ -7,7 +7,7 @@ export class UpdateDepartmentDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: "06", description: "รหัสภาควิชา" })
-  departmentCode?: string;
+  deptCode?: string;
 
   @IsOptional()
   @IsString()
@@ -31,5 +31,11 @@ export class UpdateDepartmentDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({ example: "04", description: "Faculty Code" })
-  facultyCode: string;
+  facultyCode?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ example: "uuid", description: "Faculty ID" })
+  facultyId?: string;
 }

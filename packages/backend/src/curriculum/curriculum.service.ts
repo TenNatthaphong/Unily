@@ -5,6 +5,7 @@ import { UpdateCurriculumDto } from './dto/update-curriculum.dto';
 import { Grade } from '@prisma/client';
 import csvParser = require('csv-parser');
 import { Readable } from 'stream';
+import { paginate } from '../common/utils/pagination.util';
 
 @Injectable()
 export class CurriculumService {
@@ -15,10 +16,15 @@ export class CurriculumService {
   // ===========================================================================
 
   async create(dto: CreateCurriculumDto) {
-    const { items, ...data } = dto;
+    const { items = [], ...data } = dto;
     return this.prisma.curriculum.create({
-      data: { ...data, curriculumCourses: { create: items } },
-      include: { curriculumCourses: true }
+      data: {
+        ...data,
+        status: data.status ?? 'ACTIVE',
+        totalCredits: data.totalCredits ?? 128,
+        curriculumCourses: items.length > 0 ? { create: items } : undefined,
+      },
+      include: { faculty: true, department: true, curriculumCourses: true }
     });
   }
 
@@ -27,7 +33,11 @@ export class CurriculumService {
   }
 
   async delete(id: string) {
-    return this.prisma.curriculum.delete({ where: { id } });
+    return this.prisma.$transaction(async (tx) => {
+      // Cascade delete the flow items first to satisfy foreign key constraints
+      await tx.curriculumCourse.deleteMany({ where: { curriculumId: id } });
+      return tx.curriculum.delete({ where: { id } });
+    });
   }
 
   // ===========================================================================
@@ -40,13 +50,48 @@ export class CurriculumService {
     });
   }
 
+  async findAllPaginated(params: { page: number; limit: number; search?: string; facultyId?: string; deptId?: string }) {
+    const { page, limit, search, facultyId, deptId } = params;
+    const skip = (page - 1) * limit;
+    const where: any = {};
+    
+    if (facultyId) where.facultyId = facultyId;
+    if (deptId) where.deptId = deptId;
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { curriculumCode: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.curriculum.findMany({
+        where, skip, take: limit,
+        include: { faculty: true, department: true, _count: { select: { curriculumCourses: true } } },
+        orderBy: { year: 'desc' },
+      }),
+      this.prisma.curriculum.count({ where }),
+    ]);
+    return paginate(data, total, page, limit);
+  }
+
   async findOne(id: string) {
     const curriculum = await this.prisma.curriculum.findUnique({
       where: { id },
       include: { 
         faculty: true, 
         department: true,
-        curriculumCourses: { include: { course: true }, orderBy: [{ year: 'asc' }, { semester: 'asc' }] } 
+        curriculumCourses: { 
+          include: { 
+            course: { 
+              include: { 
+                prerequisites: { include: { requiresCourse: true } } 
+              } 
+            } 
+          }, 
+          orderBy: [{ year: 'asc' }, { semester: 'asc' }] 
+        } 
       }
     });
     if (!curriculum) throw new NotFoundException('Curriculum not found');
@@ -86,31 +131,36 @@ export class CurriculumService {
     const currs = new Map<string, any>();
     
     for (const row of rows) {
-      if (!row.curriculumCode || !row.facultyCode || !row.deptCode) continue;
+      const cCode = row.curriculumCode?.trim();
+      const fCode = row.facultyCode?.trim();
+      const dCode = row.deptCode?.trim();
+      const coCode = row.courseCode?.trim();
+
+      if (!cCode || !fCode || !dCode) continue;
       
-      if (!currs.has(row.curriculumCode)) {
-        const fId = facMap.get(row.facultyCode);
-        const dId = deptMap.get(`${row.facultyCode}-${row.deptCode}`);
+      if (!currs.has(cCode)) {
+        const fId = facMap.get(fCode);
+        const dId = deptMap.get(`${fCode}-${dCode}`);
         if (!fId || !dId) continue;
 
         const curr = await this.prisma.curriculum.upsert({
-          where: { curriculumCode: row.curriculumCode },
+          where: { curriculumCode: cCode },
           update: {},
           create: {
-            curriculumCode: row.curriculumCode,
-            name: row.curriculumNameTh || row.curriculumNameEn || row.curriculumCode,
+            curriculumCode: cCode,
+            name: row.curriculumNameTh?.trim() || row.curriculumNameEn?.trim() || cCode,
             facultyId: fId,
             deptId: dId,
             year: +row.curriculumYear || new Date().getFullYear(),
             totalCredits: +row.totalCredits || 128
           }
         });
-        currs.set(row.curriculumCode, curr);
+        currs.set(cCode, curr);
         count++;
       }
 
-      const curriculum = currs.get(row.curriculumCode);
-      const cId = courseMap.get(row.courseCode);
+      const curriculum = currs.get(cCode);
+      const cId = coCode ? courseMap.get(coCode) : null;
       if (curriculum && cId) {
         await this.prisma.curriculumCourse.upsert({
           where: { curriculumId_courseId: { curriculumId: curriculum.id, courseId: cId } },
@@ -160,7 +210,7 @@ export class CurriculumService {
     });
 
     const enrollments = await this.prisma.enrollment.findMany({
-      where: { studentId, status: { not: 'DROPPED' } },
+      where: { studentId, status: 'ENROLLED' },
       include: { section: { include: { course: true } } }
     });
 
@@ -193,9 +243,12 @@ export class CurriculumService {
         return { ...cc, status: 'COMPLETED', matchedCourse: match.course };
       }
 
-      // Match studying
+      // Match studying — only ENROLLED (not past SUCCESS) and not already matched
       const studyingMatch = enrollments.find(
-        e => !coreCourseIds.has(e.section.courseId) && !usedEnrolledElectives.has(e.section.courseId) && 
+        e => !coreCourseIds.has(e.section.courseId) &&
+             !usedEnrolledElectives.has(e.section.courseId) &&
+             !passedCourseIds.has(e.section.courseId) &&
+             !usedElectiveIds.has(e.section.courseId) &&
              (pattern ? e.section.course.courseCode.startsWith(pattern) : e.section.course?.category === cc.course?.category)
       );
       if (studyingMatch) {

@@ -27,6 +27,10 @@ class CurriculumItemDto {
   @IsInt()
   @ApiProperty({example: 1, description: "Semester of the course"})
   semester: number;
+
+  @IsString()
+  @ApiProperty({required: false})
+  mappingPattern?: string;
 }
 
 export class CurriculumItemWithoutIdDto extends OmitType(CurriculumItemDto, ['curriculumId'] as const) {}

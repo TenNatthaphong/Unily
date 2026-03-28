@@ -74,6 +74,8 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: rgba(45,116,224,0.025);
+  position: relative;
+  z-index: 1;
 }
 .sp-col-header {
   background: rgba(45,116,224,0.1);
@@ -89,8 +91,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  /* bottom padding reserves room for the bypass lane used by non-adjacent arrows */
-  padding: 10px 10px 60px;
+  /* bottom padding reserves room for all staggered bypass lanes */
+  padding: 10px 10px 160px;
 }
 
 /* Node — two-row layout: code/credits/status on top, Thai name below */

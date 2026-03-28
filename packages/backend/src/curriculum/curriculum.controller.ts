@@ -13,8 +13,23 @@ export class CurriculumController {
   constructor(private readonly curriculumService: CurriculumService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List all curriculums' })
-  findAll() {
+  @ApiOperation({ summary: 'List curriculums (supports pagination)' })
+  findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('facultyId') facultyId?: string,
+    @Query('deptId') deptId?: string,
+  ) {
+    if (page || limit || search || facultyId || deptId) {
+      return this.curriculumService.findAllPaginated({
+        page: +(page || 1),
+        limit: +(limit || 50),
+        search,
+        facultyId,
+        deptId
+      });
+    }
     return this.curriculumService.findAll();
   }
 
@@ -25,6 +40,15 @@ export class CurriculumController {
   @ApiOperation({ summary: 'View academic progress and future study plan' })
   getMyPlan(@Request() req: any) {
     return this.curriculumService.getMyCurriculumPlan(req.user.id);
+  }
+
+  @Get('student/:id/plan')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Admin: View specific student progress' })
+  getStudentPlan(@Param('id') id: string) {
+    return this.curriculumService.getMyCurriculumPlan(id);
   }
 
   @Get(':id')

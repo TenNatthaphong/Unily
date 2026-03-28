@@ -13,6 +13,7 @@ import {
   BookOpen, Info, X, Clock, AlertTriangle, ShoppingCart,
   Trash2, ArrowLeft, ArrowLeftRight, CheckCircle2, User,
 } from 'lucide-react';
+import Pagination from '../../components/ui/Pagination';
 import './Enrollment.css';
 
 // ── Category labels ───────────────────────────────────────────────────────────
@@ -35,6 +36,7 @@ const CATEGORY_OPTIONS = [
   { value: 'COOP_COURSE',       label: 'สหกิจศึกษา' },
 ];
 
+import { ScheduleBadge } from '../../components/ui/ScheduleBadge';
 // ── Helpers ───────────────────────────────────────────────────────────────────
 type SchedLike = { dayOfWeek: string; startTime: string; endTime: string };
 function toMin(t: string) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
@@ -59,7 +61,7 @@ function getEnrollPeriod(cfg: SemesterConfig): EnrollPeriod {
 }
 function capClass(enrolled: number, cap: number) {
   const r = enrolled / cap;
-  return r >= 1 ? 'full' : r >= 0.8 ? 'warn' : 'avail';
+  return r >= 1 ? 'full' : r >= 0.7 ? 'warn' : 'avail';
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -175,11 +177,8 @@ function ManageModal({ enrollments, period, onClose, onBatchDrop }: ManageModalP
             const sec = enr.section;
             const isSel = selected.has(enr.id);
             return (
-              <div key={enr.id} className={`manage-course-row ${isSel ? 'selected' : ''}`}>
-                {canDrop && (
-                  <input type="checkbox" className="manage-checkbox"
-                    checked={isSel} onChange={() => toggle(enr.id)} />
-                )}
+              <div key={enr.id} className={`manage-course-row ${isSel ? 'selected' : ''}`}
+                onClick={() => canDrop && toggle(enr.id)} style={{ cursor: canDrop ? 'pointer' : 'default' }}>
                 <div className="manage-course-info">
                   <div className="manage-course-hdr">
                     <span className="scs-code">{sec?.course?.courseCode}</span>
@@ -193,10 +192,14 @@ function ManageModal({ enrollments, period, onClose, onBatchDrop }: ManageModalP
                       </span>
                     )}
                     {sec?.schedules?.map(s => (
-                      <span key={s.id} className="sched-tag sm">{s.dayOfWeek} {s.startTime}–{s.endTime}</span>
+                      <ScheduleBadge key={s.id} schedule={s as any} size="sm" />
                     ))}
                   </div>
                 </div>
+                {canDrop && (
+                  <input type="checkbox" className="manage-checkbox"
+                    checked={isSel} readOnly />
+                )}
               </div>
             );
           })}
@@ -220,11 +223,11 @@ function ManageModal({ enrollments, period, onClose, onBatchDrop }: ManageModalP
 }
 
 // ── Filter dropdown (same style as SemDropdown) ───────────────────────────────
-interface FDProps { options: { value: string; label: string }[]; value: string; onChange: (v: string) => void; icon?: React.ReactNode }
-function FilterDropdown({ options, value, onChange, icon }: FDProps) {
+interface FDProps { options: { value: string; label: string }[]; value: string; onChange: (v: string) => void; icon?: React.ReactNode; disabled?: boolean; placeholder?: string }
+function FilterDropdown({ options, value, onChange, icon, disabled, placeholder }: FDProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const sel = options.find(o => o.value === value) ?? options[0];
+  const sel = options.find(o => o.value === value) ?? { value: '', label: placeholder || options[0].label };
   useEffect(() => {
     if (!open) return;
     const h = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
@@ -232,8 +235,9 @@ function FilterDropdown({ options, value, onChange, icon }: FDProps) {
     return () => document.removeEventListener('mousedown', h);
   }, [open]);
   return (
-    <div className="enr-dropdown" ref={ref}>
-      <motion.button className="enr-dropdown-trigger" onClick={() => setOpen(v => !v)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+    <div className={`enr-dropdown ${disabled ? 'disabled' : ''}`} ref={ref}>
+      <motion.button className="enr-dropdown-trigger" onClick={() => !disabled && setOpen(v => !v)} 
+        whileHover={disabled ? {} : { scale: 1.02 }} whileTap={disabled ? {} : { scale: 0.97 }} disabled={disabled}>
         {icon && <span className="enr-trigger-icon">{icon}</span>}
         <span className="enr-trigger-label">{sel.label}</span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.22 }} style={{ display: 'flex' }}>
@@ -289,9 +293,7 @@ function SectionRow({ sec, period, inCart, isEnrolled, courseEnrolled, enrolledE
       </div>
       <div className="sec-col sec-schedule">
         {sec.schedules?.map(s => (
-          <span key={s.id} className="sched-tag">
-            <Clock size={9} />{s.dayOfWeek} {s.startTime}–{s.endTime}
-          </span>
+          <ScheduleBadge key={s.id} schedule={s as any} />
         ))}
       </div>
       <div className="sec-col sec-cap">
@@ -437,6 +439,8 @@ export default function EnrollmentPage() {
   const [selectedFaculty, setSelectedFaculty] = useState('');
   const [selectedDept, setSelectedDept]       = useState('');
   const [showManage, setShowManage]           = useState(false);
+  const [page, setPage]                       = useState(1);
+  const PAGE_SIZE = 10;
 
   // ── Load ─────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -632,6 +636,27 @@ export default function EnrollmentPage() {
   const filteredCurrent = useMemo(() => currentTermItems.filter(filterItem), [currentTermItems, filterItem]);
   const filteredRetake  = useMemo(() => retakeItems.filter(filterItem), [retakeItems, filterItem]);
 
+  // ── Pagination ────────────────────────────────────────────────────────────
+  // Treat current-term + retake as one flat ordered list for page slicing
+  const totalFiltered = useMemo(
+    () => filteredCurrent.length + (showRetake ? filteredRetake.length : 0),
+    [filteredCurrent.length, filteredRetake.length, showRetake],
+  );
+  const totalPages = Math.ceil(totalFiltered / PAGE_SIZE);
+
+  const pagedCurrent = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    const end   = page * PAGE_SIZE;
+    return filteredCurrent.slice(Math.max(0, start), Math.min(filteredCurrent.length, end));
+  }, [filteredCurrent, page, PAGE_SIZE]);
+
+  const pagedRetake = useMemo(() => {
+    if (!showRetake) return [];
+    const start = Math.max(0, (page - 1) * PAGE_SIZE - filteredCurrent.length);
+    const end   = Math.max(0, page * PAGE_SIZE - filteredCurrent.length);
+    return filteredRetake.slice(start, end);
+  }, [filteredRetake, filteredCurrent.length, page, PAGE_SIZE, showRetake]);
+
   const activeEnrollments = useMemo(() => myEnrollments.filter(e => e.status !== 'DROPPED'), [myEnrollments]);
 
   // ── Preview timetable = enrolled + cart ───────────────────────────────────
@@ -796,30 +821,30 @@ export default function EnrollmentPage() {
         transition={{ duration: 0.38, delay: 0.08 }}>
         <div className="enr-search-box">
           <Search size={15} className="enr-search-icon" />
-          <input placeholder="ค้นหารายวิชา (เช่น CS101, วิทยาศาสตร์)" value={search} onChange={e => setSearch(e.target.value)} />
-          {search && <button className="enr-clear-btn" onClick={() => setSearch('')}><X size={13} /></button>}
+          <input placeholder="ค้นหารายวิชา (เช่น CS101, วิทยาศาสตร์)" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+          {search && <button className="enr-clear-btn" onClick={() => { setSearch(''); setPage(1); }}><X size={13} /></button>}
         </div>
         <div className="enr-filter-row">
-          <FilterDropdown options={CATEGORY_OPTIONS} value={category} onChange={setCategory} icon={<BookOpen size={12} />} />
-          {faculties.length > 0 && (
-            <FilterDropdown
-              options={[{ value: '', label: 'ทุกคณะ' }, ...faculties.map(f => ({ value: f.id, label: f.nameTh }))]}
-              value={selectedFaculty}
-              onChange={v => setSelectedFaculty(v)}
-              icon={<BookOpen size={12} />}
-            />
-          )}
-          {selectedFaculty && departments.length > 0 && (
-            <FilterDropdown
-              options={[{ value: '', label: 'ทุกภาควิชา' }, ...departments.map(d => ({ value: d.id, label: d.shortName || d.nameTh }))]}
-              value={selectedDept}
-              onChange={v => setSelectedDept(v)}
-              icon={<BookOpen size={12} />}
-            />
-          )}
+          <FilterDropdown options={CATEGORY_OPTIONS} value={category} onChange={v => { setCategory(v); setPage(1); }} icon={<BookOpen size={12} />} />
+          <FilterDropdown
+            options={[{ value: '', label: 'ทุกคณะ' }, ...faculties.map(f => ({ value: f.id, label: f.nameTh }))]}
+            value={selectedFaculty}
+            onChange={v => { setSelectedFaculty(v); setPage(1); }}
+            icon={<BookOpen size={12} />}
+            disabled={faculties.length === 0}
+            placeholder="คณะ"
+          />
+          <FilterDropdown
+            options={[{ value: '', label: 'ทุกภาควิชา' }, ...departments.map(d => ({ value: d.id, label: d.nameTh }))]}
+            value={selectedDept}
+            onChange={v => { setSelectedDept(v); setPage(1); }}
+            icon={<BookOpen size={12} />}
+            disabled={!selectedFaculty || departments.length === 0}
+            placeholder="ภาควิชา"
+          />
           {retakeItems.length > 0 && (
             <motion.button className={`retake-toggle ${showRetake ? 'active' : ''}`}
-              onClick={() => setShowRetake(v => !v)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+              onClick={() => { setShowRetake(v => !v); setPage(1); }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
               <AlertTriangle size={12} /> วิชาตกค้าง ({retakeItems.length})
             </motion.button>
           )}
@@ -832,10 +857,10 @@ export default function EnrollmentPage() {
           initial="hidden" animate="visible"
           variants={{ visible: { transition: { staggerChildren: 0.04 } } }}>
           {filteredCurrent.length === 0 && filteredRetake.length === 0 ? (
-            <div className="no-data-msg card"><p>ไม่พบรายวิชาที่ตรงกับเงื่อนไข</p></div>
+            <div className="no-data-msg"><p>ไม่พบรายวิชาที่ตรงกับเงื่อนไข</p></div>
           ) : (
             <>
-              {filteredCurrent.map(item => (
+              {pagedCurrent.map(item => (
                 <motion.div key={item.id}
                   variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.28 } } }}>
                   <CourseCard item={item} sections={sectionMap.get(item.courseId) ?? []}
@@ -844,14 +869,14 @@ export default function EnrollmentPage() {
                     onAdd={addToCart} onRemove={removeFromCart} onRequestMove={requestMove} />
                 </motion.div>
               ))}
-              {showRetake && filteredRetake.length > 0 && (
+              {showRetake && pagedRetake.length > 0 && (
                 <>
                   <div className="retake-section-label">
                     <AlertTriangle size={13} />
                     <span>วิชาตกค้างจากเทอมที่ผ่านมา</span>
                     <div className="retake-divider" />
                   </div>
-                  {filteredRetake.map(item => (
+                  {pagedRetake.map(item => (
                     <motion.div key={item.id}
                       variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { duration: 0.28 } } }}>
                       <CourseCard item={item} sections={sectionMap.get(item.courseId) ?? []}
@@ -862,65 +887,19 @@ export default function EnrollmentPage() {
                   ))}
                 </>
               )}
+              {totalPages > 1 && (
+                <Pagination 
+                  currentPage={page} 
+                  lastPage={totalPages} 
+                  onPageChange={setPage} 
+                  className="enr-pagination"
+                />
+              )}
             </>
           )}
         </motion.div>
       </AnimatePresence>
 
-      {/* Enrolled courses panel */}
-      {activeEnrollments.length > 0 && (
-        <motion.div className="enrolled-panel card"
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18, duration: 0.38 }}>
-          <div className="enrolled-panel-hdr">
-            <BookOpen size={14} />
-            <h4>วิชาที่ลงทะเบียนในเทอมนี้</h4>
-            <span className="enrolled-badge">{activeEnrollments.length} วิชา</span>
-          </div>
-          <div className="enrolled-table-wrap">
-            <table className="enrolled-table">
-              <thead><tr>
-                <th>รหัสวิชา</th><th>ชื่อวิชา</th>
-                <th className="text-center">Sec</th>
-                <th>อาจารย์</th><th>วัน/เวลา</th>
-                <th className="text-center">หน่วยกิต</th>
-                <th></th>
-              </tr></thead>
-              <tbody>
-                {activeEnrollments.map(enr => {
-                  const sec  = enr.section;
-                  const prof = sec?.professor?.user;
-                  const canDrop = period === 'reg_open' || period === 'withdraw_only';
-                  return (
-                    <tr key={enr.id}>
-                      <td><span className="scs-code">{sec?.course?.courseCode}</span></td>
-                      <td>
-                        <p className="scs-name-th">{sec?.course?.nameTh}</p>
-                        {sec?.course?.nameEn && <p className="scs-name-en">{sec.course.nameEn}</p>}
-                      </td>
-                      <td className="text-center scs-sec">{sec?.sectionNo}</td>
-                      <td className="scs-prof">{prof ? <span className="prof-name"><User size={10} />{prof.firstName} {prof.lastName}</span> : '—'}</td>
-                      <td>
-                        {sec?.schedules?.map(s => (
-                          <span key={s.id} className="sched-tag sm">{s.dayOfWeek} {s.startTime}–{s.endTime}</span>
-                        ))}
-                      </td>
-                      <td className="text-center">{sec?.course?.credits}</td>
-                      <td>
-                        {canDrop && (
-                          <button className="btn-drop-enr" onClick={() => requestDrop(enr.id, sec?.sectionNo ?? 0)} title="ถอนรายวิชา">
-                            <Trash2 size={14} />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
-      )}
 
       {/* Sticky cart bar */}
       <AnimatePresence>

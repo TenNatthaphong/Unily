@@ -25,12 +25,18 @@ export class AdminSectionController {
     @Query('academicYear') academicYear?: string,
     @Query('semester') semester?: string,
     @Query('search') search?: string,
+    @Query('dayOfWeek') dayOfWeek?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('sortDir') sortDir?: string,
   ) {
     return this.sectionService.findAllAdmin({
       page: +page, limit: +limit,
       academicYear: academicYear ? +academicYear : undefined,
       semester: semester ? +semester : undefined,
       search,
+      dayOfWeek,
+      sortBy,
+      sortDir,
     });
   }
 

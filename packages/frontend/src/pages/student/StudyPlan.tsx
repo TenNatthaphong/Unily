@@ -39,7 +39,8 @@ export default function StudyPlan() {
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState<PlanItem | null>(null);
   const [showCongrats, setShowCongrats] = useState(false);
-  const [arrows, setArrows] = useState<{ x1: number; y1: number; x2: number; y2: number; key: string; completed: boolean }[]>([]);
+  const [arrows, setArrows] = useState<{ x1: number; y1: number; x2: number; y2: number; key: string; completed: boolean; srcId: string; dstId: string }[]>([]);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const nodeRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const trackRef = useRef<HTMLDivElement>(null);
@@ -97,7 +98,7 @@ export default function StudyPlan() {
           const completed =
             courseIdMap.get(p.requiresCourseId)?.status === 'COMPLETED' &&
             item.status === 'COMPLETED';
-          newArrows.push({ key: `${p.requiresCourseId}-${courseId}`, x1, y1, x2, y2, completed });
+          newArrows.push({ key: `${p.requiresCourseId}__${courseId}`, x1, y1, x2, y2, completed, srcId: p.requiresCourseId, dstId: courseId });
         }
       }
       setArrows(newArrows);
@@ -170,52 +171,48 @@ export default function StudyPlan() {
               <clipPath id="sp-track-clip">
                 <rect x="0" y="0" width="100%" height="100%" />
               </clipPath>
-              <marker id="arrow-head" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="rgba(59,130,246,0.75)" />
+              <marker id="arrow-head" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                <path d="M0,0.5 L0,6.5 L6.5,3.5 z" fill="rgba(59,130,246,0.85)" />
               </marker>
-              <marker id="arrow-head-done" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L6,3 z" fill="rgba(16,185,129,0.85)" />
+              <marker id="arrow-head-done" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                <path d="M0,0.5 L0,6.5 L6.5,3.5 z" fill="rgba(16,185,129,0.9)" />
               </marker>
             </defs>
             <g clipPath="url(#sp-track-clip)">
-            {(() => {
-              // ── Gap-only routing ────────────────────────────────────────────
-              // HALF_GAP: half the 52 px column gap — the mid-lane inside each gap.
-              const HALF_GAP = 26;
-              // bypassY: a horizontal lane BELOW the lowest node so non-adjacent
-              // arrows travel underneath all cards without crossing any column body.
-              const bypassY = arrows.length > 0
-                ? Math.max(...arrows.map(a => Math.max(a.y1, a.y2))) + 48
-                : 0;
+            {arrows.map(a => {
+              // ── Cubic bezier S-curve ────────────────────────────────────────
+              // Control points: pull horizontally so the curve bows smoothly
+              const dx  = a.x2 - a.x1;
+              const cpX = Math.min(dx * 0.5, 110); // max 110px bow
+              const cx1 = a.x1 + cpX;
+              const cx2 = a.x2 - cpX;
+              const d   = `M${a.x1},${a.y1} C${cx1},${a.y1} ${cx2},${a.y2} ${a.x2},${a.y2}`;
 
-              return arrows.map(a => {
-                // gap1: midpoint of the gap immediately after the source column
-                // gapN: midpoint of the gap immediately before the target column
-                const gap1 = Math.round(a.x1 + HALF_GAP);
-                const gapN = Math.round(a.x2 - HALF_GAP);
-                // "adjacent" = both gap references land in the same 52 px corridor
-                const adjacent = gapN - gap1 < 10;
-                const d = adjacent
-                  // Normal Z-path: source → gap mid → vertical → gap mid → target
-                  ? `M${a.x1},${a.y1} H${gap1} V${a.y2} H${a.x2}`
-                  // Bypass path: drop to the bypass lane through gap1, travel
-                  // horizontally under all intermediate columns, rise to y2 through gapN
-                  : `M${a.x1},${a.y1} H${gap1} V${bypassY} H${gapN} V${a.y2} H${a.x2}`;
-                return (
-                  <path
-                    key={a.key}
-                    d={d}
-                    stroke={a.completed ? 'rgba(16,185,129,0.75)' : 'rgba(59,130,246,0.65)'}
-                    strokeWidth="2"
-                    fill="none"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    markerEnd={a.completed ? 'url(#arrow-head-done)' : 'url(#arrow-head)'}
-                    strokeDasharray={a.completed ? undefined : '4,3'}
-                  />
-                );
-              });
-            })()}
+              // ── Hover logic ─────────────────────────────────────────────────
+              const isActive  = !hoveredId || a.srcId === hoveredId || a.dstId === hoveredId;
+              const opacity   = hoveredId
+                ? (isActive ? 1 : 0.07)
+                : (a.completed ? 0.7 : 0.55);
+              const strokeW   = isActive && hoveredId ? 3 : 2.5;
+              const color     = a.completed
+                ? `rgba(16,185,129,${isActive ? 0.9 : 0.9})`
+                : `rgba(59,130,246,${isActive ? 0.9 : 0.85})`;
+
+              return (
+                <path
+                  key={a.key}
+                  d={d}
+                  stroke={color}
+                  strokeWidth={strokeW}
+                  fill="none"
+                  strokeLinecap="round"
+                  markerEnd={a.completed ? 'url(#arrow-head-done)' : 'url(#arrow-head)'}
+                  strokeDasharray={a.completed ? undefined : '5,3'}
+                  opacity={opacity}
+                  style={{ transition: 'opacity 0.18s ease' }}
+                />
+              );
+            })}
             </g>
           </svg>
           {semGroups.map(grp => (
@@ -242,6 +239,8 @@ export default function StudyPlan() {
                       }}
                       className={`sp-node ${item.status === 'COMPLETED' ? 'completed' : item.status === 'STUDYING' ? 'studying' : ''} ${item.course?.isWildcard && item.status !== 'COMPLETED' ? 'wildcard' : ''}`}
                       onClick={() => setSelected(item)}
+                      onMouseEnter={() => setHoveredId(item.matchedCourseId || item.courseId)}
+                      onMouseLeave={() => setHoveredId(null)}
                       title={item.matchedCourse?.nameTh || item.course?.nameTh || item.mappingPattern || ''}
                       style={{ position: 'relative', zIndex: 1 }}
                     >

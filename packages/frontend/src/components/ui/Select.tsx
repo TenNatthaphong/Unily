@@ -16,9 +16,10 @@ interface SelectProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  autoWidth?: boolean;
 }
 
-export function Select({ value, onChange, options, placeholder = "Select...", className = "", disabled }: SelectProps) {
+export function Select({ value, onChange, options, placeholder = "Select...", className = "", disabled, autoWidth }: SelectProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   
@@ -34,7 +35,15 @@ export function Select({ value, onChange, options, placeholder = "Select...", cl
   const selectedTitle = options.find(o => o.value === value)?.label || placeholder;
 
   return (
-    <div className={`unily-select-wrapper ${className}`} ref={ref} style={{ position: 'relative', width: '100%', minWidth: '140px' }}>
+    <div className={`unily-select-wrapper ${className}`} ref={ref} style={{ position: 'relative', width: autoWidth ? 'max-content' : '100%', minWidth: '140px' }}>
+      
+      {autoWidth && (
+        <div aria-hidden="true" style={{ visibility: 'hidden', height: 0, overflow: 'hidden', whiteSpace: 'nowrap', fontSize: '0.875rem', fontWeight: 500, padding: '0 36px' }}>
+          {options.map(o => (<div key={`meas-${o.value}`}>{o.label}</div>))}
+          <div>{placeholder}</div>
+        </div>
+      )}
+
       <button 
         type="button"
         disabled={disabled}

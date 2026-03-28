@@ -1,46 +1,56 @@
-import { IsString, IsInt, Min, Max, IsEnum, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsInt, Min, Max, IsEnum, IsArray, ValidateNested, IsOptional } from 'class-validator';
 import { CurriculumStatus } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CurriculumItemWithoutIdDto } from '../../curriculum-item/dto/create-curriculum-item.dto';
 
 export class CreateCurriculumDto {
+  @IsOptional()
   @IsString()
-  @ApiProperty({example: '04062566'})
-  id: string;
+  @ApiPropertyOptional({ example: '04062566' })
+  id?: string;
 
   @IsString()
-  @ApiProperty({example: 'CURR-04062566'})
+  @ApiProperty({ example: 'CS-2567' })
   curriculumCode: string;
 
   @IsString()
-  @ApiProperty({example: 'วิทยาการคอมพิวเตอร์ 2566'})
+  @ApiProperty({ example: 'วิทยาการคอมพิวเตอร์ 2567' })
   name: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional()
+  description?: string;
 
   @IsInt()
   @Min(2500)
-  @Max(2600)
-  @ApiProperty({example: 2566})
+  @Max(2700)
+  @ApiProperty({ example: 2567 })
   year: number;
 
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @ApiPropertyOptional({ example: 128 })
+  totalCredits?: number;
+
   @IsString()
-  @ApiProperty({example: '04'})
+  @ApiProperty({ example: 'faculty-uuid' })
   facultyId: string;
 
   @IsString()
-  @ApiProperty({example: '06'})
+  @ApiProperty({ example: 'dept-uuid' })
   deptId: string;
 
-  @IsString()
-  @ApiProperty({example: 'หลักสูตรวิทยาศาสตรบัณฑิต สาขาวิชาวิทยาการคอมพิวเตอร์ ประจำปีการศึกษา 2566'})
-  description: string;
-
+  @IsOptional()
   @IsEnum(CurriculumStatus)
-  @ApiProperty({example: 'ACTIVE'})
-  status: CurriculumStatus;
+  @ApiPropertyOptional({ example: 'ACTIVE' })
+  status?: CurriculumStatus;
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CurriculumItemWithoutIdDto)
-  items: CurriculumItemWithoutIdDto[]; // รายการวิชาและตำแหน่ง (1,1)
+  items?: CurriculumItemWithoutIdDto[];
 }

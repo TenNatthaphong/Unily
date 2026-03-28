@@ -11,9 +11,12 @@ export interface FlowItem {
 }
 
 export const curriculumItemApi = {
-  // Get all items for a curriculum (by curriculum code)
+  // Get items for a curriculum (by curriculum code or ID)
   getByCurriculumCode: (code: string) =>
     api.get<CurriculumCourse[]>('/curriculum-items', { params: { code } }),
+
+  getByCurriculumId: (id: string) =>
+    api.get<CurriculumCourse[]>('/curriculum-items', { params: { id } }),
 
   // Admin: sync flow (delete all + re-create)
   syncFlow: (curriculumId: string, items: FlowItem[]) =>

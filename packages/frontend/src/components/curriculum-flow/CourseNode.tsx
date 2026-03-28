@@ -8,7 +8,11 @@ export interface CourseNodeData {
   category: string;
   isWildcard: boolean;
   mappingPattern?: string;
-  [key: string]: unknown;
+  courseId: string;
+  year: number;
+  semester: number;
+  onDataChange?: (data: any) => void;
+  [key: string]: any;
 }
 
 const CAT_COLORS: Record<string, string> = {
@@ -21,7 +25,7 @@ const CAT_COLORS: Record<string, string> = {
 };
 
 export default function CourseNode({ data, selected }: NodeProps) {
-  const d = data as CourseNodeData;
+  const d = data as unknown as CourseNodeData;
   const color = CAT_COLORS[d.category] || '#60a5fa';
   const isWild = d.isWildcard;
 
@@ -30,7 +34,17 @@ export default function CourseNode({ data, selected }: NodeProps) {
       style={{ borderColor: color, '--node-color': color } as React.CSSProperties}>
       <Handle type="target" position={Position.Left} />
       <div className="course-node-code" style={{ color }}>{d.courseCode}</div>
-      <div className="course-node-name">{isWild ? (d.mappingPattern || d.nameTh) : d.nameTh}</div>
+      <div className="course-node-name">
+        {isWild ? (
+           <input 
+             className="node-pattern-input"
+             placeholder="Pattern (e.g. .*)"
+             value={d.mappingPattern || ''} 
+             onChange={e => d.onDataChange?.({ ...d, mappingPattern: e.target.value })}
+             onClick={e => e.stopPropagation()}
+           />
+        ) : d.nameTh}
+      </div>
       <div className="course-node-credits">{d.credits} cr</div>
       <Handle type="source" position={Position.Right} />
     </div>

@@ -183,52 +183,141 @@
 .stat-content { display: flex; flex-direction: column; gap: 4px; }
 .stat-label { font-size: 0.6875rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; }
 .stat-value { font-size: 1.75rem; font-weight: 900; }
+.stat-value small { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
 
-/* ── Teaching schedule + sections ── */
-.dashboard-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 20px;
-}
-
-.dashboard-content-left { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
-.dashboard-content-right { min-width: 0; }
-
-.dash-section-title {
+/* ── Block (timetable / sections) ── */
+.dash-block { display: flex; flex-direction: column; gap: 12px; }
+.dash-block-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   color: var(--text-secondary);
 }
-
-/* Sections list */
-.sections-list-compact {
-  display: flex; flex-direction: column; gap: 10px; margin-top: 20px;
+.dash-empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--text-muted);
 }
 
-.compact-section-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-md);
-  transition: all 0.2s;
+/* ── Section cards grid ── */
+.dash-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
 }
-.compact-section-item:hover { border-color: var(--primary); transform: translateX(4px); }
+.dash-sec-card {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.dash-sec-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.dash-sec-no {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-left: 6px;
+}
+.dash-sec-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-sec-en {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dash-sec-schedules { display: flex; flex-wrap: wrap; gap: 5px; }
 
-.section-info .course-code { font-size: 0.75rem; font-weight: 800; color: var(--primary); }
-.section-info .course-name { font-size: 0.8125rem; font-weight: 700; margin: 2px 0; }
-.section-meta { font-size: 0.6875rem; font-weight: 600; color: var(--text-muted); display: flex; gap: 6px; }
+/* Day-colored tags — shared with SectionDetail */
+.sched-day-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px 3px 3px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem; font-weight: 600;
+  border: 1px solid transparent;
+}
+.sched-day-pill {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 18px; padding: 0 4px;
+  border-radius: var(--radius-full);
+  font-size: 0.65rem; font-weight: 800;
+}
+.day-mon { background: rgba(234,179,8,0.12); color: #ca8a04; border-color: rgba(234,179,8,0.25); }
+.day-mon .sched-day-pill { background: rgba(234,179,8,0.25); }
+.day-tue { background: rgba(236,72,153,0.12); color: #db2777; border-color: rgba(236,72,153,0.25); }
+.day-tue .sched-day-pill { background: rgba(236,72,153,0.25); }
+.day-wed { background: rgba(34,197,94,0.12); color: #16a34a; border-color: rgba(34,197,94,0.25); }
+.day-wed .sched-day-pill { background: rgba(34,197,94,0.25); }
+.day-thu { background: rgba(249,115,22,0.12); color: #ea580c; border-color: rgba(249,115,22,0.25); }
+.day-thu .sched-day-pill { background: rgba(249,115,22,0.25); }
+.day-fri { background: rgba(59,130,246,0.12); color: #2563eb; border-color: rgba(59,130,246,0.25); }
+.day-fri .sched-day-pill { background: rgba(59,130,246,0.25); }
+.day-sat { background: rgba(168,85,247,0.12); color: #9333ea; border-color: rgba(168,85,247,0.25); }
+.day-sat .sched-day-pill { background: rgba(168,85,247,0.25); }
+.day-sun { background: rgba(239,68,68,0.12); color: #dc2626; border-color: rgba(239,68,68,0.25); }
+.day-sun .sched-day-pill { background: rgba(239,68,68,0.25); }
+
+.schedule-tag {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+}
+.dash-cap-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.dash-cap-count { font-weight: 700; color: var(--text-primary); }
+.capacity-bar { height: 4px; background: var(--border); border-radius: 2px; }
+.capacity-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.capacity-fill.success { background: var(--success); }
+.capacity-fill.warning { background: var(--warning); }
+.capacity-fill.danger  { background: var(--danger); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-top: 4px; }
+.status-dot.success { background: var(--success); }
+.status-dot.warning { background: var(--warning); }
+.status-dot.danger  { background: var(--danger); }
+.dash-sec-btn {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+.dash-empty-grid {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: var(--space-2xl);
+  color: var(--text-muted);
+}
+.dash-empty-grid svg { margin-bottom: 12px; opacity: 0.3; }
 
 .no-data-msg-compact { padding: 20px 0; text-align: center; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; }
 
 @media (max-width: 1024px) {
   .dashboard-stats { grid-template-columns: 1fr; }
-  .dashboard-main { grid-template-columns: 1fr; }
   .dash-event-panel { grid-template-columns: 1fr; }
+  .dash-sections-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
   .dash-greeting { flex-direction: column; align-items: flex-start; }
+  .dash-sections-grid { grid-template-columns: 1fr; }
 }

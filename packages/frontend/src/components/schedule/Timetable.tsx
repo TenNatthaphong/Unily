@@ -1,4 +1,6 @@
 import { useMemo, useRef, useLayoutEffect, useState } from 'react';
+import { Clock, Users } from 'lucide-react';
+import Portal from '../ui/Portal';
 import type { DayOfWeek, Enrollment } from '../../types';
 import './Timetable.css';
 
@@ -11,9 +13,16 @@ interface TimetableProps {
   pendingSectionIds?: Set<string>;
 }
 
-const DAYS: DayOfWeek[] = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-const DAY_TH: Record<DayOfWeek, string> = {
-  MON: 'จ', TUE: 'อ', WED: 'พ', THU: 'พฤ', FRI: 'ศ', SAT: 'ส', SUN: 'อา',
+import { DAY_CONFIG, DAYS } from '../../types/day';
+
+const DAY_TH: Record<string, string> = {
+  MON: DAY_CONFIG.MON.short,
+  TUE: DAY_CONFIG.TUE.short,
+  WED: DAY_CONFIG.WED.short,
+  THU: DAY_CONFIG.THU.short,
+  FRI: DAY_CONFIG.FRI.short,
+  SAT: DAY_CONFIG.SAT.short,
+  SUN: DAY_CONFIG.SUN.short,
 };
 
 const BASE_MINUTE_WIDTH = 1.45; // compressed so 08:00–21:00 fits in most viewports
@@ -36,6 +45,7 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
     () => Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) => START_HOUR + i),
     []
   );
+  const [tooltip, setTooltip] = useState<any>(null);
 
   // ── fitWidth: scale to container, no scroll ──────────────────────────────
   useLayoutEffect(() => {
@@ -168,7 +178,11 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
                         key={idx}
                         className={`timetable-item h-mode ${compact ? 'fill' : 'hug'} day-${day.toLowerCase()} ${item.pending ? 'pending' : ''}`}
                         style={{ left: x, width: w }}
-                        title={`${item.courseCode} — ${item.nameTh} | ${item.schedule.startTime}–${item.schedule.endTime}`}
+                        onMouseEnter={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setTooltip({ ...item, rect });
+                        }}
+                        onMouseLeave={() => setTooltip(null)}
                       >
                         <div className="timetable-item-inner">
                           <div className="item-header">
@@ -193,6 +207,33 @@ export default function Timetable({ enrollments, compact = false, fitWidth = fal
           </div>
         </div>
       </div>
+
+      {tooltip && (
+        <Portal>
+          <div 
+            className="timetable-tooltip glass-card"
+            style={{ 
+              position: 'fixed', 
+              top: tooltip.rect.top - 8,
+              left: tooltip.rect.left + (tooltip.rect.width / 2),
+              transform: 'translate(-50%, -100%)',
+              pointerEvents: 'none',
+              zIndex: 9999,
+            }}
+          >
+            <div className="tt-header">
+              <span className="tt-code">{tooltip.courseCode}</span>
+              <span className="tt-sec">Sec {tooltip.sectionNo}</span>
+            </div>
+            <div className="tt-name">{tooltip.nameTh}</div>
+            <div className="tt-meta">
+              <span><Clock size={12} /> {tooltip.schedule.startTime}–{tooltip.schedule.endTime}</span>
+              {tooltip.professor && <span><Users size={12} /> {tooltip.professor}</span>}
+            </div>
+            <div className="tt-arrow" />
+          </div>
+        </Portal>
+      )}
     </div>
   );
 }

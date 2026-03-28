@@ -1,12 +1,38 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../i18n/useTranslation';
 import { useAuthStore } from '../../stores/auth.store';
 import { professorApi } from '../../api/professor.api';
 import { configApi } from '../../api/config.api';
 import Timetable from '../../components/schedule/Timetable';
 import type { Section, Enrollment, SemesterConfig, Event } from '../../types';
-import { Users, BookOpen, Clock, Loader2, ChevronRight, CalendarDays, MapPin } from 'lucide-react';
+import { Users, BookOpen, Clock, Loader2, ChevronRight, CalendarDays, MapPin, ClipboardList } from 'lucide-react';
 import './Dashboard.css';
+
+function calcWeeklyHours(sections: Section[]): number {
+  let total = 0;
+  for (const sec of sections) {
+    for (const sch of sec.schedules ?? []) {
+      const [sh, sm] = sch.startTime.split(':').map(Number);
+      const [eh, em] = sch.endTime.split(':').map(Number);
+      total += (eh + em / 60) - (sh + sm / 60);
+    }
+  }
+  return Math.round(total * 10) / 10;
+}
+
+const DAY_TH: Record<string, string> = {
+  MON: 'จ', TUE: 'อ', WED: 'พ', THU: 'พฤ', FRI: 'ศ', SAT: 'ส', SUN: 'อา',
+};
+
+function calcTermHours(sections: Section[], config: SemesterConfig | null): number {
+  const weekly = calcWeeklyHours(sections);
+  if (!config?.startDate || !config?.endDate) return weekly;
+  const weeks = Math.round(
+    (new Date(config.endDate).getTime() - new Date(config.startDate).getTime()) / (7 * 24 * 60 * 60 * 1000)
+  );
+  return Math.round(weekly * weeks * 10) / 10;
+}
 
 const CATEGORY_COLOR: Record<string, string> = {
   GENERAL: 'var(--text-muted)',
@@ -28,6 +54,7 @@ interface CalendarItem {
 
 export default function ProfessorDashboard() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const user = useAuthStore(s => s.user);
   const [sections, setSections] = useState<Section[]>([]);
   const [config, setConfig] = useState<SemesterConfig | null>(null);
@@ -193,48 +220,75 @@ export default function ProfessorDashboard() {
         <div className="card stat-card">
           <div className="stat-icon warning"><Clock size={24} /></div>
           <div className="stat-content">
-            <span className="stat-label">Teaching Hours/Week</span>
-            <span className="stat-value">12 hrs</span>
+            <span className="stat-label">ชั่วโมงสอน/เทอม</span>
+            <span className="stat-value">{calcTermHours(sections, config)} <small>hrs</small></span>
           </div>
         </div>
       </div>
 
-      {/* ── Teaching schedule + Sections list ── */}
-      <div className="dashboard-main">
-        <div className="dashboard-content-left">
-          <div className="dash-section-title mb-md">
-            <Clock size={16} />
-            <span>{t('nav.teaching_schedule')} — ภาคเรียน {config?.semester}/{config?.academicYear}</span>
-          </div>
-          <Timetable enrollments={mockEnrollmentsForTimetable} fitWidth />
+      {/* ── Timetable (full width) ── */}
+      <div className="dash-block">
+        <div className="dash-block-header">
+          <Clock size={16} />
+          <span>ตารางสอน — ภาคเรียน {config?.semester}/{config?.academicYear}</span>
         </div>
+        {sections.length === 0
+          ? <div className="card dash-empty">ไม่มีรายวิชาที่สอนในภาคเรียนนี้</div>
+          : <Timetable enrollments={mockEnrollmentsForTimetable} fitWidth compact />
+        }
+      </div>
 
-        <div className="dashboard-content-right">
-          <div className="card sections-list-card">
-            <div className="card-header">
-              <Users size={20} />
-              <h4>Active Sections</h4>
-            </div>
-            <div className="sections-list-compact">
-              {sections.map(sec => (
-                <div key={sec.id} className="compact-section-item">
-                  <div className="section-info">
-                    <span className="course-code">{sec.course?.courseCode}</span>
-                    <p className="course-name">{sec.course?.nameTh}</p>
-                    <div className="section-meta">
-                      <span>Sec {sec.sectionNo}</span>
-                      <span>•</span>
-                      <span>{sec.enrolledCount} {t('enrollment.capacity')}</span>
-                    </div>
+      {/* ── Section cards ── */}
+      <div className="dash-block">
+        <div className="dash-block-header">
+          <ClipboardList size={16} />
+          <span>กลุ่มเรียน</span>
+        </div>
+        <div className="dash-sections-grid">
+          {sections.map(sec => {
+            const ratio = sec.enrolledCount / sec.capacity;
+            const capCls = ratio >= 1 ? 'danger' : ratio >= 0.7 ? 'warning' : 'success';
+            return (
+              <div key={sec.id} className="card dash-sec-card">
+                <div className="dash-sec-top">
+                  <div>
+                    <span className="badge">{sec.course?.courseCode}</span>
+                    <span className="dash-sec-no">Sec.{sec.sectionNo}</span>
                   </div>
-                  <button className="btn-icon">
-                    <ChevronRight size={18} />
-                  </button>
+                  <span className={`status-dot ${capCls}`} />
                 </div>
-              ))}
-              {sections.length === 0 && <div className="no-data-msg">No assigned sections</div>}
+                <p className="dash-sec-name">{sec.course?.nameTh}</p>
+                <p className="dash-sec-en">{sec.course?.nameEn}</p>
+                <div className="dash-sec-schedules">
+                  {sec.schedules?.map(sc => (
+                    <span key={sc.id} className={`sched-day-tag day-${sc.dayOfWeek.toLowerCase()}`}>
+                      <span className="sched-day-pill">{DAY_TH[sc.dayOfWeek]}</span>
+                      {sc.startTime}–{sc.endTime}
+                    </span>
+                  ))}
+                </div>
+                <div className="dash-cap-row">
+                  <span>นักศึกษา</span>
+                  <span className="dash-cap-count">{sec.enrolledCount}/{sec.capacity}</span>
+                </div>
+                <div className="capacity-bar">
+                  <div className={`capacity-fill ${capCls}`} style={{ width: `${Math.min(100, ratio * 100)}%` }} />
+                </div>
+                <button
+                  className="btn btn-primary btn-sm dash-sec-btn"
+                  onClick={() => navigate(`/professor/section/${sec.id}`, { state: { section: sec } })}
+                >
+                  ดูรายละเอียด <ChevronRight size={14} />
+                </button>
+              </div>
+            );
+          })}
+          {sections.length === 0 && (
+            <div className="dash-empty-grid">
+              <BookOpen size={40} />
+              <p>ไม่มีกลุ่มเรียน</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

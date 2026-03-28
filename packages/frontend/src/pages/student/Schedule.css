@@ -12,6 +12,43 @@
   flex-wrap: wrap;
   gap: 12px;
 }
+.schedule-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sem-btn-group {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+}
+.sem-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sem-btn:hover:not(.disabled) {
+  background: var(--primary-mild);
+  color: var(--primary);
+}
+.sem-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+.sem-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
 .schedule-subtitle {
   font-size: 0.8rem;
   color: var(--text-secondary);
@@ -224,7 +261,25 @@
   border-radius: 6px;
 }
 .grade-A    { background: rgba(16,185,129,0.15); color: #10b981; }
-.grade-BPLUS, .grade-B { background: rgba(96,165,250,0.15); color: #60a5fa; }
+.grade-BPLUS, .grade-B { background: rgba(96,165,250,0.15); color: #3b82f6; }
 .grade-CPLUS, .grade-C { background: rgba(251,191,36,0.15);  color: #ca8a04; }
 .grade-DPLUS, .grade-D { background: rgba(251,146,60,0.15);  color: #f97316; }
 .grade-F    { background: rgba(239,68,68,0.15);  color: #ef4444; }
+
+/* ── Light-mode overrides ──────────────────────────────────────────────── */
+[data-theme="light"] .sem-btn-group {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+[data-theme="light"] .grade-A    { background: rgba(16,185,129,0.12);  color: #059669; }
+[data-theme="light"] .grade-BPLUS,
+[data-theme="light"] .grade-B    { background: rgba(59,130,246,0.12);  color: #1d4ed8; }
+[data-theme="light"] .grade-CPLUS,
+[data-theme="light"] .grade-C    { background: rgba(251,191,36,0.15);  color: #92400e; }
+[data-theme="light"] .grade-DPLUS,
+[data-theme="light"] .grade-D    { background: rgba(251,146,60,0.15);  color: #c2410c; }
+[data-theme="light"] .grade-F    { background: rgba(239,68,68,0.12);   color: #b91c1c; }
+[data-theme="light"] .current-tag { background: rgba(16,185,129,0.12); color: #059669; }
+[data-theme="light"] .sem-current-pill { background: rgba(16,185,129,0.12); color: #059669; }
+[data-theme="light"] .scs-category { background: rgba(59,130,246,0.08); }
+[data-theme="light"] .scs-table tbody tr:hover td { background: rgba(59,130,246,0.04); }

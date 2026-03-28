@@ -5,7 +5,8 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import * as bcrypt from "bcrypt";
 
 const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({ connectionString });
+// Supabase free tier จำกัด connections — cap pool ที่ 5 เพื่อป้องกัน "Max client connections reached"
+const pool = new Pool({ connectionString, max: 5, idleTimeoutMillis: 30000, connectionTimeoutMillis: 10000 });
 const adapter = new PrismaPg(pool as any);
 const prisma = new PrismaClient({ adapter });
 
@@ -74,41 +75,10 @@ async function main() {
         await prisma.studentProfile.updateMany({
             data: { year: 1, gpax: 0, ca: 0, cs: 0, status: StudentStatus.STUDYING, curriculumId: regularCurric.id }
         });
+        // Fix: actual slot sum for REGULAR = 125 (not 128). Patch DB to match curriculum.json.
+        await prisma.curriculum.update({ where: { id: regularCurric.id }, data: { totalCredits: 125 } });
     }
     console.log('Done.');
-
-    // Generate Batch 69 students (200 accounts)
-    const batch69Exists = await prisma.studentProfile.findFirst({ where: { entryYear: 2569 } });
-    if (!batch69Exists && regularCurric) {
-        process.stdout.write('   🎓 Syncing 200 Students for Batch 69... ');
-        const csFaculty = await prisma.faculty.findUnique({ where: { facultyCode: '04' } });
-        const csDept = await prisma.department.findUnique({ where: { facultyId_deptCode: { facultyId: csFaculty!.id, deptCode: '06' } } });
-        const sharedPassword = await bcrypt.hash("unily69", 10);
-        for (let i = 1; i <= 200; i++) {
-            if (i % 50 === 0) console.log(`      ... ${i}/200 student accounts created for Batch 69`);
-            const studentCode = `690406${i.toString().padStart(5, '0')}`;
-            const email = `u${studentCode}@unily.ac.th`;
-            const user = await prisma.user.upsert({
-                where: { email },
-                update: {},
-                create: {
-                    email, password: sharedPassword,
-                    firstName: `Student69`, lastName: `No${i.toString().padStart(5, '0')}`,
-                    role: 'STUDENT', status: 'ACTIVE'
-                }
-            });
-            await prisma.studentProfile.upsert({
-                where: { userId: user.id },
-                update: { status: StudentStatus.STUDYING, year: 1, gpax: 0, ca: 0, cs: 0, entryYear: 2569, curriculumId: regularCurric.id },
-                create: {
-                    userId: user.id, studentCode, entryYear: 2569, year: 1,
-                    facultyId: csFaculty!.id, deptId: csDept!.id, curriculumId: regularCurric.id,
-                    status: StudentStatus.STUDYING, gpax: 0, ca: 0, cs: 0
-                }
-            });
-        }
-        console.log('Done.');
-    }
 
     const allStudents = await prisma.studentProfile.findMany();
     let professors = await prisma.professorProfile.findMany();
@@ -119,18 +89,52 @@ async function main() {
         const hash = await bcrypt.hash('password123', 10);
         const newProfs: any[] = [];
         const firstNames = [
-            "กิตติภพ", "ธนัชชา", "ปิยบุตร", "วรัญญา", "ชลสิทธิ์", "ณัฐพงศ์", "ทศพล", "นรินทร์", "เบญจมาศ", "ปกรณ์",
-            "พรพิมล", "มงคล", "ยุทธนา", "รพีพรรณ", "ศิริชัย", "อภิชาติ", "กมลวรรณ", "ขวัญชัย", "จตุพร", "ฉัตรชัย",
-            "ชยานนท์", "ญาณิศา", "ฐิติมา", "ณรงค์เดช", "ดนัย", "ทรงพล", "นันทวัฒน์", "บวร", "ปวริศา", "พงศธร",
-            "สมชาย", "สมพงษ์", "สมจิต", "อุไร", "จินตนา", "วันชัย", "วิเชียร", "ประสิทธิ์", "พรชัย", "มานะ",
-            "มาลี", "ปราณี", "ประเสริฐ", "สมนึก", "สมคิด", "อนุชา", "เพ็ญศรี", "สมบูรณ์", "วิบูลย์", "อำนวย"
+            "กวิน","กัญญา","กาญจนา","กิตติภพ","กิตติพล","กิตติมา","เกษม","กฤษฎา","กฤษณ์","กมลวรรณ",
+            "ขนิษฐา","ขวัญชัย","เขมจิรา","คชาธาร","คันธารัตน์","จักรกฤษณ์","จักรพร","จันทร์จิรา","จารุณี","จารุพงศ์",
+            "จิตสุภา","จิราพร","จิรายุ","จตุพร","ชนิดา","ชนินทร","ชยพล","ชยานนท์","ชลลดา","ชลสิทธิ์",
+            "ชลธิชา","ชัยณรงค์","ชาคริต","ชานนท์","ชิตพล","ชูเกียรติ","เชษฐา","โชติกา","ญาณณัฐ","ญาณิศา",
+            "ณปภัช","ณภัทร","ณรงค์วุฒิ","ณฐพล","ณหทัย","ณัฐกิตติ์","ณัฐชน","ณัฐณิชา","ณัฐธิดา","ณัฐนิช",
+            "ณัฐพงศ์","ณัฐพัชร์","ณัฐภณ","ณัฐวรรณ","ณัฐสิทธิ์","ดนัย","ดนัยพัฒน์","ดวงพร","ถิรเดช","ทรงพล",
+            "ทรรศนีย์","ทวีศักดิ์","ทศพล","ทัตพิชา","ทิตยา","เทวินทร์","ธนกร","ธนชัย","ธนพร","ธนภัทร",
+            "ธนภูมิ","ธนวัฒน์","ธนัชชา","ธนัชพร","ธนันต์","ธนาพร","ธรรศ","ธวัฒน์","ธัชพล","ธัญชนิต",
+            "นครินทร์","นพดล","นพรัตน์","นภัสสร","นภาพรรณ","นรากร","นรินทร์","นรเศรษฐ์","นราพร","นราวิชญ์",
+            "นลินรัตน์","นวพล","นันทวัฒน์","นาวิน","นิตยา","นิธิ","นิพนธ์","นิพัทธ์","นิภา","นิษฐา",
+            "บดินทร์","บวร","บุญส่ง","บุษกร","ปกรณ์","ปฏิพาน","ปภาวรินทร์","ปวริศา","ปวีณา","ปิยบุตร",
+            "ปิยมาศ","ปิยะนันท์","พงศ์พัศ","พงศธร","พชรพล","พรชัย","พรนิภา","พรพิมล","พรเทพ","พลอยไพลิน",
+            "พัชราภา","พัทธนันท์","พิชิต","พิทยา","พิพัฒน์","พิมลพรรณ","พิยดา","พิรุฬห์","พิศิษฐ์","พีรพล",
+            "ภคพล","ภทรพล","ภัทรพล","ภานุพงศ์","ภาวิณี","ภูชิต","ภูดิท","ภูเบศร์","มณีนุช","มนตรี",
+            "มลฤดี","มัลลิกา","มงคล","ยนต์ชนก","ยุทธนา","ยุวดี","รพีพรรณ","รวิศ","รังสิมันต์","ระวี",
+            "รัตนา","รุ่งโรจน์","วรรณวิมล","วรวุฒิ","วรัญญา","วรินทร","ศกุนตลา","ศรัณย์","ศักดิ์ดา","ศิริชัย",
+            "ศิริพร","ศิริรัตน์","ศตวรรษ","ศุภกร","สมชาย","สมพงษ์","สมเกียรติ","สิรินทร์","สิรินภา","สิรีธร",
+            "สุรชัย","สุรินทร์","สุวิชา","อดิศร","อดิศักดิ์","อธิป","อนันต์","อนาวิน","อนุชา","อนุสรณ์",
+            "อภิชาติ","อภิเษก","อมรรัตน์","อรุณ","อลิสา","อำนาจ","อาทิตย์","อาภา","เอกพล","เอกรัตน์",
+            "กัญญารัตน์","เจษฎา","โชคชัย","ณิชา","ธรรม์ธันย์","นันทิกา","ปฏิภาณ","พีระวัฒน์","ภาสกร","วัชรพล"
         ];
         const lastNames = [
-            "รัตนโชติ", "แสงสว่าง", "เอื้อเฟื้อ", "ปรีดากุล", "ดีเลิศ", "พงษ์สุวรรณ", "เจริญผล", "รัตนวิจิตร", "งามขำ", "มณีรัตน์",
-            "สวัสดิ์ดี", "ทองคำ", "รุ่งเรือง", "ปัญญาดี", "สุวรรณรัตน์", "ศิริโชติ", "บุญมี", "พาณิชย์", "วงศ์สวัสดิ์", "ธรรมะ",
-            "แซ่ตั้ง", "ดีประเสริฐ", "ใจดี", "แซ่ลิ้ม", "ประเสริฐผล", "เจริญราษฎร์", "สุขุม", "มีทรัพย์", "ศรีสุข", "พิทักษ์",
-            "โพธิ์แก้ว", "สุขสวัสดิ์", "ทรัพย์เจริญ", "บุญกอบ", "เจริญชัย", "สิงห์ทอง", "มั่นคง", "ชูศิลป์", "รักษา", "ชูชัย"
+            "รัตนโชติ","แสงสว่าง","เอื้อเฟื้อ","ปรีดากุล","ดีเลิศ","พงษ์สุวรรณ","เจริญผล","รัตนวิจิตร","งามขำ","มณีรัตน์",
+            "สวัสดิ์ดี","ทองคำ","รุ่งเรือง","ปัญญาดี","สุวรรณรัตน์","ศิริโชติ","บุญมี","พาณิชย์","วงศ์สวัสดิ์","ธรรมะ",
+            "เลิศล้ำ","จิตต์มั่น","อัครเดชา","คงกระพัน","นิมิตรา","วรโชติ","เกียรติขจร","เดชาศิลป์","นราภิรมย์","ทิพย์มาศ",
+            "เมธาภัทร","อนันตสุข","จิรภาคย์","ศรีสุวรรณ","แก้วมณี","ชัยชนะ","ปัญญามี","พิพัฒน์ผล","รุ่งนภา","วรากุล",
+            "วิจิตรศิลป์","ศุภกิจ","อนันตชัย","กิตติสกุล","ขจรเดช","จตุรพักตร์","ชินบุตร","ณัฐกร","ตระกูลว่อง","ทวีโชค",
+            "นันทศิลป์","บริบูรณ์","ปวริศร","พงษ์สวัสดิ์","พิชัยนาวิน","รัตนศิลป์","เลิศวิจิตร","วนิชชา","ศิริวัฒน์","สุขสันต์",
+            "อดุลยเดช","โอฬารวิจิตร","กาญจนวิทย์","จรูญศิลป์","ชโลธร","ณรงค์วิทย์","ธนปัญญา","นฤมล","ประสิทธิผล","พิทักษ์",
+            "ภักดีศิริ","ยอดเยี่ยม","วัฒนศิลป์","ศิรินทร์","สมบูรณ์","หิรัญพงศ์","อัศวเดช","กอบโชค","จิตติพล","ชัยรัตน์",
+            "โชคพิสิษฐ์","ฐิติวัฒน์","ทิพยากร","นันทนา","พรหมสุวรรณ","ไพโรจน์","รุ่งอนันต์","ศรีวิไล","สุทธิพงศ์","อดิศักดิ์",
+            "อมรศิลป์","เก่งกาจ","คงเจริญ","ชาญชัย","ณัฐวรรณ","ธราธร","นพนันท์","ประชานิยม","พรรณราย","สายทอง",
+            "สิทธิเดช","สุขเกษม","อ่อนน้อม","อุตสาหกรรม","กาญจนา","เจริญรัตน์","ชวลิต","ดาราวดี","ทองสุข","นิรันดร์",
+            "บุญเรือง","ประสาร","พงศ์วัฒนา","มาลาวรรณ","รัตนพันธ์","วงษ์ทอง","ศรีทอง","สิทธิโชค","แสนดี","อุทัยรัตน์",
+            "เจริญสุข","ใจดี","ดีมาก","ทองพูล","นิลรัตน์","พรมสิทธิ์","มั่นคง","รัตนวงศ์","วิชัยดิษฐ","สาระ",
+            "สุวรรณภูมิ","หาญกล้า","อัมพร","กล้าหาญ","จันทรวิภา","ชัยสิทธิ์","ทองแก้ว","นิราศ","โภคทรัพย์","ยิ่งยง",
+            "ราชสมบัติ","วิเชียร","ศรีบุตร","สงวน","อ่อนละมุน","อาจหาญ","เขียวดี","โชติช่วง","ดุสิต","ทองเจือ",
+            "นิยม","บุตรดา","พัฒน์","มีชัย","รัตนกูล","วัฒนาการ","ศิลปกิจ","สมัคร","อติพล","เหมือนสวรรค์",
+            "โกศล","ช่วยชาติ","ดิเรก","ทองปาน","นิรุต","บำรุงชาติ","พลายงาม","ยาวิชัย","รุ่งเรืองกิจ","วิทยากร",
+            "สกุลดี","หวังดี","อาคม","เจนจบ","ชำนาญ","ดำรงค์","ทิพวรรณ","นิมมาน","บริสุทธิ์","พิสิษฐ์",
+            "มนัสวี","ยืนยง","วิไลลักษณ์","ศรีสุข","สดใส","หาญณรงค์","อโนทัย","แจ่มจรัส","เชี่ยวชาญ","ดลชัย",
+            "ทวีสุข","นิรมิต","บุญญาพร","พิทักษ์สิน","ยิ่งสถาพร","รัตนไชย","วงศ์จินดา","สิทธิพงศ์","อัคนีย์","เพชรงาม"
         ];
+        const csFaculty = await prisma.faculty.findUnique({ where: { facultyCode: '04' } });
+        const csDept = await prisma.department.findUnique({ where: { facultyId_deptCode: { facultyId: csFaculty!.id, deptCode: '06' } } });
+
         for (let i = 0; i < 80; i++) {
             const fname = firstNames[Math.floor(Math.random() * firstNames.length)];
             const lname = lastNames[Math.floor(Math.random() * lastNames.length)];
@@ -140,14 +144,14 @@ async function main() {
                 update: {},
                 create: {
                     email, password: hash,
-                    firstName: fname, lastName: lname + i,
+                    firstName: fname, lastName: lname,
                     role: 'PROFESSOR', status: 'ACTIVE'
                 }
             });
             const profile = await prisma.professorProfile.upsert({
                 where: { userId: user.id },
                 update: {},
-                create: { userId: user.id, facultyId: '04', deptId: '06' }
+                create: { userId: user.id, facultyId: csFaculty!.id, deptId: csDept!.id }
             });
             newProfs.push(profile);
         }
@@ -159,6 +163,11 @@ async function main() {
 
     const coopCurric = await prisma.curriculum.findUnique({ where: { curriculumCode: "CS64-COOP" } });
     const allCourses = await prisma.course.findMany();
+    // ─── Special course IDs ───────────────────────────────────────────────────
+    const COOP2_COURSE_CODE  = '040613132'; // COOP2 — exclusive term (no other courses allowed)
+    const PRECOOP_COURSE_CODE = '040613130'; // pre-COOP — S/U graded, no GPA contribution
+    const coop2CourseId  = allCourses.find(c => c.courseCode === COOP2_COURSE_CODE)?.id  ?? '';
+    const preCoopCourseId = allCourses.find(c => c.courseCode === PRECOOP_COURSE_CODE)?.id ?? '';
     const allCurriculumCourses = await prisma.curriculumCourse.findMany({ include: { course: true } });
     // prerequisite map: courseId -> [requiresCourseId, ...]
     const allPrerequisites = await prisma.prerequisite.findMany();
@@ -181,25 +190,53 @@ async function main() {
 
     const requiredCoreFull = allCurriculumCourses.filter(c => !c.mappingPattern);
 
+    // Pre-fetch curriculum totalCredits to avoid N+1 DB queries inside the student loop
+    const allCurriculaFull = await prisma.curriculum.findMany();
+    const curriculumCreditsMap = new Map(allCurriculaFull.map(c => [c.id, c.totalCredits]));
+
     const TARGET_YEAR = 2569;
     const TARGET_SEM = 1;
 
     // semester config dates (ISO string -> Date)
     const SEMESTER_DATES: Record<string, { regStart: Date; regEnd: Date; withdrawStart: Date; withdrawEnd: Date; isCurrent: boolean }> = {
-        "2565-1": { regStart: new Date("2022-07-04T08:00:00+07:00"), regEnd: new Date("2022-07-18T16:00:00+07:00"), withdrawStart: new Date("2022-07-04T08:00:00+07:00"), withdrawEnd: new Date("2022-08-29T16:00:00+07:00"), isCurrent: false },
-        "2565-2": { regStart: new Date("2022-11-07T08:00:00+07:00"), regEnd: new Date("2022-11-21T16:00:00+07:00"), withdrawStart: new Date("2022-11-07T08:00:00+07:00"), withdrawEnd: new Date("2023-01-02T16:00:00+07:00"), isCurrent: false },
-        "2565-3": { regStart: new Date("2023-04-03T08:00:00+07:00"), regEnd: new Date("2023-04-10T16:00:00+07:00"), withdrawStart: new Date("2023-04-03T08:00:00+07:00"), withdrawEnd: new Date("2023-05-15T16:00:00+07:00"), isCurrent: false },
-        "2566-1": { regStart: new Date("2023-07-03T08:00:00+07:00"), regEnd: new Date("2023-07-17T16:00:00+07:00"), withdrawStart: new Date("2023-07-03T08:00:00+07:00"), withdrawEnd: new Date("2023-08-28T16:00:00+07:00"), isCurrent: false },
-        "2566-2": { regStart: new Date("2023-11-06T08:00:00+07:00"), regEnd: new Date("2023-11-20T16:00:00+07:00"), withdrawStart: new Date("2023-11-06T08:00:00+07:00"), withdrawEnd: new Date("2024-01-01T16:00:00+07:00"), isCurrent: false },
-        "2566-3": { regStart: new Date("2024-04-01T08:00:00+07:00"), regEnd: new Date("2024-04-08T16:00:00+07:00"), withdrawStart: new Date("2024-04-01T08:00:00+07:00"), withdrawEnd: new Date("2024-05-13T16:00:00+07:00"), isCurrent: false },
-        "2567-1": { regStart: new Date("2024-07-01T08:00:00+07:00"), regEnd: new Date("2024-07-15T16:00:00+07:00"), withdrawStart: new Date("2024-07-01T08:00:00+07:00"), withdrawEnd: new Date("2024-08-26T16:00:00+07:00"), isCurrent: false },
-        "2567-2": { regStart: new Date("2024-11-04T08:00:00+07:00"), regEnd: new Date("2024-11-18T16:00:00+07:00"), withdrawStart: new Date("2024-11-04T08:00:00+07:00"), withdrawEnd: new Date("2024-12-30T16:00:00+07:00"), isCurrent: false },
-        "2567-3": { regStart: new Date("2025-04-07T08:00:00+07:00"), regEnd: new Date("2025-04-14T16:00:00+07:00"), withdrawStart: new Date("2025-04-07T08:00:00+07:00"), withdrawEnd: new Date("2025-05-19T16:00:00+07:00"), isCurrent: false },
-        "2568-1": { regStart: new Date("2025-07-07T08:00:00+07:00"), regEnd: new Date("2025-07-21T16:00:00+07:00"), withdrawStart: new Date("2025-07-07T08:00:00+07:00"), withdrawEnd: new Date("2025-09-01T16:00:00+07:00"), isCurrent: false },
-        "2568-2": { regStart: new Date("2025-11-03T08:00:00+07:00"), regEnd: new Date("2025-11-17T16:00:00+07:00"), withdrawStart: new Date("2025-11-03T08:00:00+07:00"), withdrawEnd: new Date("2025-12-29T16:00:00+07:00"), isCurrent: false },
-        "2568-3": { regStart: new Date("2026-04-06T08:00:00+07:00"), regEnd: new Date("2026-04-13T16:00:00+07:00"), withdrawStart: new Date("2026-04-06T08:00:00+07:00"), withdrawEnd: new Date("2026-05-18T16:00:00+07:00"), isCurrent: false },
-        "2569-1": { regStart: new Date("2026-03-23T18:00:00+07:00"), regEnd: new Date("2026-04-07T09:00:00+07:00"), withdrawStart: new Date("2026-03-23T18:00:00+07:00"), withdrawEnd: new Date("2026-05-19T02:00:00+07:00"), isCurrent: true },
+        "2565-1": { regStart: new Date("2022-07-04T01:00:00+07:00"), regEnd: new Date("2022-07-18T09:00:00+07:00"), withdrawStart: new Date("2022-07-04T01:00:00+07:00"), withdrawEnd: new Date("2022-08-29T11:00:00+07:00"), isCurrent: false },
+        "2565-2": { regStart: new Date("2022-11-07T01:00:00+07:00"), regEnd: new Date("2022-11-21T09:00:00+07:00"), withdrawStart: new Date("2022-11-07T01:00:00+07:00"), withdrawEnd: new Date("2023-01-02T11:00:00+07:00"), isCurrent: false },
+        "2565-3": { regStart: new Date("2023-04-03T01:00:00+07:00"), regEnd: new Date("2023-04-10T09:00:00+07:00"), withdrawStart: new Date("2023-04-03T01:00:00+07:00"), withdrawEnd: new Date("2023-05-15T11:00:00+07:00"), isCurrent: false },
+        "2566-1": { regStart: new Date("2023-07-03T01:00:00+07:00"), regEnd: new Date("2023-07-17T09:00:00+07:00"), withdrawStart: new Date("2023-07-03T01:00:00+07:00"), withdrawEnd: new Date("2023-08-28T11:00:00+07:00"), isCurrent: false },
+        "2566-2": { regStart: new Date("2023-11-06T01:00:00+07:00"), regEnd: new Date("2023-11-20T09:00:00+07:00"), withdrawStart: new Date("2023-11-06T01:00:00+07:00"), withdrawEnd: new Date("2024-01-01T11:00:00+07:00"), isCurrent: false },
+        "2566-3": { regStart: new Date("2024-04-01T01:00:00+07:00"), regEnd: new Date("2024-04-08T09:00:00+07:00"), withdrawStart: new Date("2024-04-01T01:00:00+07:00"), withdrawEnd: new Date("2024-05-13T11:00:00+07:00"), isCurrent: false },
+        "2567-1": { regStart: new Date("2024-07-01T01:00:00+07:00"), regEnd: new Date("2024-07-15T09:00:00+07:00"), withdrawStart: new Date("2024-07-01T01:00:00+07:00"), withdrawEnd: new Date("2024-08-26T11:00:00+07:00"), isCurrent: false },
+        "2567-2": { regStart: new Date("2024-11-04T01:00:00+07:00"), regEnd: new Date("2024-11-18T09:00:00+07:00"), withdrawStart: new Date("2024-11-04T01:00:00+07:00"), withdrawEnd: new Date("2024-12-30T11:00:00+07:00"), isCurrent: false },
+        "2567-3": { regStart: new Date("2025-04-07T01:00:00+07:00"), regEnd: new Date("2025-04-14T09:00:00+07:00"), withdrawStart: new Date("2025-04-07T01:00:00+07:00"), withdrawEnd: new Date("2025-05-19T11:00:00+07:00"), isCurrent: false },
+        "2568-1": { regStart: new Date("2025-07-07T01:00:00+07:00"), regEnd: new Date("2025-07-21T09:00:00+07:00"), withdrawStart: new Date("2025-07-07T01:00:00+07:00"), withdrawEnd: new Date("2025-09-01T11:00:00+07:00"), isCurrent: false },
+        "2568-2": { regStart: new Date("2025-11-03T01:00:00+07:00"), regEnd: new Date("2025-11-17T09:00:00+07:00"), withdrawStart: new Date("2025-11-03T01:00:00+07:00"), withdrawEnd: new Date("2025-12-29T11:00:00+07:00"), isCurrent: false },
+        "2568-3": { regStart: new Date("2026-04-06T01:00:00+07:00"), regEnd: new Date("2026-04-13T09:00:00+07:00"), withdrawStart: new Date("2026-04-06T01:00:00+07:00"), withdrawEnd: new Date("2026-05-18T11:00:00+07:00"), isCurrent: false },
+        "2569-1": { regStart: new Date("2026-03-23T01:00:00+07:00"), regEnd: new Date("2026-04-07T09:00:00+07:00"), withdrawStart: new Date("2026-03-23T01:00:00+07:00"), withdrawEnd: new Date("2026-05-19T11:00:00+07:00"), isCurrent: true },
     };
+
+    // ── Centralized SemesterConfig ─────────────────────────────────────────────
+    // Delete all existing configs, then create ALL semesters upfront.
+    // isCurrent = true only for the final target semester (TARGET_YEAR/TARGET_SEM).
+    await prisma.semesterConfig.deleteMany({});
+    const allTermKeys: string[] = [];
+    for (const y of [2565, 2566, 2567, 2568, 2569]) {
+        for (const s of [1, 2, 3]) {
+            if (y === TARGET_YEAR && s > TARGET_SEM) continue;
+            allTermKeys.push(`${y}-${s}`);
+        }
+    }
+    const createdSemesters = new Map<string, { id: string; academicYear: number; semester: number }>();
+    for (const key of allTermKeys) {
+        const semDates = SEMESTER_DATES[key];
+        if (!semDates) continue;
+        const [y, s] = key.split('-').map(Number);
+        const isCurrentTerm = (y === TARGET_YEAR && s === TARGET_SEM);
+        const sc = await prisma.semesterConfig.create({
+            data: { academicYear: y, semester: s, ...semDates, isCurrent: isCurrentTerm }
+        });
+        createdSemesters.set(key, sc);
+    }
+    console.log(`   ✅ Created ${createdSemesters.size} semester configs (current: ${TARGET_YEAR}/${TARGET_SEM})\n`);
 
     for (const year of [2565, 2566, 2567, 2568, 2569]) {
         console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━ Year: ${year} ━━━━━━━━━━━━━━━━━━━━━━━━`);
@@ -211,13 +248,20 @@ async function main() {
             const termTag = `[${year}/${semester}]`;
             console.time(termTag);
 
-            await prisma.semesterConfig.updateMany({ data: { isCurrent: false } });
-            const semDates = SEMESTER_DATES[`${year}-${semester}`];
-            const activeSemester = await prisma.semesterConfig.create({
-                data: { academicYear: year, semester, ...semDates }
-            });
+            const activeSemester = createdSemesters.get(`${year}-${semester}`)!;
             // PHASE 1: SECTIONS
-            const plannedCourses = allCurriculumCourses.filter(c => c.semester === activeSemester.semester);
+            // เทอม 3 = COOP semester — เปิดเฉพาะ COOP1 (040613131) เท่านั้น
+            // เทอม 1/2 = ปกติ + วิชาเสรีเปิดทุกเทอม
+            const plannedCourses = allCurriculumCourses.filter(c => {
+                if (activeSemester.semester === 3) {
+                    // COOP semester: only COOP_COURSE in semester 3 slot (= COOP1)
+                    return c.semester === 3 && c.course.category === 'COOP_COURSE';
+                }
+                return (
+                    c.semester === activeSemester.semester ||
+                    c.course.category === 'FREE_ELECTIVE' // วิชาเสรีเปิดทุก sem 1/2
+                );
+            });
             const processedKeys = new Set<string>();
             let sectionCountBefore = 0;
 
@@ -323,14 +367,48 @@ async function main() {
                 const passedIds = new Set(stdRecords.filter(r => r.grade !== Grade.F).map(r => r.courseId));
                 const studyYear = (year - std.entryYear) + 1;
                 const studCurriculum = allCurriculumCourses.filter(c => c.curriculumId === std.curriculumId);
-                // retry เฉพาะวิชาที่ F ปีก่อน เทอมเดียวกัน — ไม่รวม COOP courses (ถ้า revert กลับ REGULAR ไม่ควร retry)
-                const failedInTerm = stdRecords.filter(r => r.grade === Grade.F && r.academicYear === year - 1 && r.semester === semester && !passedIds.has(r.courseId) && !COOP_COURSE_CODES.includes(r.course.courseCode)).map(r => r.courseId);
+                // ปี 5+ = เรียนเกินหลักสูตร 4 ปี → ผ่อนปรนข้อจำกัด semester + ดึง F ทุกตัว
+                const isOverdueStudent = studyYear > 4;
+
+                // failedItems: ปี 5+ ดึงทุก F ที่ยังไม่ผ่าน (de-dup by courseId/pattern)
+                // ปีปกติ: core F → ต้องตรง semester เดิม; wildcard F → retry ได้ทุก semester (เพราะเปิดทุกเทอม)
+                type FailItem = { courseId: string | null; isWildcard: boolean; pattern: string | null; rYear: number };
+                const failedItems: FailItem[] = [];
+                const seenFailCourseIds = new Set<string>();
+                const seenFailPatterns = new Set<string>();
+                for (const r of stdRecords) {
+                    if (r.grade !== Grade.F) continue;
+                    if (passedIds.has(r.courseId)) continue;
+                    if (COOP_COURSE_CODES.includes(r.course.courseCode)) continue;
+                    // ถ้าวิชาที่ F อยู่ใน core slot (ไม่ใช่ wildcard) → ต้องลงวิชาเดิม + ต้องตรง semester
+                    const isCore = studCurriculum.some(cc => cc.courseId === r.courseId && !cc.mappingPattern && !cc.course.isWildcard);
+                    if (isCore) {
+                        // Core: ปีปกติ → ต้องตรง semester; ปี 5+ → ยืดหยุ่น
+                        if (!isOverdueStudent && r.semester !== semester) continue;
+                        if (!seenFailCourseIds.has(r.courseId)) {
+                            seenFailCourseIds.add(r.courseId);
+                            failedItems.push({ courseId: r.courseId, isWildcard: false, pattern: null, rYear: 0 });
+                        }
+                    } else {
+                        // Wildcard elective: retry ได้ทุก semester (sections เปิดทุกเทอม)
+                        const wc = studCurriculum.find(cc => cc.mappingPattern && r.course.courseCode.startsWith(cc.mappingPattern.replace('%', '')));
+                        if (wc && !seenFailPatterns.has(wc.mappingPattern!)) {
+                            seenFailPatterns.add(wc.mappingPattern!);
+                            failedItems.push({ courseId: null, isWildcard: true, pattern: wc.mappingPattern, rYear: 0 });
+                        } else if (!wc && !seenFailCourseIds.has(r.courseId)) {
+                            seenFailCourseIds.add(r.courseId);
+                            failedItems.push({ courseId: r.courseId, isWildcard: false, pattern: null, rYear: 0 });
+                        }
+                    }
+                }
 
                 const isCoopStudent = std.curriculumId === coopCurric?.id;
                 const queue = [
-                    ...failedInTerm.map(id => ({ courseId: id, isWildcard: false, pattern: null, rYear: 0 })),
+                    ...failedItems,
                     ...studCurriculum.filter(c => {
-                        if (c.semester !== semester || c.year > studyYear) return false;
+                        if (c.year > studyYear) return false;
+                        // ปี 5+: ไม่จำกัด semester — เรียนวิชาที่เหลือทุกเทอมได้
+                        if (!isOverdueStudent && c.semester !== semester) return false;
                         // COOP_COURSE: ต้องผ่าน prerequisite ทุกตัวก่อน (chain: pre-coop -> coop1 -> coop2)
                         if (c.course.category === 'COOP_COURSE') {
                             if (!isCoopStudent) return false; // ไม่ใช่ COOP student ห้ามลง
@@ -342,12 +420,28 @@ async function main() {
                         if (SPECIAL_PROJECT_CODES.includes(c.course.courseCode) && isCoopStudent) return false;
                         return true;
                     }).map(p => ({ courseId: p.courseId, isWildcard: p.course.isWildcard || !!p.mappingPattern, pattern: p.mappingPattern, rYear: p.year }))
-                ].sort((a,b) => (a.rYear === studyYear ? -1 : 1));
+                ].sort((a, b) => {
+                    // 1. Current-year courses before older-year retries
+                    const aCurr = a.rYear === studyYear, bCurr = b.rYear === studyYear;
+                    if (aCurr !== bCurr) return aCurr ? -1 : 1;
+                    // 2. Within same "tier", specific courses before wildcards (prevents
+                    //    wildcards filling the credit budget before required specifics like
+                    //    Special Project 1 which is only 1 credit)
+                    if (!a.isWildcard && b.isWildcard) return -1;
+                    if (a.isWildcard && !b.isWildcard) return 1;
+                    return 0;
+                });
 
                 const studentSchedules: any[] = [];
                 let termCredits = 0, termCourseIds = new Set(), termPatternCounts = new Map<string, number>();
 
-                for (const item of queue) {
+                // COOP2 exclusive: ถ้า COOP2 อยู่ใน queue ให้ลงแค่ COOP2 เท่านั้น (ไปทำงานจริง ไม่มีเรียนวิชาอื่น)
+                const hasCoop2 = coop2CourseId && queue.some(item => !item.isWildcard && item.courseId === coop2CourseId);
+                const effectiveQueue = hasCoop2
+                    ? queue.filter(item => !item.isWildcard && item.courseId === coop2CourseId)
+                    : queue;
+
+                for (const item of effectiveQueue) {
                     if (termCredits >= 22) break;
                     let targets: any[] = [];
                     // helper: check all prerequisites passed
@@ -358,14 +452,59 @@ async function main() {
                         if (!prereqOk(item.courseId!)) continue;
                         targets = sectionsPool.filter(s => s.courseId === item.courseId && s.enrolledCount < s.capacity);
                     } else {
-                        let p = item.pattern?.replace('%', '') || '';
-                        const isSci = p === "04";
-                        const passedInPattern = stdRecords.filter(r => r.grade !== Grade.F && !allLockedCourseIds.has(r.courseId) && r.course.courseCode.startsWith(p) && !(isSci && r.course.courseCode.startsWith("0406"))).length;
-                        const inTermInPattern = Array.from(termPatternCounts.keys()).filter(k => k.startsWith(p) && !(isSci && k.startsWith("0406"))).reduce((s,k) => s + termPatternCounts.get(k)!, 0);
-                        const slotsRequiredUntilNow = studCurriculum.filter(c => c.year <= studyYear && c.mappingPattern === item.pattern).length;
+                        const pat          = item.pattern!;
+                        const p            = pat.replace('%', '');
+                        const isSci        = pat === '04%';
+                        const isSocialElec = pat === '0802%'; // 0802% + GENERAL_EDUCATION
+                        const isFreeElec   = pat === '%';     // category FREE_ELECTIVE (ไม่ซ้ำ SOCIAL-ELEC)
+
+                        // ── passedInPattern ───────────────────────────────────────────────
+                        const passedInPattern = stdRecords.filter(r => {
+                            if (r.grade === Grade.F) return false;
+                            if (allLockedCourseIds.has(r.courseId)) return false;
+                            if (isSocialElec) return r.course.courseCode.startsWith('0802') && r.course.category === 'GENERAL_EDUCATION';
+                            if (isFreeElec)   return r.course.category === 'FREE_ELECTIVE';
+                            if (isSci)        return r.course.courseCode.startsWith('04') && !r.course.courseCode.startsWith('0406');
+                            return r.course.courseCode.startsWith(p);
+                        }).length;
+
+                        const inTermInPattern       = termPatternCounts.get(pat) ?? 0;
+                        const slotsRequiredUntilNow = studCurriculum.filter(c => c.year <= studyYear && c.mappingPattern === pat).length;
 
                         if (passedInPattern + inTermInPattern >= slotsRequiredUntilNow) continue;
-                        targets = sectionsPool.filter(s => s.course.courseCode.startsWith(p) && !(isSci && s.course.courseCode.startsWith("0406")) && !allLockedCourseIds.has(s.courseId) && !passedIds.has(s.courseId) && !termCourseIds.has(s.courseId) && s.enrolledCount < s.capacity && prereqOk(s.courseId));
+
+                        // ── targets ───────────────────────────────────────────────────────
+                        const baseFilter = (s: any) =>
+                            !allLockedCourseIds.has(s.courseId) &&
+                            !passedIds.has(s.courseId) &&
+                            !termCourseIds.has(s.courseId) &&
+                            s.enrolledCount < s.capacity &&
+                            prereqOk(s.courseId);
+
+                        if (isSocialElec) {
+                            targets = sectionsPool.filter(s =>
+                                s.course.courseCode.startsWith('0802') &&
+                                s.course.category === 'GENERAL_EDUCATION' &&
+                                baseFilter(s)
+                            );
+                        } else if (isFreeElec) {
+                            targets = sectionsPool.filter(s =>
+                                s.course.category === 'FREE_ELECTIVE' &&
+                                baseFilter(s)
+                            );
+                        } else if (isSci) {
+                            targets = sectionsPool.filter(s =>
+                                s.course.courseCode.startsWith('04') &&
+                                !s.course.courseCode.startsWith('0406') &&
+                                baseFilter(s)
+                            );
+                        } else {
+                            // CS-ELEC (0406%), LANG-ELEC (0801%), SPORT-ELEC (0803035%), HUMAN-ELEC (0803036%) etc.
+                            targets = sectionsPool.filter(s =>
+                                s.course.courseCode.startsWith(p) &&
+                                baseFilter(s)
+                            );
+                        }
                     }
 
                     for (const sec of targets) {
@@ -382,12 +521,15 @@ async function main() {
 
             if (enrollmentBatch.length > 0) {
                 await prisma.enrollment.createMany({ data: enrollmentBatch });
-                // Batch update section enrolledCount (ทีละ 50 parallel)
+                // Bulk update section enrolledCount via raw SQL
                 const dirtySecss = sectionsPool.filter(s => s.enrolledCount > 0);
-                for (let i = 0; i < dirtySecss.length; i += 50) {
-                    await Promise.all(dirtySecss.slice(i, i + 50).map(s =>
-                        prisma.section.update({ where: { id: s.id }, data: { enrolledCount: s.enrolledCount } })
-                    ));
+                if (dirtySecss.length > 0) {
+                    const vals = dirtySecss.map(s => `('${s.id}'::uuid,${s.enrolledCount})`).join(',');
+                    await prisma.$executeRawUnsafe(`
+                        UPDATE "Section" sec SET "enrolledCount"=v.cnt
+                        FROM (VALUES ${vals}) AS v(id,cnt)
+                        WHERE sec.id=v.id
+                    `);
                 }
             }
 
@@ -397,6 +539,23 @@ async function main() {
                 await prisma.section.deleteMany({ where: { id: { in: emptySecIds } } });
             }
             const sectionCountAfter = sectionCountBefore - emptySecIds.length;
+
+            // สำหรับ isLastOfAll: Phase 3 ไม่รัน (เทอมปัจจุบัน ยังไม่มีเกรด)
+            // แต่ต้อง update year ให้ถูกต้อง (ไม่งั้นปี 5 จะยังแสดงเป็นปี 4)
+            if (isLastOfAll) {
+                const yearBatch = allStudents
+                    .filter(std => !(std as any)._graduated)
+                    .map(std => ({ userId: std.userId, year: Math.max(1, (year - std.entryYear) + 1) }));
+                if (yearBatch.length > 0) {
+                    const vals = yearBatch.map(u => `('${u.userId}'::uuid,${u.year})`).join(',');
+                    await prisma.$executeRawUnsafe(`
+                        UPDATE "StudentProfile" sp SET year=v.yr
+                        FROM (VALUES ${vals}) AS v(uid,yr)
+                        WHERE sp."userId"=v.uid
+                    `);
+                }
+                process.stdout.write(`   📅 Updated year for ${yearBatch.length} active students\n`);
+            }
 
             // PHASE 3: END SEMESTER
             let grads = 0, coops = 0, coopReverts = 0;
@@ -413,13 +572,32 @@ async function main() {
                     const gp = GP_MAP[grade] ?? 0;
                     const cr = e.section.course.credits;
                     enrollUpdates.push({ id: e.id, midtermScore: midterm, finalScore, totalScore: total, grade, status: EnrollmentStatus.SUCCESS });
-                    recBatch.push({ studentId: e.studentId, courseId: e.section.courseId, academicYear: year, semester, grade, gpa: gp, gp: gp * cr, ca: cr, cs: grade === Grade.F ? 0 : cr });
+                    // pre-COOP (040613130) = S/U graded: ไม่คิด GPA (ca=0, gp=0) แต่ยังนับ credit สำเร็จ
+                    const isPreCoop = e.section.courseId === preCoopCourseId;
+                    recBatch.push({
+                        studentId: e.studentId, courseId: e.section.courseId, academicYear: year, semester, grade,
+                        gpa: gp,
+                        gp: isPreCoop ? 0 : gp * cr,   // pre-COOP: ไม่ contribute grade points
+                        ca: isPreCoop ? 0 : cr,          // pre-COOP: ไม่ contribute credits attempted (ไม่คิด GPA)
+                        cs: grade === Grade.F ? 0 : cr   // ทุกวิชา (รวม pre-COOP): นับ credit passed ปกติ
+                    });
                 }
-                // Batch update enrollments (ทีละ 50 parallel)
-                for (let i = 0; i < enrollUpdates.length; i += 50) {
-                    await Promise.all(enrollUpdates.slice(i, i + 50).map(u =>
-                        prisma.enrollment.update({ where: { id: u.id }, data: { midtermScore: u.midtermScore, finalScore: u.finalScore, totalScore: u.totalScore, grade: u.grade, status: u.status } })
-                    ));
+                // Bulk update enrollments via single raw SQL (ไม่ต้อง N round trips)
+                if (enrollUpdates.length > 0) {
+                    const CHUNK = 300;
+                    for (let i = 0; i < enrollUpdates.length; i += CHUNK) {
+                        const chunk = enrollUpdates.slice(i, i + CHUNK);
+                        const vals = chunk.map(u =>
+                            `('${u.id}'::uuid,${u.midtermScore},${u.finalScore},${u.totalScore},'${u.grade}'::"Grade",'SUCCESS'::"EnrollmentStatus")`
+                        ).join(',');
+                        await prisma.$executeRawUnsafe(`
+                            UPDATE "Enrollment" e
+                            SET "midtermScore"=v.mid,"finalScore"=v.fin,"totalScore"=v.tot,
+                                grade=v.g::"Grade",status=v.s::"EnrollmentStatus"
+                            FROM (VALUES ${vals}) AS v(id,mid,fin,tot,g,s)
+                            WHERE e.id=v.id
+                        `);
+                    }
                 }
                 await prisma.academicRecord.createMany({ data: recBatch });
 
@@ -463,8 +641,7 @@ async function main() {
                         .filter(c => c.curriculumId === cId)
                         .every(c => rs.some(r => r.courseId === c.courseId && r.grade !== Grade.F));
                     
-                    const minCurric = cId ? (await prisma.curriculum.findUnique({ where: { id: cId } })) : null;
-                    const minCredits = minCurric?.totalCredits || 128;
+                    const minCredits = curriculumCreditsMap.get(cId ?? '') ?? 128;
                     const isG = tCS >= minCredits && gpax >= 2.0 && allCorePassedForCurric;
                     if (isG) grads++;
                     // sync in-memory
@@ -473,11 +650,22 @@ async function main() {
                     if (isG) (std as any)._graduated = true;
                     profileUpdates.push({ userId: std.userId, data: { gpax: parseFloat(gpax.toFixed(2)), ca: tCA, cs: tCS, year: sY, status: isG ? StudentStatus.GRADUATED : StudentStatus.STUDYING, curriculumId: cId } });
                 }
-                // Batch update profiles (ทีละ 50 parallel)
-                for (let i = 0; i < profileUpdates.length; i += 50) {
-                    await Promise.all(profileUpdates.slice(i, i + 50).map(u =>
-                        prisma.studentProfile.update({ where: { userId: u.userId }, data: u.data })
-                    ));
+                // Bulk update student profiles via raw SQL (single round trip per chunk)
+                if (profileUpdates.length > 0) {
+                    const CHUNK = 200;
+                    for (let i = 0; i < profileUpdates.length; i += CHUNK) {
+                        const chunk = profileUpdates.slice(i, i + CHUNK);
+                        const vals = chunk.map(u =>
+                            `('${u.userId}'::uuid,${u.data.gpax},${u.data.ca},${u.data.cs},${u.data.year},'${u.data.status}'::"StudentStatus",'${u.data.curriculumId}'::uuid)`
+                        ).join(',');
+                        await prisma.$executeRawUnsafe(`
+                            UPDATE "StudentProfile" sp
+                            SET gpax=v.gpax,ca=v.ca,cs=v.cs,year=v.year,
+                                status=v.status::"StudentStatus","curriculumId"=v.cid
+                            FROM (VALUES ${vals}) AS v(uid,gpax,ca,cs,year,status,cid)
+                            WHERE sp."userId"=v.uid
+                        `);
+                    }
                 }
             }
             const revertStr = coopReverts > 0 ? ` | ⛔ F→REG: ${coopReverts}` : '';

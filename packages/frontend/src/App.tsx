@@ -18,6 +18,7 @@ import ProfessorDashboard from './pages/professor/Dashboard';
 import ProfessorSchedule from './pages/professor/Schedule';
 import ProfessorSections from './pages/professor/Sections';
 import SectionGrading from './pages/professor/Grading';
+import SectionDetail from './pages/professor/SectionDetail';
 // Admin
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminFaculties from './pages/admin/Faculties';
@@ -28,6 +29,8 @@ import AdminSections from './pages/admin/Sections';
 import AdminUsers from './pages/admin/Users';
 import AuditLogPage from './pages/admin/AuditLog';
 import AdminSemesterConfig from './pages/admin/SemesterConfig';
+
+import { useEffect, useRef } from 'react';
 
 function DashboardRedirect() {
   const { user } = useAuthStore();
@@ -41,6 +44,33 @@ function DashboardRedirect() {
 }
 
 function App() {
+  const { isAuthenticated, logout } = useAuthStore();
+  const timeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const INACTIVITY_LIMIT = 30 * 60 * 1000; // 30 minutes
+
+    const resetTimer = () => {
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = window.setTimeout(() => {
+        logout();
+        window.location.href = '/login';
+      }, INACTIVITY_LIMIT);
+    };
+
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(event => window.addEventListener(event, resetTimer));
+    
+    resetTimer();
+
+    return () => {
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      events.forEach(event => window.removeEventListener(event, resetTimer));
+    };
+  }, [isAuthenticated, logout]);
+
   return (
     <BrowserRouter>
       <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
@@ -81,15 +111,12 @@ function App() {
             <Route path="dashboard" element={
               <ProtectedRoute allowedRoles={['PROFESSOR']}><ProfessorDashboard /></ProtectedRoute>
             } />
-            <Route path="schedule" element={
-              <ProtectedRoute allowedRoles={['PROFESSOR']}><ProfessorSchedule /></ProtectedRoute>
+            <Route path="schedule" element={<Navigate to="/professor/dashboard" replace />} />
+            <Route path="sections" element={<Navigate to="/professor/dashboard" replace />} />
+            <Route path="section/:id" element={
+              <ProtectedRoute allowedRoles={['PROFESSOR']}><SectionDetail /></ProtectedRoute>
             } />
-            <Route path="sections" element={
-              <ProtectedRoute allowedRoles={['PROFESSOR']}><ProfessorSections /></ProtectedRoute>
-            } />
-            <Route path="section/:id/grading" element={
-              <ProtectedRoute allowedRoles={['PROFESSOR']}><SectionGrading /></ProtectedRoute>
-            } />
+            <Route path="section/:id/grading" element={<Navigate to="/professor/sections" replace />} />
           </Route>
 
           {/* ── Admin ────────────────────────────────────────── */}

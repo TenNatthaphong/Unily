@@ -7,7 +7,11 @@ export class CurriculumItemController {
   constructor(private readonly itemService: CurriculumItemService) {}
 
   @Get()
-  findById(@Query('code') code: string) {
-    return this.itemService.findById(code);
+  findByQuery(
+    @Query('code') code?: string,
+    @Query('id') id?: string
+  ) {
+    if (id) return this.itemService.findByCurriculumId(id);
+    return this.itemService.findById(code || '');
   } 
 }

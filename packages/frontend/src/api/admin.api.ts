@@ -20,16 +20,16 @@ export const adminApi = {
 
   // --- Sections Management ---
   createSection: (data: any) =>
-    api.post<Section>('/section', data),
+    api.post<Section>('/admin/sections', data),
 
   updateSection: (id: string, data: any) =>
-    api.patch<Section>(`/section/${id}`, data),
+    api.patch<Section>(`/admin/sections/${id}`, data),
 
   deleteSection: (id: string) =>
-    api.delete(`/section/${id}`),
+    api.delete(`/admin/sections/${id}`),
 
-  getAllSections: (params: { page: number; limit: number; academicYear?: number; semester?: number; search?: string }) =>
-    api.get<PaginatedResponse<Section>>('/admin/sections', { params }), // Assuming backend has this under admin
+  getAllSections: (params: { page: number; limit: number; academicYear?: number; semester?: number; search?: string; dayOfWeek?: string; sortBy?: string; sortDir?: string }) =>
+    api.get<PaginatedResponse<Section>>('/admin/sections', { params }),
 
   // --- Universal CSV Import ---
   importUsersCsv: (file: File) => {
@@ -66,4 +66,17 @@ export const adminApi = {
   // --- Audit Log ---
   getAuditLogs: (params: { page?: number; limit?: number; action?: string; adminName?: string }) =>
     api.get<PaginatedResponse<AuditLog>>('/admin/audit-log', { params }),
+
+  activateUser: (userId: string) =>
+    api.patch(`/admin/users/${userId}/activate`),
+
+  getTopFailedCourses: (academicYear: number, semester: number) =>
+    api.get<{ courseCode: string; nameTh: string; failCount: number }[]>(
+      '/admin/stats/failed-courses', { params: { academicYear, semester } }
+    ),
+
+  getTopEnrolledCourses: (academicYear: number, semester: number) =>
+    api.get<{ courseCode: string; nameTh: string; enrollCount: number }[]>(
+      '/admin/stats/top-enrolled', { params: { academicYear, semester } }
+    ),
 };

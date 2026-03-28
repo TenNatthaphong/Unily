@@ -8,6 +8,7 @@ import { isTimeOverlapping } from '../common/utils/time.util';
 import { calculateGrade, getGradePoint, calculateGPAX } from '../common/utils/grade.util';
 import csvParser = require('csv-parser');
 import { Readable } from 'stream';
+import { paginate } from '../common/utils/pagination.util';
 
 @Injectable()
 export class SectionService {
@@ -91,27 +92,68 @@ export class SectionService {
     });
   }
 
-  async findAllAdmin(params: { page: number; limit: number; academicYear?: number; semester?: number; search?: string }) {
-    const { page, limit, academicYear, semester, search } = params;
+  async findAllAdmin(params: { page: number; limit: number; academicYear?: number; semester?: number; search?: string; dayOfWeek?: string; sortBy?: string; sortDir?: string }) {
+    const { page, limit, academicYear, semester, search, dayOfWeek, sortBy, sortDir = 'asc' } = params;
     const skip = (page - 1) * limit;
     const where: any = {};
     if (academicYear) where.academicYear = academicYear;
     if (semester) where.semester = semester;
     if (search) where.course = { courseCode: { contains: search, mode: 'insensitive' } };
+    if (dayOfWeek && dayOfWeek !== 'ALL') {
+      where.schedules = { some: { dayOfWeek } };
+    }
+
+    if (sortBy === 'TIME') {
+      const allSections = await this.prisma.section.findMany({
+        where,
+        include: {
+          course: { select: { courseCode: true, nameTh: true, credits: true, nameEn: true } },
+          professor: { include: { user: { select: { firstName: true, lastName: true } } } },
+          schedules: true,
+        }
+      });
+
+      const ascOrder: Record<string, number> = { MON: 1, TUE: 2, WED: 3, THU: 4, FRI: 5, SAT: 6, SUN: 7 };
+      const descOrder: Record<string, number> = { FRI: 1, THU: 2, WED: 3, TUE: 4, MON: 5, SAT: 6, SUN: 7 };
+      
+      const sorted = allSections.sort((a, b) => {
+        const s1 = a.schedules?.[0];
+        const s2 = b.schedules?.[0];
+        if (!s1 || !s2) return 0;
+        
+        const o1 = sortDir === 'desc' ? (descOrder[s1.dayOfWeek] || 99) : (ascOrder[s1.dayOfWeek] || 99);
+        const o2 = sortDir === 'desc' ? (descOrder[s2.dayOfWeek] || 99) : (ascOrder[s2.dayOfWeek] || 99);
+        
+        if (o1 !== o2) return o1 - o2; 
+        
+        const t1 = s1.startTime;
+        const t2 = s2.startTime;
+        return sortDir === 'desc' ? t2.localeCompare(t1) : t1.localeCompare(t2);
+      });
+
+      return paginate(sorted.slice(skip, skip + limit), sorted.length, page, limit);
+    }
+
+    const orderBy: any[] = [];
+    if (sortBy === 'MOST_ENROLLED') {
+      orderBy.push({ enrolledCount: sortDir === 'desc' ? 'desc' : 'asc' });
+    } else {
+      orderBy.push({ academicYear: 'desc' }, { semester: 'asc' }, { sectionNo: 'asc' });
+    }
 
     const [data, total] = await this.prisma.$transaction([
       this.prisma.section.findMany({
         where, skip, take: limit,
         include: {
-          course: { select: { courseCode: true, nameTh: true, credits: true } },
+          course: { select: { courseCode: true, nameTh: true, credits: true, nameEn: true } },
           professor: { include: { user: { select: { firstName: true, lastName: true } } } },
           schedules: true,
         },
-        orderBy: [{ academicYear: 'desc' }, { semester: 'asc' }, { sectionNo: 'asc' }],
+        orderBy,
       }),
       this.prisma.section.count({ where }),
     ]);
-    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+    return paginate(data, total, page, limit);
   }
 
   async findOne(id: string) {
@@ -151,19 +193,19 @@ export class SectionService {
     return Promise.all(dto.grades.map(async g => {
       const enr = await this.prisma.enrollment.findUnique({ where: { studentId_sectionId: { studentId: g.studentId, sectionId: id } } });
       if (!enr) return null;
-      const mid = g.midtermScore || enr.midtermScore;
-      const fin = g.finalScore || enr.finalScore;
+      const mid = g.midtermScore ?? enr.midtermScore ?? 0;
+      const fin = g.finalScore ?? enr.finalScore ?? 0;
       const total = mid + fin;
       return this.prisma.enrollment.update({
         where: { id: enr.id },
-        data: { midtermScore: mid, finalScore: fin, totalScore: total, grade: g.grade || calculateGrade(total) }
+        data: { midtermScore: mid, finalScore: fin, totalScore: total, grade: g.grade ?? calculateGrade(total) }
       });
     }));
   }
 
   async closeSemester(yr: number, sem: number) {
     const config = await this.prisma.semesterConfig.findFirst({ where: { academicYear: yr, semester: sem } });
-    if (!config || config.isCurrent) throw new BadRequestException('Cannot close current or non-existent semester');
+    if (!config) throw new BadRequestException('Semester configuration not found');
 
     return this.prisma.$transaction(async (tx) => {
       const sections = await tx.section.findMany({ where: { academicYear: yr, semester: sem }, include: { enrollments: true, course: true } });
@@ -201,6 +243,48 @@ export class SectionService {
       data: { year: { increment: 1 } }
     });
     return { count: result.count };
+  }
+
+  // ===========================================================================
+  // STATISTICS
+  // ===========================================================================
+
+  async getTopEnrolledCourses(yr: number, sem: number) {
+    // RAW QUERY to group by courseId across sections
+    const results: any[] = await this.prisma.$queryRaw`
+      SELECT c."courseCode", c."nameTh", COUNT(e.id)::int as "enrollCount"
+      FROM "Enrollment" e
+      JOIN "Section" s ON e."sectionId" = s.id
+      JOIN "Course" c ON s."courseId" = c.id
+      WHERE s."academicYear" = ${yr} AND s.semester = ${sem} 
+        AND e.status IN ('ENROLLED', 'SUCCESS')
+      GROUP BY c."courseCode", c."nameTh"
+      ORDER BY "enrollCount" DESC
+      LIMIT 5
+    `;
+    return results;
+  }
+
+  async getTopFailedCourses(yr: number, sem: number) {
+    const groups = await this.prisma.academicRecord.groupBy({
+      by: ['courseId'],
+      where: { academicYear: yr, semester: sem, grade: 'F' },
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } },
+      take: 5,
+    });
+
+    const results = await Promise.all(groups.map(async g => {
+      const course = await this.prisma.course.findUnique({ where: { id: g.courseId } });
+      if (!course) return null;
+      return {
+        courseCode: course.courseCode,
+        nameTh: course.nameTh,
+        failCount: g._count.id
+      };
+    }));
+
+    return results.filter((r): r is { courseCode: string; nameTh: string; failCount: number } => r !== null);
   }
 
   // ===========================================================================

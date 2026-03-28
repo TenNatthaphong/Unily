@@ -2,10 +2,11 @@ import api from './axios';
 import type { Department } from '../types';
 
 export const departmentApi = {
+  /** Get departments by facultyId (UUID) */
   getByFaculty: (facultyId: string) =>
-    api.get<Department[]>(`/department/faculty/${facultyId}`),
+    api.get<Department[]>(`/department/by-faculty/${facultyId}`),
 
-  // Admin
+  // Admin CRUD — match updated routes (PATCH/DELETE by :id)
   create: (data: Partial<Department>) =>
     api.post<Department>('/admin/department', data),
 
@@ -14,4 +15,10 @@ export const departmentApi = {
 
   delete: (id: string) =>
     api.delete(`/admin/department/${id}`),
+
+  importCsv: (file: File) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return api.post('/admin/department/import', fd);
+  },
 };

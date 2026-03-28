@@ -12,50 +12,229 @@
       { "code": "040613100", "year": 1, "semester": 1, "x": 1, "y": 4 },
       { "code": "SOCIAL-ELEC", "year": 1, "semester": 1, "x": 1, "y": 5, "pattern": "0802%" },
       { "code": "SCI-ELEC", "year": 1, "semester": 1, "x": 1, "y": 6, "pattern": "04%" },
-      
-      { "code": "040613104", "year": 1, "semester": 2, "x": 2, "y": 1 },
-      { "code": "040613301", "year": 1, "semester": 2, "x": 2, "y": 2 },
-      { "code": "040613203", "year": 1, "semester": 2, "x": 2, "y": 3 },
-      { "code": "040613501", "year": 1, "semester": 2, "x": 2, "y": 4 },
-      { "code": "040613303", "year": 1, "semester": 2, "x": 2, "y": 5 },
-      { "code": "040503011", "year": 1, "semester": 2, "x": 2, "y": 6 },
-      
-      { "code": "040613105", "year": 2, "semester": 1, "x": 3, "y": 1 },
-      { "code": "040613205", "year": 2, "semester": 1, "x": 3, "y": 2 },
-      { "code": "040613204", "year": 2, "semester": 1, "x": 3, "y": 3 },
-      { "code": "040613302", "year": 2, "semester": 1, "x": 3, "y": 4 },
-      { "code": "040613111", "year": 2, "semester": 1, "x": 3, "y": 5 },
-      { "code": "080103001", "year": 2, "semester": 1, "x": 3, "y": 6 },
-
-      { "code": "040613502", "year": 2, "semester": 2, "x": 4, "y": 1 },
-      { "code": "040613206", "year": 2, "semester": 2, "x": 4, "y": 2 },
-      { "code": "040613701", "year": 2, "semester": 2, "x": 4, "y": 3 },
-      { "code": "040613306", "year": 2, "semester": 2, "x": 4, "y": 4 },
-      { "code": "040613601", "year": 2, "semester": 2, "x": 4, "y": 5 },
-      { "code": "080103002", "year": 2, "semester": 2, "x": 4, "y": 6 },
-
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 1, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 2, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 3, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 4, "pattern": "0406%" },
-      { "code": "SCI-ELEC", "year": 3, "semester": 1, "x": 5, "y": 5, "pattern": "04%" },
-      { "code": "LANG-ELEC", "year": 3, "semester": 1, "x": 5, "y": 6, "pattern": "0801%" },
-
-      { "code": "CS-ELEC", "year": 3, "semester": 2, "x": 6, "y": 1, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 2, "x": 6, "y": 2, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 2, "x": 6, "y": 3, "pattern": "0406%" },
-      { "code": "040003004", "year": 3, "semester": 2, "x": 6, "y": 4 },
-      { "code": "SPORT-ELEC", "year": 3, "semester": 2, "x": 6, "y": 5, "pattern": "0803035%" },
-      { "code": "LANG-ELEC", "year": 3, "semester": 2, "x": 6, "y": 6, "pattern": "0801%" },
-
-      { "code": "040613141", "year": 4, "semester": 1, "x": 7, "y": 1 },
-      { "code": "CS-ELEC", "year": 4, "semester": 1, "x": 7, "y": 2, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 4, "semester": 1, "x": 7, "y": 3, "pattern": "0406%" },
-      { "code": "FREE-ELEC", "year": 4, "semester": 1, "x": 7, "y": 4, "pattern": "%" },
-
-      { "code": "040613142", "year": 4, "semester": 2, "x": 8, "y": 1 },
-      { "code": "CS-ELEC", "year": 4, "semester": 2, "x": 8, "y": 2, "pattern": "0406%" },
-      { "code": "FREE-ELEC", "year": 4, "semester": 2, "x": 8, "y": 3, "pattern": "%" }
+      { "code": "040613104", "year": 1,"semester": 2,"x": 2,"y": 1 },
+      { "code": "040613301", "year": 1,"semester": 2,"x": 2,"y": 2 },
+      { "code": "040613203", "year": 1,"semester": 2,"x": 2,"y": 3 },
+      { "code": "040613501", "year": 1,"semester": 2,"x": 2,"y": 4 },
+      { "code": "040613303", "year": 1,"semester": 2,"x": 2,"y": 5 },
+      { "code": "040503011", "year": 1,"semester": 2,"x": 2,"y": 6 },
+      { "code": "040613105", "year": 2,"semester": 1,"x": 3,"y": 1 },
+      { "code": "040613205", "year": 2,"semester": 1,"x": 3,"y": 2 },
+      { "code": "040613204", "year": 2,"semester": 1,"x": 3,"y": 3 },
+      { "code": "040613302", "year": 2,"semester": 1,"x": 3,"y": 4 },
+      {
+        "code": "040613111",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 5
+      },
+      {
+        "code": "080103001",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 6
+      },
+      {
+        "code": "040613502",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 1
+      },
+      {
+        "code": "040613206",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 2
+      },
+      {
+        "code": "040613701",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 3
+      },
+      {
+        "code": "040613306",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 4
+      },
+      {
+        "code": "040613601",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 5
+      },
+      {
+        "code": "080103002",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 6
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 1,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 2,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 3,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 4,
+        "pattern": "0406%"
+      },
+      {
+        "code": "SCI-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 5,
+        "pattern": "04%"
+      },
+      {
+        "code": "LANG-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 6,
+        "pattern": "0801%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 1,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 2,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 3,
+        "pattern": "0406%"
+      },
+      {
+        "code": "040003004",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 4
+      },
+      {
+        "code": "SPORT-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 5,
+        "pattern": "0803035%"
+      },
+      {
+        "code": "LANG-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 6,
+        "pattern": "0801%"
+      },
+      {
+        "code": "040613141",
+        "year": 4,
+        "semester": 1,
+        "x": 7,
+        "y": 1
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 4,
+        "semester": 1,
+        "x": 7,
+        "y": 2,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 4,
+        "semester": 1,
+        "x": 7,
+        "y": 3,
+        "pattern": "0406%"
+      },
+      {
+        "code": "FREE-ELEC",
+        "year": 4,
+        "semester": 1,
+        "x": 7,
+        "y": 4,
+        "pattern": "%"
+      },
+      {
+        "code": "040613142",
+        "year": 4,
+        "semester": 2,
+        "x": 8,
+        "y": 1
+      },
+      {
+        "code": "HUMAN-ELEC",
+        "year": 4,
+        "semester": 2,
+        "x": 8,
+        "y": 2,
+        "pattern": "0803036%"
+      },
+      {
+        "code": "SOCIAL-ELEC",
+        "year": 4,
+        "semester": 2,
+        "x": 8,
+        "y": 3,
+        "pattern": "0802%"
+      },
+      {
+        "code": "FREE-ELEC",
+        "year": 4,
+        "semester": 2,
+        "x": 8,
+        "y": 4,
+        "pattern": "%"
+      }
     ]
   },
   {
@@ -65,57 +244,324 @@
     "totalCredits": 128,
     "note": "นักศึกษาต้องผ่านเกณฑ์คัดเลือกและลงเรียนวิชาเตรียมสหกิจศึกษาก่อนไปปฏิบัติงานจริงในชั้นปีที่ 4",
     "courses": [
-      { "code": "040203101", "year": 1, "semester": 1, "x": 1, "y": 1 },
-      { "code": "040613103", "year": 1, "semester": 1, "x": 1, "y": 2 },
-      { "code": "040613201", "year": 1, "semester": 1, "x": 1, "y": 3 },
-      { "code": "040613100", "year": 1, "semester": 1, "x": 1, "y": 4 },
-      { "code": "SOCIAL-ELEC", "year": 1, "semester": 1, "x": 1, "y": 5, "pattern": "0802%" },
-      { "code": "SCI-ELEC", "year": 1, "semester": 1, "x": 1, "y": 6, "pattern": "04%" },
-      
-      { "code": "040613104", "year": 1, "semester": 2, "x": 2, "y": 1 },
-      { "code": "040613301", "year": 1, "semester": 2, "x": 2, "y": 2 },
-      { "code": "040613203", "year": 1, "semester": 2, "x": 2, "y": 3 },
-      { "code": "040613501", "year": 1, "semester": 2, "x": 2, "y": 4 },
-      { "code": "040613303", "year": 1, "semester": 2, "x": 2, "y": 5 },
-      { "code": "040503011", "year": 1, "semester": 2, "x": 2, "y": 6 },
-      
-      { "code": "040613105", "year": 2, "semester": 1, "x": 3, "y": 1 },
-      { "code": "040613205", "year": 2, "semester": 1, "x": 3, "y": 2 },
-      { "code": "040613204", "year": 2, "semester": 1, "x": 3, "y": 3 },
-      { "code": "040613302", "year": 2, "semester": 1, "x": 3, "y": 4 },
-      { "code": "040613111", "year": 2, "semester": 1, "x": 3, "y": 5 },
-      { "code": "080103001", "year": 2, "semester": 1, "x": 3, "y": 6 },
-
-      { "code": "040613502", "year": 2, "semester": 2, "x": 4, "y": 1 },
-      { "code": "040613206", "year": 2, "semester": 2, "x": 4, "y": 2 },
-      { "code": "040613701", "year": 2, "semester": 2, "x": 4, "y": 3 },
-      { "code": "040613306", "year": 2, "semester": 2, "x": 4, "y": 4 },
-      { "code": "040613601", "year": 2, "semester": 2, "x": 4, "y": 5 },
-      { "code": "080103002", "year": 2, "semester": 2, "x": 4, "y": 6 },
-
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 1, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 2, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 3, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 1, "x": 5, "y": 4, "pattern": "0406%" },
-      { "code": "SCI-ELEC", "year": 3, "semester": 1, "x": 5, "y": 5, "pattern": "04%" },
-      { "code": "LANG-ELEC", "year": 3, "semester": 1, "x": 5, "y": 6, "pattern": "0801%" },
-
-      { "code": "CS-ELEC", "year": 3, "semester": 2, "x": 6, "y": 1, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 2, "x": 6, "y": 2, "pattern": "0406%" },
-      { "code": "CS-ELEC", "year": 3, "semester": 2, "x": 6, "y": 3, "pattern": "0406%" },
-      { "code": "040003004", "year": 3, "semester": 2, "x": 6, "y": 4 },
-      { "code": "SPORT-ELEC", "year": 3, "semester": 2, "x": 6, "y": 5, "pattern": "0803035%" },
-      { "code": "LANG-ELEC", "year": 3, "semester": 2, "x": 6, "y": 6, "pattern": "0801%" },
-      { "code": "040613130", "year": 3, "semester": 2, "x": 6, "y": 7 },
-
-      { "code": "040613131", "year": 3, "semester": 3, "x": 7, "y": 1 },
-
-      { "code": "040613132", "year": 4, "semester": 1, "x": 8, "y": 1 },
-
-      { "code": "FREE-ELEC", "year": 4, "semester": 2, "x": 9, "y": 1, "pattern": "%" },
-      { "code": "SOCIAL-ELEC", "year": 4, "semester": 2, "x": 9, "y": 2, "pattern": "0802%" },
-      { "code": "HUMAN-ELEC", "year": 4, "semester": 2, "x": 9, "y": 3, "pattern": "0803036%" },
-      { "code": "FREE-ELEC", "year": 4, "semester": 2, "x": 9, "y": 1, "pattern": "%" }
+      {
+        "code": "040203101",
+        "year": 1,
+        "semester": 1,
+        "x": 1,
+        "y": 1
+      },
+      {
+        "code": "040613103",
+        "year": 1,
+        "semester": 1,
+        "x": 1,
+        "y": 2
+      },
+      {
+        "code": "040613201",
+        "year": 1,
+        "semester": 1,
+        "x": 1,
+        "y": 3
+      },
+      {
+        "code": "040613100",
+        "year": 1,
+        "semester": 1,
+        "x": 1,
+        "y": 4
+      },
+      {
+        "code": "SOCIAL-ELEC",
+        "year": 1,
+        "semester": 1,
+        "x": 1,
+        "y": 5,
+        "pattern": "0802%"
+      },
+      {
+        "code": "SCI-ELEC",
+        "year": 1,
+        "semester": 1,
+        "x": 1,
+        "y": 6,
+        "pattern": "04%"
+      },
+      {
+        "code": "040613104",
+        "year": 1,
+        "semester": 2,
+        "x": 2,
+        "y": 1
+      },
+      {
+        "code": "040613301",
+        "year": 1,
+        "semester": 2,
+        "x": 2,
+        "y": 2
+      },
+      {
+        "code": "040613203",
+        "year": 1,
+        "semester": 2,
+        "x": 2,
+        "y": 3
+      },
+      {
+        "code": "040613501",
+        "year": 1,
+        "semester": 2,
+        "x": 2,
+        "y": 4
+      },
+      {
+        "code": "040613303",
+        "year": 1,
+        "semester": 2,
+        "x": 2,
+        "y": 5
+      },
+      {
+        "code": "040503011",
+        "year": 1,
+        "semester": 2,
+        "x": 2,
+        "y": 6
+      },
+      {
+        "code": "040613105",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 1
+      },
+      {
+        "code": "040613205",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 2
+      },
+      {
+        "code": "040613204",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 3
+      },
+      {
+        "code": "040613302",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 4
+      },
+      {
+        "code": "040613111",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 5
+      },
+      {
+        "code": "080103001",
+        "year": 2,
+        "semester": 1,
+        "x": 3,
+        "y": 6
+      },
+      {
+        "code": "040613502",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 1
+      },
+      {
+        "code": "040613206",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 2
+      },
+      {
+        "code": "040613701",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 3
+      },
+      {
+        "code": "040613306",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 4
+      },
+      {
+        "code": "040613601",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 5
+      },
+      {
+        "code": "080103002",
+        "year": 2,
+        "semester": 2,
+        "x": 4,
+        "y": 6
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 1,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 2,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 3,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 4,
+        "pattern": "0406%"
+      },
+      {
+        "code": "SCI-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 5,
+        "pattern": "04%"
+      },
+      {
+        "code": "LANG-ELEC",
+        "year": 3,
+        "semester": 1,
+        "x": 5,
+        "y": 6,
+        "pattern": "0801%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 1,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 2,
+        "pattern": "0406%"
+      },
+      {
+        "code": "CS-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 3,
+        "pattern": "0406%"
+      },
+      {
+        "code": "040003004",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 4
+      },
+      {
+        "code": "SPORT-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 5,
+        "pattern": "0803035%"
+      },
+      {
+        "code": "LANG-ELEC",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 6,
+        "pattern": "0801%"
+      },
+      {
+        "code": "040613130",
+        "year": 3,
+        "semester": 2,
+        "x": 6,
+        "y": 7
+      },
+      {
+        "code": "040613131",
+        "year": 3,
+        "semester": 3,
+        "x": 7,
+        "y": 1
+      },
+      {
+        "code": "040613132",
+        "year": 4,
+        "semester": 1,
+        "x": 8,
+        "y": 1
+      },
+      {
+        "code": "HUMAN-ELEC",
+        "year": 4,
+        "semester": 2,
+        "x": 9,
+        "y": 1,
+        "pattern": "0803036%"
+      },
+      {
+        "code": "SOCIAL-ELEC",
+        "year": 4,
+        "semester": 2,
+        "x": 9,
+        "y": 2,
+        "pattern": "0802%"
+      },
+      {
+        "code": "FREE-ELEC",
+        "year": 4,
+        "semester": 2,
+        "x": 9,
+        "y": 3,
+        "pattern": "%"
+      },
+      {
+        "code": "FREE-ELEC",
+        "year": 4,
+        "semester": 2,
+        "x": 9,
+        "y": 4,
+        "pattern": "%"
+      }
     ]
   }
 ]

@@ -43,12 +43,16 @@ export default function StudentDashboard() {
 
   const fetchData = useCallback(async () => {
     try {
-      const confRes = await configApi.getCurrentSemester();
-      setConfig(confRes.data);
-      const yr = confRes.data?.academicYear;
-      const sem = confRes.data?.semester;
+      const semsRes = await configApi.getPublicSemesters();
+      const sems: SemesterConfig[] = semsRes.data ?? [];
+      const current = sems.find((s: SemesterConfig) => s.isCurrent)
+        ?? sems.sort((a: SemesterConfig, b: SemesterConfig) =>
+            b.academicYear !== a.academicYear ? b.academicYear - a.academicYear : b.semester - a.semester
+          )[0];
+      if (!current) { setIsLoading(false); return; }
+      setConfig(current);
       const [enrRes, eventRes] = await Promise.all([
-        enrollmentApi.getMyEnrollments(yr, sem),
+        enrollmentApi.getMyEnrollments(current.academicYear, current.semester),
         configApi.getEvents(),
       ]);
       setEnrollments(enrRes.data.filter((e: any) => e.status !== 'DROPPED'));
@@ -95,10 +99,10 @@ export default function StudentDashboard() {
           </div>
           <div className="dash-mini-stat">
             <span className="label">Credits</span>
-            <span className="val">{student?.cs || 0}/128</span>
+            <span className="val">{student?.cs || 0}</span>
           </div>
           <div className="dash-progress-bar">
-            <div className="dash-progress-fill" style={{ width: `${((student?.cs || 0) / 128) * 100}%` }} />
+            <div className="dash-progress-fill" style={{ width: `${Math.min(((student?.cs || 0) / 128) * 100, 100)}%` }} />
           </div>
         </div>
       </motion.div>

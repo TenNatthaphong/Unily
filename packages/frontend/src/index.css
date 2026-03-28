@@ -108,7 +108,7 @@
 }
 
 body {
-  font-family: 'Inter', 'Prompt', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg-body);
   color: var(--text-primary);
   line-height: 1.6;
@@ -152,7 +152,7 @@ button, input, select, textarea {
 .card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg), var(--shadow-glow);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--bg-card-border);
 }
 
 /* --- Components: Buttons --- */
@@ -183,6 +183,20 @@ button, input, select, textarea {
   filter: brightness(1.1);
 }
 
+.btn-import {
+  background: var(--primary);
+  color: white;
+  border-radius: 99px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+  border: none;
+}
+.btn-import:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
 .btn-secondary {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
@@ -199,11 +213,17 @@ button, input, select, textarea {
   border: 1px solid rgba(239, 68, 68, 0.2);
 }
 .btn-danger:hover {
-  background: var(--danger);
-  color: white;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--danger);
 }
 
-/* --- Components: Inputs --- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- Container Utilities --- */
 .input {
   width: 100%;
   background: rgba(15, 23, 42, 0.6);
@@ -238,7 +258,7 @@ button, input, select, textarea {
 
 /* --- Custom Utilities --- */
 .text-gradient {
-  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -251,14 +271,6 @@ button, input, select, textarea {
 }
 
 /* ── Shared Admin/Page Layout Utilities ───────────────────────────────────── */
-
-/* Missing vars compatibility */
-:root {
-  --bg-surface: rgba(30, 41, 59, 0.7);
-  --bg-elevated: rgba(30, 41, 59, 0.9);
-  --border: rgba(255, 255, 255, 0.08);
-  --primary-mild: rgba(59, 130, 246, 0.08);
-}
 
 .admin-page, .records-page, .student-schedule, .prof-schedule, .prof-sections, .graduation-page {
   padding: var(--space-xl);
@@ -600,3 +612,204 @@ button, input, select, textarea {
 }
 .status-badge.active { background: rgba(16,185,129,0.15); color: var(--success); }
 .status-badge.inactive { background: rgba(100,116,139,0.15); color: var(--text-muted); }
+
+/* ─── Modal header / footer (new pattern) ─────────────────────────────── */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 {
+  font-size: 1.125rem;
+  font-weight: 800;
+  margin: 0;
+}
+.modal-content {
+  padding: var(--space-xl);
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-xl);
+  border-top: 1px solid var(--border);
+}
+.btn-close {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.btn-close:hover { background: var(--bg-elevated); color: var(--text-primary); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { background: var(--bg-elevated); border-color: var(--border-hover, var(--border)); }
+
+/* ─── Pagination ─────────────────────────────────────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-lg);
+}
+.pagination button {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s ease;
+}
+.pagination button:hover:not(:disabled) { 
+  border-color: var(--primary); 
+  color: var(--primary); 
+  background: var(--primary-mild);
+}
+.pagination button.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+.pagination button:disabled { opacity: 0.35; cursor: not-allowed; }
+.pagination .p-dots {
+  width: 36px;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+/* ─── Data table (global for all admin pages) ────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.data-table th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-elevated);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table .text-center, .data-table th.text-center { text-align: center; }
+.data-table .text-right, .data-table th.text-right  { text-align: right; }
+
+/* Utilities */
+.align-center { align-items: center; }
+.j-center { justify-content: center; }
+.m-center { margin-left: auto; margin-right: auto; }
+.w-full { width: 100%; }
+.m-0 { margin: 0; }
+.p-0 { padding: 0; }
+
+/* ─── Admin page layout shared ───────────────────────────────────────────── */
+.admin-page {
+  padding: var(--space-xl);
+}
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xl);
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.page-title h1 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  margin: 0;
+}
+.page-title svg { color: var(--primary); }
+
+.page-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  transition: border-color 0.2s;
+}
+.search-box:focus-within { border-color: var(--primary); }
+.search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  width: 100%;
+}
+.search-box svg { color: var(--text-muted); flex-shrink: 0; }
+
+/* ─── CSV btn ────────────────────────────────────────────────────────────── */
+.csv-btn { display: flex; align-items: center; gap: 8px; }
+
+/* ─── Row actions ────────────────────────────────────────────────────────── */
+.row-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Pop-in animation ───────────────────────────────────────────────────── */
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-pop-in { animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+

@@ -3,14 +3,16 @@ import { useTranslation } from '../../i18n/useTranslation';
 import { useAuthStore } from '../../stores/auth.store';
 import { adminApi } from '../../api/admin.api';
 import { configApi } from '../../api/config.api';
-import type { SemesterConfig, Event } from '../../types';
+import type { SemesterConfig, Event, AuditLog } from '../../types';
 import {
-  ShieldAlert, Settings, FileUp, Calendar,
-  Trash2, Plus, Clock, Loader2, AlertTriangle,
-  Database, UserPlus, BookOpen, Layers, CalendarDays, MapPin, ChevronRight
+  Settings, Calendar,
+  Trash2, Plus, Loader2,
+  CalendarDays, MapPin, ChevronRight, ScrollText
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import './Dashboard.css';
+
+const ACTION_TH: Record<string, string> = { CREATE: 'สร้าง', UPDATE: 'แก้ไข', DELETE: 'ลบ' };
 
 const CATEGORY_COLOR: Record<string, string> = {
   GENERAL: 'var(--text-muted)',
@@ -35,20 +37,22 @@ export default function AdminDashboard() {
   const user = useAuthStore(s => s.user);
   const [config, setConfig] = useState<SemesterConfig | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isClosingSem, setIsClosingSem] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [confRes, evRes] = await Promise.all([
+        const [confRes, evRes, logRes] = await Promise.all([
           configApi.getCurrentSemester(),
-          configApi.getEvents()
+          configApi.getEvents(),
+          adminApi.getAuditLogs({ limit: 5, page: 1 }),
         ]);
         setConfig(confRes.data);
         setEvents(evRes.data);
+        setAuditLogs(logRes.data.data ?? []);
       } catch (err) {
-        toast.error('Failed to load system state');
+        toast.error('โหลดข้อมูลไม่สำเร็จ');
       } finally {
         setIsLoading(false);
       }
@@ -56,36 +60,9 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
-  const handleCloseSemester = async () => {
-    if (!config) return;
-    setIsClosingSem(true);
-    toast.promise(adminApi.closeSemester(config.academicYear, config.semester), {
-      loading: 'Closing semester & processing grades...',
-      success: 'Semester closed successfully!',
-      error: 'Failed to close semester'
-    }).finally(() => setIsClosingSem(false));
-  };
-
-  const onImport = (type: 'users' | 'courses' | 'sections' | 'curriculums', e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    let promise;
-    if (type === 'users') promise = adminApi.importUsersCsv(file);
-    else if (type === 'courses') promise = adminApi.importCoursesCsv(file);
-    else if (type === 'sections') promise = adminApi.importSectionsCsv(file);
-    else promise = adminApi.importCurriculumCsv(file);
-
-    toast.promise(promise, {
-      loading: `Importing ${type}...`,
-      success: `Successfully imported ${type}`,
-      error: `Failed to import ${type}`
-    });
-  };
-
   if (isLoading) {
     return (
-      <div className="loading-state-premium">
+      <div className="loading-state">
         <Loader2 className="spin" size={40} />
       </div>
     );
@@ -106,7 +83,7 @@ export default function AdminDashboard() {
   calItems.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <div className="admin-dashboard animate-fade-in">
+    <div className="admin-dashboard">
       {/* ── Compact greeting ── */}
       <div className="dash-greeting">
         <div className="dash-greeting-left">
@@ -115,11 +92,11 @@ export default function AdminDashboard() {
         </div>
         <div className="dash-greeting-stats">
           <div className="dash-mini-stat">
-            <span className="label">Term</span>
+            <span className="label">เทอม</span>
             <span className="val">{config ? `${config.semester}/${config.academicYear}` : '—'}</span>
           </div>
           <div className="dash-mini-stat">
-            <span className="label">Status</span>
+            <span className="label">สถานะ</span>
             <span className="val" style={{ color: config?.isCurrent ? 'var(--success)' : 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 800 }}>
               {config?.isCurrent ? 'ACTIVE' : 'IDLE'}
             </span>
@@ -151,7 +128,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="dash-banner-content">
-              <h2 className="dash-banner-title">System Control & Bulk Operations</h2>
+              <h2 className="dash-banner-title">ยินดีต้อนรับสู่ระบบ Unily</h2>
             </div>
           )}
         </div>
@@ -181,151 +158,29 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="admin-grid">
-        <div className="admin-main">
-          {/* Current Semester Status */}
-          <div className="card system-pulse-card glass-panel-premium">
-            <div className="card-header">
-              <Database size={20} />
-              <h4>{t('nav.semester_config')}</h4>
-              <span className={`status-badge-premium ${config?.isCurrent ? 'active' : ''}`}>
-                {config?.isCurrent ? 'ACTIVE' : 'IDLE'}
-              </span>
-            </div>
-            <div className="config-grid">
-              <div className="config-item">
-                <span className="config-label">Academic Term</span>
-                <span className="config-value">{config?.semester}/{config?.academicYear}</span>
-              </div>
-              <div className="config-item">
-                <span className="config-label">Registration Window</span>
-                <span className="config-value">
-                  {config ? new Date(config.regStart).toLocaleDateString() : 'N/A'} - {config ? new Date(config.regEnd).toLocaleDateString() : 'N/A'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bulk Operations */}
-          <div className="card bulk-ops-card mt-lg">
-            <div className="card-header">
-              <FileUp size={20} />
-              <h4>Universal CSV Import</h4>
-            </div>
-            <div className="ops-stack">
-              {/* Users Import */}
-              <div className="op-row">
-                <div className="op-info">
-                  <UserPlus size={24} className="text-primary" />
-                  <div className="op-text">
-                    <h5>Bulk User Import</h5>
-                    <p>Import students, professors, and admins</p>
-                  </div>
-                </div>
-                <label className="btn btn-secondary shadow-indigo">
-                  Select CSV
-                  <input type="file" hidden accept=".csv" onChange={e => onImport('users', e)} />
-                </label>
-              </div>
-
-              {/* Courses Import */}
-              <div className="op-row">
-                <div className="op-info">
-                  <BookOpen size={24} className="text-success" />
-                  <div className="op-text">
-                    <h5>Bulk Course Import</h5>
-                    <p>Populate university course catalog</p>
-                  </div>
-                </div>
-                <label className="btn btn-secondary shadow-emerald">
-                  Select CSV
-                  <input type="file" hidden accept=".csv" onChange={e => onImport('courses', e)} />
-                </label>
-              </div>
-
-              {/* Sections Import */}
-              <div className="op-row">
-                <div className="op-info">
-                  <Layers size={24} className="text-amber" />
-                  <div className="op-text">
-                    <h5>Bulk Section Import</h5>
-                    <p>Setup master schedule & section capacities</p>
-                  </div>
-                </div>
-                <label className="btn btn-secondary shadow-amber">
-                  Select CSV
-                  <input type="file" hidden accept=".csv" onChange={e => onImport('sections', e)} />
-                </label>
-              </div>
-
-              {/* Curriculum Import */}
-              <div className="op-row">
-                <div className="op-info">
-                  <BookOpen size={24} className="text-indigo" />
-                  <div className="op-text">
-                    <h5>Bulk Curriculum Import</h5>
-                    <p>Import academic curriculum structures</p>
-                  </div>
-                </div>
-                <label className="btn btn-secondary shadow-indigo">
-                  Select CSV
-                  <input type="file" hidden accept=".csv" onChange={e => onImport('curriculums', e)} />
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Critical Actions */}
-          <div className="card critical-card mt-lg danger-border">
-            <div className="card-header">
-              <ShieldAlert size={20} className="text-danger" />
-              <h4>System Maintenance</h4>
-            </div>
-            <div className="op-row danger-bg-soft">
-              <div className="op-info">
-                <AlertTriangle size={24} className="text-danger" />
-                <div className="op-text">
-                  <h5>{t('nav.semester_close')}</h5>
-                  <p>Processing final grades & advancing terms.</p>
-                </div>
-              </div>
-              <button
-                className="btn btn-danger shadow-rose"
-                onClick={handleCloseSemester}
-                disabled={isClosingSem}
-              >
-                {isClosingSem ? <Loader2 className="spin" size={16} /> : <Clock size={16} />}
-                Run Global Process
-              </button>
-            </div>
-          </div>
+      {/* ── Recent Activity ── */}
+      <div className="section-header">
+        <div className="section-title">
+          <ScrollText size={18} />
+          <h4>กิจกรรมล่าสุด</h4>
         </div>
-
-        <div className="admin-sidebar">
-          <div className="card events-mgr-card">
-            <div className="card-header">
-              <Calendar size={20} />
-              <h4>Global Events</h4>
-              <button className="btn-icon circle-btn primary">
-                <Plus size={16} />
-              </button>
-            </div>
-            <div className="admin-events-list">
-              {events.map(ev => (
-                <div key={ev.id} className="admin-event-item">
-                  <div className="event-main">
-                    <span className="event-name">{ev.title}</span>
-                    <span className="event-date font-xs text-muted">{new Date(ev.startDate).toLocaleDateString()}</span>
-                  </div>
-                  <div className="event-actions">
-                    <button className="btn-icon delete"><Trash2 size={16} /></button>
-                  </div>
-                </div>
-              ))}
-              {events.length === 0 && <div className="no-data-msg p-md text-center">No system events scheduled</div>}
-            </div>
-          </div>
-        </div>
+        <a href="/admin/audit-log" className="view-all-link">ดูทั้งหมด</a>
+      </div>
+      <div className="card admin-audit-card">
+        <table className="admin-audit-table">
+          <thead><tr><th>แอดมิน</th><th>กิจกรรม</th><th>เป้าหมาย</th><th>เวลา</th></tr></thead>
+          <tbody>
+            {auditLogs.map(log => (
+              <tr key={log.id}>
+                <td>{log.adminName}</td>
+                <td><span className={`action-badge action-${log.action.toLowerCase()}`}>{ACTION_TH[log.action] ?? log.action}</span></td>
+                <td style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>{log.target}</td>
+                <td style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>{new Date(log.createdAt).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })}</td>
+              </tr>
+            ))}
+            {auditLogs.length === 0 && <tr><td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '20px' }}>ไม่มีกิจกรรม</td></tr>}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -1509,19 +1509,5 @@
     "facultyId": "08",
     "deptId": "02",
     "prerequisites": []
-  },
-  {
-    "code": "080303803",
-    "nameTh": "พฤติกรรมนวัตกรรมในการทำงาน",
-    "nameEn": "Innovative Work Behavior",
-    "credits": 3,
-    "lectureHours": 3,
-    "labHours": 0,
-    "selfStudyHours": 6,
-    "category": "FREE_ELECTIVE",
-    "isWildcard": false,
-    "facultyId": "08",
-    "deptId": "03",
-    "prerequisites": []
   }
 ]

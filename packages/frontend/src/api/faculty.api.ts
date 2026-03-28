@@ -12,6 +12,12 @@ export const facultyApi = {
   update: (id: string, data: Partial<Faculty>) =>
     api.patch<Faculty>(`/admin/faculty/${id}`, data),
 
-  delete: (id: string) =>
-    api.delete(`/admin/faculty/${id}`),
+  delete: (facultyCode: string) =>
+    api.delete('/admin/faculty', { params: { facultyCode } }),
+
+  importCsv: (file: File) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return api.post('/admin/faculty/import', fd);
+  },
 };

@@ -5,7 +5,12 @@
 .tt-header-cell { padding: var(--space-sm); text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
 .tt-time-cell { padding: var(--space-xs) var(--space-sm); font-size: 0.75rem; color: var(--text-muted); border-right: 1px solid var(--border); text-align: right; }
 .tt-cell { min-height: 48px; border-bottom: 1px solid var(--border); padding: 2px; position: relative; }
-.tt-block { border-radius: var(--radius-sm); padding: 3px 6px; margin-bottom: 2px; }
+.tt-block { border-radius: var(--radius-sm); padding: 3px 6px; margin-bottom: 2px; background: var(--primary-mild); }
 .tt-block-code { font-size: 0.72rem; font-weight: 600; color: var(--text-primary); }
 .tt-block-sec { font-size: 0.65rem; color: var(--text-secondary); }
 .tt-block-time { font-size: 0.62rem; color: var(--text-muted); }
+
+/* ── Light-mode overrides ──────────────────────────────────────────────── */
+[data-theme="light"] .no-data-msg {
+  color: var(--text-secondary);
+}

@@ -25,19 +25,17 @@ import { Select } from '../../components/ui/Select';
 // ── Main page ───────────────────────────────────────────────────────────────
 export default function StudentSchedule() {
   const [allSemesters, setAllSemesters] = useState<SemesterConfig[]>([]);
-  const [selectedSemId, setSelectedSemId] = useState<string>('');
-  // map: semesterId → enrollments (only semesters that have ≥1 enrollment)
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedSemNum, setSelectedSemNum] = useState<number | null>(null);
   const [enrollmentMap, setEnrollmentMap] = useState<Map<string, Enrollment[]>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
 
-  // ── Load all semesters → fetch enrollments concurrently → filter to non-empty ──
   useEffect(() => {
     configApi.getPublicSemesters()
       .then(async r => {
         const sems: SemesterConfig[] = r.data;
         setAllSemesters(sems);
 
-        // Fetch all semesters' enrollments in parallel
         const results = await Promise.allSettled(
           sems.map(s =>
             enrollmentApi.getMyEnrollments(s.academicYear, s.semester)
@@ -56,14 +54,14 @@ export default function StudentSchedule() {
         });
         setEnrollmentMap(map);
 
-        // Default: current semester if it has enrollments, else first available
+        // Default: current semester if has enrollments, else latest
         const sorted = [...sems].sort((a, b) =>
           b.academicYear !== a.academicYear ? b.academicYear - a.academicYear : b.semester - a.semester
         );
         const first =
           sorted.find(s => s.isCurrent && map.has(s.id)) ||
           sorted.find(s => map.has(s.id));
-        if (first) setSelectedSemId(first.id);
+        if (first) { setSelectedYear(first.academicYear); setSelectedSemNum(first.semester); }
         setIsLoading(false);
       })
       .catch(() => {
@@ -72,28 +70,41 @@ export default function StudentSchedule() {
       });
   }, []);
 
-  // Only semesters where student has enrollments, sorted year/term desc
-  const validSemesters = useMemo(() =>
-    [...allSemesters]
-      .filter(s => enrollmentMap.has(s.id))
-      .sort((a, b) =>
-        b.academicYear !== a.academicYear
-          ? b.academicYear - a.academicYear
-          : b.semester - a.semester
-      ),
+  // Unique years from semesters that have enrollments, sorted desc
+  const availableYears = useMemo(() =>
+    [...new Set(
+      [...allSemesters]
+        .filter(s => enrollmentMap.has(s.id))
+        .map(s => s.academicYear)
+    )].sort((a, b) => b - a),
     [allSemesters, enrollmentMap]
   );
 
-  const selectedSem = useMemo(
-    () => allSemesters.find(s => s.id === selectedSemId),
-    [allSemesters, selectedSemId]
+  // Semesters available for the selected year
+  const availableSems = useMemo(() =>
+    [...allSemesters]
+      .filter(s => s.academicYear === selectedYear && enrollmentMap.has(s.id))
+      .map(s => s.semester)
+      .sort(),
+    [allSemesters, enrollmentMap, selectedYear]
   );
 
-  // Enrollments for selected semester — from cache (no extra fetch)
-  const enrollments = useMemo(
-    () => enrollmentMap.get(selectedSemId) || [],
-    [enrollmentMap, selectedSemId]
+  const selectedSem = useMemo(
+    () => allSemesters.find(s => s.academicYear === selectedYear && s.semester === selectedSemNum),
+    [allSemesters, selectedYear, selectedSemNum]
   );
+
+  const enrollments = useMemo(
+    () => (selectedSem ? enrollmentMap.get(selectedSem.id) : undefined) || [],
+    [enrollmentMap, selectedSem]
+  );
+
+  // When year changes, auto-pick first available semester for that year
+  const handleYearChange = (yr: number) => {
+    setSelectedYear(yr);
+    const sems = allSemesters.filter(s => s.academicYear === yr && enrollmentMap.has(s.id)).map(s => s.semester).sort();
+    setSelectedSemNum(sems[0] ?? null);
+  };
 
   if (isLoading) {
     return (
@@ -106,7 +117,7 @@ export default function StudentSchedule() {
     );
   }
 
-  if (validSemesters.length === 0) {
+  if (availableYears.length === 0) {
     return (
       <div className="student-schedule">
         <div className="card no-enroll-msg">
@@ -145,19 +156,26 @@ export default function StudentSchedule() {
         </motion.div>
 
         <motion.div
+          className="schedule-filter-group"
           initial={{ opacity: 0, x: 12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.08, duration: 0.38 }}
         >
-          <div style={{ minWidth: 220 }}>
-            <Select
-              value={selectedSemId}
-              onChange={setSelectedSemId}
-              options={validSemesters.map(s => ({
-                value: s.id,
-                label: `ภาคเรียน ${s.semester}/${s.academicYear}${s.isCurrent ? ' (ปัจจุบัน)' : ''}`
-              }))}
-            />
+          <Select
+            value={selectedYear ?? 0}
+            onChange={v => handleYearChange(Number(v))}
+            options={availableYears.map(y => ({ value: y, label: String(y) }))}
+            icon={<CalendarDays size={15} />}
+          />
+          <div className="sem-btn-group">
+            {[1, 2, 3].map(n => (
+              <button
+                key={n}
+                className={`sem-btn${selectedSemNum === n ? ' active' : ''}${!availableSems.includes(n) ? ' disabled' : ''}`}
+                onClick={() => availableSems.includes(n) && setSelectedSemNum(n)}
+                disabled={!availableSems.includes(n)}
+              >{n}</button>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -165,7 +183,7 @@ export default function StudentSchedule() {
       {/* ── Content: timetable + table ──────────────────── */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={selectedSemId}
+          key={`${selectedYear}-${selectedSemNum}`}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
