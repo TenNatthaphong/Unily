@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../course/prisma/prisma.service';
 import { calculateGPAX } from '../common/utils/grade.util';
 import { getElectiveName, isElective } from '../common/utils/elective.util';
 import { Grade } from '@prisma/client';

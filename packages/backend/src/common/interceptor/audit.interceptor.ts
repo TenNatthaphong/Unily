@@ -1,6 +1,6 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../../course/prisma/prisma.service';
 import { Action } from '@prisma/client';
 
 @Injectable()
@@ -89,4 +89,4 @@ export class AuditInterceptor implements NestInterceptor {
       }),
     );
   }
-}
+}

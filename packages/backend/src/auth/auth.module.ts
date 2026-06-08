@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshTokenStrategy } from './strategies/refresh.strategy';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../course/prisma/prisma.module';
 
 @Module({
   imports: [

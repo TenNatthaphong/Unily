@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Unily — Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:#1a1f2e;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Sarabun','Outfit',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─── 16:9 STAGE ─────────────────────────────────── */
+/* Design at 1280×720, then scale to fit viewport     */
+#stage{
+  width:1280px;
+  height:720px;
+  position:relative;
+  overflow:hidden;
+  transform-origin:center center;
+  flex-shrink:0;
+}
+
+/* ─── TOKENS ─────────────────────────────────────── */
+:root{
+  --blue:#3b82f6;--blue-d:#1d4ed8;--blue-l:#93c5fd;
+  --blue-bg:rgba(59,130,246,.08);
+  --green:#10b981;--amber:#f59e0b;--red:#ef4444;
+  --cyan:#0ea5e9;--purple:#8b5cf6;
+  --bg:#f0f4ff;--surface:rgba(255,255,255,.92);
+  --text:#0f172a;--muted:#64748b;--faint:#94a3b8;
+  --border:rgba(148,163,184,.22);
+  --sh:0 2px 12px rgba(15,23,42,.09),0 0 0 1px rgba(148,163,184,.13);
+  --sh-lg:0 8px 32px rgba(15,23,42,.13),0 0 0 1px rgba(148,163,184,.10);
+  --sh-blue:0 6px 24px rgba(59,130,246,.26);
+}
+
+/* ─── BACKGROUND ─────────────────────────────────── */
+.bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 800px 600px at 12% 8%,rgba(59,130,246,.12) 0%,transparent 60%),
+    radial-gradient(ellipse 600px 500px at 88% 92%,rgba(14,165,233,.09) 0%,transparent 55%),
+    radial-gradient(ellipse 400px 300px at 65% 35%,rgba(139,92,246,.06) 0%,transparent 55%),
+    linear-gradient(150deg,#f0f4ff 0%,#e8f2ff 45%,#f0f9ff 100%);
+}
+.bg::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(148,163,184,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(148,163,184,.07) 1px,transparent 1px);
+  background-size:50px 50px;
+}
+
+/* ─── PROGRESS BAR ───────────────────────────────── */
+#prog{
+  position:absolute;top:0;left:0;height:3px;z-index:300;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  border-radius:0 2px 2px 0;
+  box-shadow:0 0 10px rgba(59,130,246,.5);
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── SLIDES ─────────────────────────────────────── */
+.slide{
+  position:absolute;inset:0;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transform:translateY(20px) scale(.988);
+  transition:opacity .48s cubic-bezier(.4,0,.2,1),
+              transform .48s cubic-bezier(.4,0,.2,1);
+}
+.slide.active{opacity:1;transform:none;pointer-events:auto;}
+.slide.out{
+  opacity:0;transform:translateY(-18px) scale(.988);
+  transition:opacity .32s cubic-bezier(.4,0,.2,1),
+              transform .32s cubic-bezier(.4,0,.2,1);
+}
+
+/* ─── STAGGER ────────────────────────────────────── */
+.s{opacity:0;transform:translateY(14px)}
+.slide.active .s{animation:up .5s cubic-bezier(.4,0,.2,1) both}
+@keyframes up{to{opacity:1;transform:none}}
+
+/* ─── NAV ────────────────────────────────────────── */
+.nav{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  z-index:200;display:flex;align-items:center;gap:12px;
+  background:var(--surface);backdrop-filter:blur(16px);
+  border:1px solid var(--border);border-radius:40px;
+  padding:7px 14px;box-shadow:var(--sh);
+}
+.nb{
+  width:30px;height:30px;border-radius:50%;
+  border:1.5px solid var(--border);background:transparent;
+  color:var(--muted);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;flex-shrink:0;
+}
+.nb:hover{background:var(--blue);color:#fff;border-color:var(--blue);transform:scale(1.1)}
+.nb:disabled{opacity:.22;cursor:default;transform:none}
+.dots{display:flex;gap:5px}
+.dot{width:6px;height:6px;border-radius:3px;background:var(--faint);
+  cursor:pointer;transition:all .28s cubic-bezier(.4,0,.2,1)}
+.dot.on{width:20px;background:var(--blue)}
+.nc{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;
+  color:var(--faint);letter-spacing:.06em;min-width:30px;text-align:center}
+.hint{
+  position:absolute;bottom:20px;right:28px;z-index:200;
+  font-family:'Outfit',sans-serif;font-size:10px;color:var(--faint);
+  display:flex;gap:4px;align-items:center;
+}
+.hint kbd{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:3px;padding:1px 5px;font-size:9.5px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
+}
+
+/* ─── SHARED COMPONENTS ──────────────────────────── */
+.label{
+  font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--blue);
+  background:var(--blue-bg);border:1px solid rgba(59,130,246,.2);
+  border-radius:20px;padding:3px 12px;display:inline-block;
+}
+.h2{
+  font-family:'Outfit',sans-serif;font-size:28px;font-weight:800;
+  letter-spacing:-.025em;color:var(--text);
+}
+.h2 .th{font-family:'Sarabun',sans-serif;}
+.pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 11px;border:1px solid var(--border);border-radius:8px;
+  background:var(--surface);font-family:'Outfit',sans-serif;
+  font-size:11px;font-weight:500;color:var(--muted);
+}
+.pill .d{width:6px;height:6px;border-radius:50%}
+
+/* ════════════════════════════════════════════════════
+   SLIDE 1 — HERO
+════════════════════════════════════════════════════ */
+#s1{flex-direction:column;gap:0;text-align:center;}
+#s1 .o1{position:absolute;width:580px;height:580px;border-radius:50%;
+  background:radial-gradient(circle,rgba(59,130,246,.15),rgba(14,165,233,.07) 50%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(50px);pointer-events:none;z-index:0}
+#s1 .o2{position:absolute;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(139,92,246,.11),transparent 70%);
+  top:5%;left:6%;filter:blur(40px);pointer-events:none;z-index:0}
+#s1 .inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+#s1 .icon{
+  width:68px;height:68px;background:linear-gradient(135deg,var(--blue),var(--blue-d));
+  border-radius:20px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;box-shadow:var(--sh-blue),0 0 0 9px rgba(59,130,246,.09);
+  animation:bob 4s ease-in-out infinite;
+}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#s1 .t{
+  font-family:'Outfit',sans-serif;font-size:100px;font-weight:900;
+  letter-spacing:-.05em;line-height:1;
+  background:linear-gradient(140deg,#0f172a 0%,#1e40af 45%,#3b82f6 75%,#38bdf8 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px;
+}
+#s1 .s1t{font-family:'Sarabun',sans-serif;font-size:20px;font-weight:600;
+  color:var(--text);margin-bottom:4px}
+#s1 .s2t{font-family:'Outfit',sans-serif;font-size:14px;color:var(--muted);
+  letter-spacing:.02em;margin-bottom:36px}
+#s1 .sep{width:50px;height:3px;background:linear-gradient(90deg,var(--blue),var(--cyan));
+  border-radius:2px;margin:0 auto 28px}
+#s1 .acard{
+  display:inline-flex;align-items:center;gap:14px;
+  padding:12px 22px;background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;box-shadow:var(--sh);
+}
+#s1 .av{
+  width:42px;height:42px;background:linear-gradient(135deg,var(--blue),var(--blue-d));
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',sans-serif;font-size:17px;font-weight:800;color:#fff;
+}
+#s1 .an{font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+#s1 .ai{font-family:'Outfit',sans-serif;font-size:12px;color:var(--muted);margin-top:1px}
+
+/* ════════════════════════════════════════════════════
+   SLIDE 2 — OVERVIEW
+════════════════════════════════════════════════════ */
+#s2 .wrap{width:1160px;display:flex;flex-direction:column;gap:16px}
+#s2 .top{display:flex;align-items:center;gap:10px}
+#s2 .desc{
+  font-family:'Sarabun',sans-serif;font-size:14px;color:var(--muted);
+  line-height:1.65;max-width:700px;
+}
+#s2 .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rc{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;box-shadow:var(--sh);
+}
+.rc-stripe{height:3px;width:100%}
+.rc-head{padding:12px 14px 0;display:flex;align-items:center;gap:10px}
+.rc-ico{width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.rc-name{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.rc-en{font-family:'Outfit',sans-serif;font-size:9.5px;font-weight:600;
+  color:var(--faint);text-transform:uppercase;letter-spacing:.08em}
+/* mini mockup */
+.mock{margin:10px 12px 0;background:#f8fafc;border:1px solid var(--border);
+  border-radius:8px;overflow:hidden}
+.mbar{height:18px;display:flex;align-items:center;gap:4px;padding:0 8px;
+  background:#f1f5f9;border-bottom:1px solid var(--border)}
+.md{width:5px;height:5px;border-radius:50%}
+.mtitle{font-family:'Outfit',sans-serif;font-size:7.5px;color:#94a3b8;margin-left:5px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:5px 7px 7px}
+.mc{height:22px;border-radius:5px;border:1px solid var(--border);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',sans-serif;font-size:7px;font-weight:600}
+.mlist{padding:5px 8px 7px;display:flex;flex-direction:column;gap:3px}
+.mrow{display:flex;align-items:center;gap:5px}
+.mav{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-family:'Outfit',sans-serif;font-size:6px;font-weight:700}
+.mline{flex:1;height:4px;border-radius:2px;background:var(--border)}
+.mtag{padding:1px 5px;border-radius:3px;font-family:'Outfit',sans-serif;font-size:6.5px;font-weight:700}
+.mstats{padding:5px 8px 7px;display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.mstat{padding:4px 6px;background:#fff;border:1px solid var(--border);border-radius:5px}
+.mstat-v{font-family:'Outfit',sans-serif;font-size:11px;font-weight:800}
+.mstat-l{font-family:'Outfit',sans-serif;font-size:6.5px;color:#94a3b8}
+/* list items */
+.rc-list{padding:8px 14px 12px;display:flex;flex-direction:column;gap:5px}
+.ri{font-family:'Sarabun',sans-serif;font-size:12px;color:var(--muted);
+  display:flex;align-items:flex-start;gap:6px}
+.ri::before{content:'→';color:var(--faint);font-size:9.5px;margin-top:1px;flex-shrink:0}
+#s2 .tags{display:flex;flex-wrap:wrap;gap:7px}
+
+/* ════════════════════════════════════════════════════
+   SLIDE 3 — TECH STACK
+════════════════════════════════════════════════════ */
+#s3 .wrap{width:1160px;display:flex;flex-direction:column;gap:16px}
+#s3 .top{display:flex;align-items:center;gap:10px}
+#s3 .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sc{border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh-lg)}
+.sc-h{padding:16px 20px;display:flex;align-items:center;gap:12px}
+.sc-h.fe{background:linear-gradient(135deg,#1e3a8a,#1d4ed8 40%,#3b82f6 70%,#0ea5e9)}
+.sc-h.be{background:linear-gradient(135deg,#3b0764,#6d28d9 40%,#7c3aed 70%,#8b5cf6)}
+.sc-hi{width:38px;height:38px;background:rgba(255,255,255,.18);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:19px}
+.sc-ht{font-family:'Outfit',sans-serif;font-size:18px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.sc-hs{font-family:'Outfit',sans-serif;font-size:11px;color:rgba(255,255,255,.62);margin-top:1px}
+.sc-b{background:var(--surface);padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.si{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  transition:transform .14s;
+}
+.si:hover{transform:translateX(4px)}
+.si-i{width:24px;height:24px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.si-n{font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;color:var(--text)}
+.si-t{font-family:'Outfit',sans-serif;font-size:10px;color:var(--faint);margin-left:auto}
+.db{
+  display:flex;align-items:center;gap:8px;padding:7px 10px;
+  background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(14,165,233,.04));
+  border:1px solid rgba(59,130,246,.15);border-radius:8px;margin-top:2px;
+}
+.db span{font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;color:var(--text)}
+.db small{font-family:'Outfit',sans-serif;font-size:10px;color:var(--muted);margin-left:auto}
+
+/* ════════════════════════════════════════════════════
+   SLIDE 4 — FEATURES
+════════════════════════════════════════════════════ */
+#s4 .wrap{width:1160px;display:flex;flex-direction:column;gap:16px}
+#s4 .top{display:flex;align-items:center;gap:10px}
+#s4 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fc{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column;
+  transition:transform .22s,box-shadow .22s;
+}
+.fc:hover{transform:translateY(-3px);box-shadow:var(--sh-lg)}
+.fc-top{padding:14px 16px 0;display:flex;align-items:center;gap:11px}
+.fc-ico{width:42px;height:42px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.fc-t{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.fc-t .th{font-family:'Sarabun',sans-serif}
+.fc-d{font-family:'Sarabun',sans-serif;font-size:12.5px;line-height:1.6;
+  color:var(--muted);padding:6px 16px 0}
+.fc-demo{margin:10px 12px 12px;border-radius:10px;overflow:hidden;
+  border:1px solid var(--border);background:#f8fafc}
+
+/* demo: flow */
+.dflow{padding:10px 10px 0}
+.frow{display:flex;gap:5px;align-items:center;margin-bottom:5px}
+.fn{padding:4px 8px;border-radius:6px;font-family:'Outfit',sans-serif;
+  font-size:9.5px;font-weight:600;white-space:nowrap}
+.fn.done{background:rgba(16,185,129,.11);border:1px solid rgba(16,185,129,.25);color:#059669}
+.fn.curr{background:rgba(59,130,246,.11);border:1px solid rgba(59,130,246,.28);color:var(--blue)}
+.fn.lock{background:rgba(148,163,184,.09);border:1px solid var(--border);color:var(--faint)}
+.farr{font-size:9px;color:var(--faint)}
+.fleg{display:flex;gap:8px;padding:6px 10px;border-top:1px solid var(--border);margin-top:2px}
+.fli{display:flex;align-items:center;gap:3px;font-family:'Outfit',sans-serif;
+  font-size:8.5px;font-weight:500;color:var(--muted)}
+.fld{width:6px;height:6px;border-radius:50%}
+
+/* demo: clone */
+.dclone{padding:10px}
+.ccard{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.cchead{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.cct{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;color:var(--text)}
+.ccb{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;
+  background:var(--blue-bg);border:1px solid rgba(59,130,246,.22);border-radius:4px;
+  font-family:'Outfit',sans-serif;font-size:8.5px;font-weight:600;color:var(--blue)}
+.ccs{font-family:'Outfit',sans-serif;font-size:9px;color:var(--faint)}
+.cnew{background:rgba(16,185,129,.06);border:1px dashed rgba(16,185,129,.3);
+  border-radius:7px;padding:6px 10px;
+  font-family:'Sarabun',sans-serif;font-size:10.5px;color:#059669;
+  display:flex;align-items:center;gap:5px}
+
+/* demo: stats */
+.dstats{padding:9px 10px}
+.shead{font-family:'Outfit',sans-serif;font-size:8px;font-weight:700;
+  color:var(--faint);letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.shead::after{content:'';flex:1;height:1px;background:var(--border)}
+.srow{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.slbl{font-family:'Outfit',sans-serif;font-size:8.5px;font-weight:600;
+  color:var(--muted);width:56px;white-space:nowrap}
+.strk{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.sfil{height:100%;border-radius:3px}
+.sval{font-family:'Outfit',sans-serif;font-size:8.5px;font-weight:700;
+  color:var(--text);width:22px;text-align:right}
+
+/* demo: ui */
+.dui{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px}
+.up{border-radius:8px;border:1px solid var(--border);overflow:hidden}
+.utb{height:17px;display:flex;align-items:center;gap:3px;padding:0 7px;border-bottom-width:1px;border-bottom-style:solid}
+.ubd{width:5px;height:5px;border-radius:50%}
+.ubody{padding:7px;display:flex;flex-direction:column;gap:3px}
+.ur{height:5px;border-radius:2.5px}
+.ubtn{height:13px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+  font-family:'Outfit',sans-serif;font-size:6.5px;font-weight:700;letter-spacing:.04em;margin-top:2px}
+.up.drk{background:#0f172a}
+.up.drk .utb{background:#1e293b;border-bottom-color:rgba(255,255,255,.08)}
+.up.drk .ubd{background:rgba(255,255,255,.25)}
+.up.drk .ur{background:rgba(255,255,255,.07)}
+.up.drk .ur.a{background:rgba(59,130,246,.38)}
+.up.drk .ubtn{background:var(--blue);color:#fff}
+.up.lgt{background:#f8fafc}
+.up.lgt .utb{background:#fff;border-bottom-color:var(--border)}
+.up.lgt .ubd{background:#cbd5e1}
+.up.lgt .ur{background:var(--border)}
+.up.lgt .ur.a{background:rgba(59,130,246,.18)}
+.up.lgt .ubtn{background:var(--blue);color:#fff}
+.ulbl{font-family:'Outfit',sans-serif;font-size:8px;font-weight:600;
+  color:var(--faint);text-align:center;padding:3px 0;letter-spacing:.05em}
+.duitags{display:flex;gap:4px;padding:0 9px 8px;flex-wrap:wrap}
+.dtag{font-family:'Outfit',sans-serif;font-size:8.5px;font-weight:600;padding:2px 7px;border-radius:4px}
+
+/* ════════════════════════════════════════════════════
+   SLIDE 5 — THANK YOU
+════════════════════════════════════════════════════ */
+#s5{flex-direction:column;text-align:center;}
+#s5 .o1{position:absolute;width:680px;height:680px;border-radius:50%;
+  background:radial-gradient(circle,rgba(59,130,246,.15),rgba(14,165,233,.07) 40%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(55px);pointer-events:none;z-index:0}
+#s5 .ring{position:absolute;border-radius:50%;border-style:solid;pointer-events:none;z-index:0}
+#s5 .r1{width:500px;height:500px;border-width:1px;border-color:rgba(59,130,246,.12);
+  top:50%;left:50%;transform:translate(-50%,-50%);animation:spin 35s linear infinite}
+#s5 .r2{width:360px;height:360px;border-width:1px;border-color:rgba(14,165,233,.09);
+  top:50%;left:50%;transform:translate(-50%,-50%);animation:spin 22s linear infinite reverse}
+#s5 .r3{width:240px;height:240px;border-width:1.5px;border-color:rgba(139,92,246,.08);
+  top:50%;left:50%;transform:translate(-50%,-50%);animation:spin 14s linear infinite}
+@keyframes spin{
+  from{transform:translate(-50%,-50%) rotate(0)}
+  to  {transform:translate(-50%,-50%) rotate(360deg)}
+}
+#s5 .inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+#s5 .ey{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--blue);background:var(--blue-bg);
+  border:1px solid rgba(59,130,246,.2);border-radius:20px;padding:4px 14px;margin-bottom:26px}
+#s5 .big{
+  font-family:'Outfit',sans-serif;font-size:110px;font-weight:900;
+  letter-spacing:-.05em;line-height:1;
+  background:linear-gradient(140deg,#0f172a 0%,#1e40af 40%,#3b82f6 70%,#38bdf8 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;
+}
+#s5 .th{font-family:'Sarabun',sans-serif;font-size:22px;font-weight:600;
+  color:var(--muted);margin-bottom:36px}
+#s5 .sep{width:72px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  border-radius:1px;margin:0 auto 28px}
+#s5 .an{font-family:'Sarabun',sans-serif;font-size:18px;font-weight:700;color:var(--text)}
+#s5 .ai{font-family:'Outfit',sans-serif;font-size:13px;color:var(--muted);margin-top:2px}
+#s5 .brand{
+  margin-top:36px;display:inline-flex;align-items:center;gap:9px;
+  padding:9px 16px;background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;box-shadow:var(--sh);
+}
+#s5 .bi{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--blue-d));
+  border-radius:9px;display:flex;align-items:center;justify-content:center}
+#s5 .bn{font-family:'Outfit',sans-serif;font-size:18px;font-weight:800;
+  color:var(--text);letter-spacing:-.03em}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="bg"></div>
+  <div id="prog"></div>
+
+  <!-- ═══════ S1 HERO ═══════ -->
+  <section class="slide active" id="s1">
+    <div class="o1"></div><div class="o2"></div>
+    <div class="inner">
+      <div class="icon s" style="animation-delay:.06s">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </div>
+      <div class="t s" style="animation-delay:.12s">Unily</div>
+      <p class="s1t s" style="animation-delay:.18s">ระบบลงทะเบียนและสารสนเทศ</p>
+      <p class="s2t s" style="animation-delay:.23s">University Registration &amp; Information System</p>
+      <div class="sep s" style="animation-delay:.28s"></div>
+      <div class="acard s" style="animation-delay:.33s">
+        <div class="av">ณ</div>
+        <div>
+          <div class="an">ณัฐพงศ์ จันทร์เพ็ง</div>
+          <div class="ai">รหัสนักศึกษา 6604062630188</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ S2 OVERVIEW ═══════ -->
+  <section class="slide" id="s2">
+    <div class="wrap">
+      <div class="top s" style="animation-delay:.07s">
+        <span class="label">Overview</span>
+        <h2 class="h2"><span class="th">Unily คืออะไร?</span></h2>
+      </div>
+      <p class="desc s" style="animation-delay:.13s">ระบบบริหารจัดการมหาวิทยาลัยแบบครบวงจร รองรับ <strong>3 บทบาทหลัก</strong> ที่ทำงานร่วมกันได้อย่างราบรื่น ในแอปพลิเคชันเดียว</p>
+      <div class="cols s" style="animation-delay:.19s">
+        <!-- Student -->
+        <div class="rc">
+          <div class="rc-stripe" style="background:linear-gradient(90deg,#3b82f6,#0ea5e9)"></div>
+          <div class="rc-head">
+            <div class="rc-ico" style="background:rgba(59,130,246,.1)">🎓</div>
+            <div><div class="rc-name">นักศึกษา</div><div class="rc-en">Student</div></div>
+          </div>
+          <div class="mock">
+            <div class="mbar"><div class="md" style="background:#ef4444"></div><div class="md" style="background:#f59e0b"></div><div class="md" style="background:#10b981"></div><span class="mtitle">ตารางเรียน</span></div>
+            <div class="mgrid">
+              <div class="mc" style="background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.2);color:#3b82f6">CS101</div>
+              <div class="mc" style="color:#94a3b8">—</div>
+              <div class="mc" style="color:#94a3b8">—</div>
+              <div class="mc" style="background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2);color:#10b981">MATH2</div>
+            </div>
+          </div>
+          <div class="rc-list">
+            <div class="ri">ลงทะเบียนเรียนและเลือก Section</div>
+            <div class="ri">ดูตารางเรียนและตารางสอบ</div>
+            <div class="ri">ติดตาม GPA และผลการเรียน</div>
+            <div class="ri">วางแผน Curriculum Flow</div>
+          </div>
+        </div>
+        <!-- Professor -->
+        <div class="rc">
+          <div class="rc-stripe" style="background:linear-gradient(90deg,#10b981,#059669)"></div>
+          <div class="rc-head">
+            <div class="rc-ico" style="background:rgba(16,185,129,.1)">👨‍🏫</div>
+            <div><div class="rc-name">อาจารย์</div><div class="rc-en">Professor</div></div>
+          </div>
+          <div class="mock">
+            <div class="mbar"><div class="md" style="background:#ef4444"></div><div class="md" style="background:#f59e0b"></div><div class="md" style="background:#10b981"></div><span class="mtitle">รายชื่อนักศึกษา</span></div>
+            <div class="mlist">
+              <div class="mrow"><div class="mav" style="background:rgba(16,185,129,.15);color:#10b981">A</div><div class="mline"></div><div class="mtag" style="background:rgba(16,185,129,.12);color:#059669">A</div></div>
+              <div class="mrow"><div class="mav" style="background:rgba(59,130,246,.1);color:#3b82f6">B</div><div class="mline"></div><div class="mtag" style="background:rgba(59,130,246,.1);color:#3b82f6">B+</div></div>
+              <div class="mrow"><div class="mav" style="background:rgba(245,158,11,.1);color:#f59e0b">C</div><div class="mline"></div><div class="mtag" style="background:rgba(245,158,11,.1);color:#d97706">C</div></div>
+            </div>
+          </div>
+          <div class="rc-list">
+            <div class="ri">ดูตารางสอนและ Section ที่รับผิดชอบ</div>
+            <div class="ri">จัดการรายชื่อนักศึกษา</div>
+            <div class="ri">บันทึกและแก้ไขเกรด</div>
+          </div>
+        </div>
+        <!-- Admin -->
+        <div class="rc">
+          <div class="rc-stripe" style="background:linear-gradient(90deg,#8b5cf6,#7c3aed)"></div>
+          <div class="rc-head">
+            <div class="rc-ico" style="background:rgba(139,92,246,.1)">⚙️</div>
+            <div><div class="rc-name">แอดมิน</div><div class="rc-en">Admin</div></div>
+          </div>
+          <div class="mock">
+            <div class="mbar"><div class="md" style="background:#ef4444"></div><div class="md" style="background:#f59e0b"></div><div class="md" style="background:#10b981"></div><span class="mtitle">Dashboard</span></div>
+            <div class="mstats">
+              <div class="mstat"><div class="mstat-v" style="color:#8b5cf6">1,234</div><div class="mstat-l">นักศึกษา</div></div>
+              <div class="mstat"><div class="mstat-v" style="color:#3b82f6">86</div><div class="mstat-l">วิชา</div></div>
+            </div>
+          </div>
+          <div class="rc-list">
+            <div class="ri">บริหารหลักสูตรและรายวิชา</div>
+            <div class="ri">จัดการผู้ใช้ทุกบทบาท</div>
+            <div class="ri">ดูสถิติและรายงานเชิงลึก</div>
+          </div>
+        </div>
+      </div>
+      <div class="tags s" style="animation-delay:.26s">
+        <div class="pill"><span class="d" style="background:#10b981"></span>JWT Auth</div>
+        <div class="pill"><span class="d" style="background:#3b82f6"></span>Role-based Access</div>
+        <div class="pill"><span class="d" style="background:#f59e0b"></span>Thai / EN i18n</div>
+        <div class="pill"><span class="d" style="background:#8b5cf6"></span>Light &amp; Dark Mode</div>
+        <div class="pill"><span class="d" style="background:#0ea5e9"></span>Swagger API Docs</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ S3 TECH ═══════ -->
+  <section class="slide" id="s3">
+    <div class="wrap">
+      <div class="top s" style="animation-delay:.07s">
+        <span class="label">Tech Stack</span>
+        <h2 class="h2">Technology Stack</h2>
+      </div>
+      <div class="cols s" style="animation-delay:.14s">
+        <!-- Frontend -->
+        <div class="sc">
+          <div class="sc-h fe">
+            <div class="sc-hi">⚛️</div>
+            <div><div class="sc-ht">Frontend</div><div class="sc-hs">Client-side Application</div></div>
+          </div>
+          <div class="sc-b">
+            <div class="si"><div class="si-i" style="background:rgba(59,130,246,.1)">⚛️</div><span class="si-n">React 19 + TypeScript</span><span class="si-t">UI Framework</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(250,204,21,.12)">⚡</div><span class="si-n">Vite</span><span class="si-t">Build Tool</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(16,185,129,.1)">🗺️</div><span class="si-n">React Router v7</span><span class="si-t">Routing</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(251,146,60,.12)">🐻</div><span class="si-n">Zustand</span><span class="si-t">State Management</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(59,130,246,.1)">🔀</div><span class="si-n">XYFlow</span><span class="si-t">Flow Visualization</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(236,72,153,.1)">🎞️</div><span class="si-n">Framer Motion</span><span class="si-t">Animation</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(148,163,184,.12)">🎨</div><span class="si-n">Lucide React</span><span class="si-t">Icons</span></div>
+          </div>
+        </div>
+        <!-- Backend -->
+        <div class="sc">
+          <div class="sc-h be">
+            <div class="sc-hi">🚀</div>
+            <div><div class="sc-ht">Backend</div><div class="sc-hs">Server-side Application</div></div>
+          </div>
+          <div class="sc-b">
+            <div class="si"><div class="si-i" style="background:rgba(239,68,68,.1)">🔴</div><span class="si-n">NestJS + TypeScript</span><span class="si-t">API Framework</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(59,130,246,.1)">🐘</div><span class="si-n">PostgreSQL + Prisma ORM</span><span class="si-t">Database</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(16,185,129,.1)">🔐</div><span class="si-n">JWT + Passport</span><span class="si-t">Authentication</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(250,204,21,.12)">📄</div><span class="si-n">Swagger / OpenAPI</span><span class="si-t">API Docs</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(139,92,246,.1)">🔒</div><span class="si-n">bcrypt</span><span class="si-t">Password Hashing</span></div>
+            <div class="si"><div class="si-i" style="background:rgba(14,165,233,.1)">✅</div><span class="si-n">class-validator</span><span class="si-t">Input Validation</span></div>
+            <div class="db"><span>🐘</span><span>PostgreSQL — Relational Database</span><small>Prisma ORM · Migrations · Seed</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ S4 FEATURES ═══════ -->
+  <section class="slide" id="s4">
+    <div class="wrap">
+      <div class="top s" style="animation-delay:.07s">
+        <span class="label">Features</span>
+        <h2 class="h2"><span class="th">จุดเด่นของระบบ</span></h2>
+      </div>
+      <div class="grid">
+        <!-- F1 -->
+        <div class="fc s" style="animation-delay:.14s">
+          <div class="fc-top">
+            <div class="fc-ico" style="background:rgba(59,130,246,.1)">🗺️</div>
+            <div><div class="fc-t"><span class="th">วางแผนการเรียน</span></div></div>
+          </div>
+          <p class="fc-d">นักศึกษาดู Flow การเรียนแบบ Visual Graph เห็น Prerequisite ของแต่ละวิชา วางแผนได้อย่างแม่นยำ</p>
+          <div class="fc-demo">
+            <div class="dflow">
+              <div class="frow"><div class="fn done">MATH101 ✓</div><div class="farr">→</div><div class="fn done">MATH102 ✓</div><div class="farr">→</div><div class="fn curr">MATH201</div></div>
+              <div class="frow"><div class="fn done">CS101 ✓</div><div class="farr">→</div><div class="fn curr">CS201</div><div class="farr">→</div><div class="fn lock">CS301 🔒</div></div>
+              <div class="frow"><div class="fn lock">ENG201 🔒</div><div class="farr">→</div><div class="fn lock">ENG301 🔒</div></div>
+            </div>
+            <div class="fleg">
+              <div class="fli"><div class="fld" style="background:#10b981"></div>ผ่านแล้ว</div>
+              <div class="fli"><div class="fld" style="background:#3b82f6"></div>กำลังเรียน</div>
+              <div class="fli"><div class="fld" style="background:#94a3b8"></div>ยังไม่ถึง</div>
+            </div>
+          </div>
+        </div>
+        <!-- F2 -->
+        <div class="fc s" style="animation-delay:.20s">
+          <div class="fc-top">
+            <div class="fc-ico" style="background:rgba(16,185,129,.1)">📋</div>
+            <div><div class="fc-t"><span class="th">สร้างหลักสูตรง่ายดาย</span></div></div>
+          </div>
+          <p class="fc-d">แอดมินสร้างหลักสูตรใหม่พร้อม <strong>ปุ่มคัดลอก</strong> นำหลักสูตรเก่ามาปรับปรุงได้ทันที ไม่ต้องสร้างจากศูนย์</p>
+          <div class="fc-demo">
+            <div class="dclone">
+              <div class="ccard">
+                <div class="cchead">
+                  <span class="cct">วิศวกรรมซอฟต์แวร์ 2566</span>
+                  <div class="ccb">
+                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    คัดลอก
+                  </div>
+                </div>
+                <div class="ccs">128 หน่วยกิต · 32 วิชา · 8 เทอม</div>
+              </div>
+              <div class="cnew">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                หลักสูตรใหม่ 2567 (สำเนาจาก 2566) — พร้อมแก้ไข
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- F3 -->
+        <div class="fc s" style="animation-delay:.26s">
+          <div class="fc-top">
+            <div class="fc-ico" style="background:rgba(245,158,11,.1)">📊</div>
+            <div><div class="fc-t"><span class="th">สถิติเชิงลึก</span></div></div>
+          </div>
+          <p class="fc-d">ดูสถิติการ F และการลงทะเบียนตามเทอม พร้อม <strong>Top 5</strong> รายวิชาที่มีผู้ลงทะเบียนสูงสุด</p>
+          <div class="fc-demo">
+            <div class="dstats">
+              <div class="shead">Top 5 ลงทะเบียน — เทอม 1/2567</div>
+              <div class="srow"><span class="slbl">CS101</span><div class="strk"><div class="sfil" style="width:100%;background:linear-gradient(90deg,#3b82f6,#0ea5e9)"></div></div><span class="sval">245</span></div>
+              <div class="srow"><span class="slbl">MATH101</span><div class="strk"><div class="sfil" style="width:82%;background:linear-gradient(90deg,#8b5cf6,#6d28d9)"></div></div><span class="sval">201</span></div>
+              <div class="srow"><span class="slbl">ENG101</span><div class="strk"><div class="sfil" style="width:68%;background:linear-gradient(90deg,#10b981,#059669)"></div></div><span class="sval">167</span></div>
+              <div class="srow"><span class="slbl">PHYS101</span><div class="strk"><div class="sfil" style="width:54%;background:linear-gradient(90deg,#f59e0b,#d97706)"></div></div><span class="sval">133</span></div>
+              <div class="srow"><span class="slbl">CS201</span><div class="strk"><div class="sfil" style="width:40%;background:linear-gradient(90deg,#ef4444,#dc2626)"></div></div><span class="sval">98</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- F4 -->
+        <div class="fc s" style="animation-delay:.32s">
+          <div class="fc-top">
+            <div class="fc-ico" style="background:rgba(139,92,246,.1)">✨</div>
+            <div><div class="fc-t"><span class="th">UI ทันสมัย</span></div></div>
+          </div>
+          <p class="fc-d">อินเทอร์เฟซสวยงาม รองรับ <strong>Light / Dark Mode</strong> และภาษาไทย–อังกฤษ พร้อม Animation ที่ลื่นไหล</p>
+          <div class="fc-demo">
+            <div class="dui">
+              <div>
+                <div class="up drk">
+                  <div class="utb"><div class="ubd"></div><div class="ubd"></div><div class="ubd"></div></div>
+                  <div class="ubody"><div class="ur a"></div><div class="ur" style="width:75%"></div><div class="ur" style="width:55%"></div><div class="ubtn">ENROLL</div></div>
+                </div>
+                <div class="ulbl">Dark Mode</div>
+              </div>
+              <div>
+                <div class="up lgt">
+                  <div class="utb"><div class="ubd"></div><div class="ubd"></div><div class="ubd"></div></div>
+                  <div class="ubody"><div class="ur a"></div><div class="ur" style="width:75%"></div><div class="ur" style="width:55%"></div><div class="ubtn">ENROLL</div></div>
+                </div>
+                <div class="ulbl">Light Mode</div>
+              </div>
+            </div>
+            <div class="duitags">
+              <span class="dtag" style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#3b82f6">🇹🇭 Thai</span>
+              <span class="dtag" style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:#10b981">🇬🇧 English</span>
+              <span class="dtag" style="background:rgba(236,72,153,.08);border:1px solid rgba(236,72,153,.2);color:#db2777">✦ Framer Motion</span>
+              <span class="dtag" style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);color:#8b5cf6">📱 Responsive</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ S5 THANK YOU ═══════ -->
+  <section class="slide" id="s5">
+    <div class="o1"></div>
+    <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+    <div class="inner">
+      <div class="ey s" style="animation-delay:.07s">Unily · Pitch Deck</div>
+      <div class="big s" style="animation-delay:.14s">Thank You</div>
+      <div class="th s" style="animation-delay:.20s">ขอบคุณที่รับฟัง</div>
+      <div class="sep s" style="animation-delay:.26s"></div>
+      <div class="s" style="animation-delay:.31s">
+        <div class="an">ณัฐพงศ์ จันทร์เพ็ง</div>
+        <div class="ai">6604062630188</div>
+      </div>
+      <div class="brand s" style="animation-delay:.38s">
+        <div class="bi">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <span class="bn">Unily</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAV -->
+  <nav class="nav" id="navEl">
+    <button class="nb" id="pb" onclick="go(-1)" disabled>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="dots" id="dotsEl"></div>
+    <span class="nc" id="cnt">1 / 5</span>
+    <button class="nb" id="nbt" onclick="go(1)">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </nav>
+
+  <div class="hint">
+    <kbd>←</kbd><kbd>→</kbd>&nbsp;navigate&nbsp;·&nbsp;<kbd>Space</kbd>&nbsp;next
+  </div>
+
+</div><!-- /stage -->
+
+<script>
+const TOTAL=5;
+const stage=document.getElementById('stage');
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dotsEl');
+const cnt=document.getElementById('cnt');
+const pb=document.getElementById('pb');
+const nbt=document.getElementById('nbt');
+const prog=document.getElementById('prog');
+let cur=0,busy=false;
+
+/* ── Build dots ── */
+for(let i=0;i<TOTAL;i++){
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' on':'');
+  d.onclick=()=>nav(i);
+  dotsEl.appendChild(d);
+}
+
+/* ── Scale stage to fit viewport, maintain 16:9 ── */
+function scale(){
+  const W=window.innerWidth,H=window.innerHeight;
+  const s=Math.min(W/1280,H/720);
+  stage.style.transform=`scale(${s})`;
+}
+window.addEventListener('resize',scale);
+scale();
+
+/* ── Slide logic ── */
+function nav(n){
+  if(n===cur||busy)return;
+  busy=true;
+  slides[cur].classList.add('out');
+  slides[cur].classList.remove('active');
+  setTimeout(()=>{
+    slides[cur].classList.remove('out');
+    cur=n;render();busy=false;
+  },340);
+}
+function go(d){const n=cur+d;if(n>=0&&n<TOTAL)nav(n);}
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  cnt.textContent=(cur+1)+' / '+TOTAL;
+  pb.disabled=cur===0;
+  nbt.disabled=cur===TOTAL-1;
+  prog.style.width=((cur+1)/TOTAL*100)+'%';
+}
+
+/* ── Keyboard ── */
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();go(1);}
+  else if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();go(-1);}
+});
+
+/* ── Touch swipe ── */
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const d=e.changedTouches[0].clientX-tx;
+  if(Math.abs(d)>50)go(d<0?1:-1);
+});
+
+render();
+</script>
+</body>
+</html>

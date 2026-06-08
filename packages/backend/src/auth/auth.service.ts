@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../course/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -59,4 +59,4 @@ export class AuthService {
     ]);
     return { accessToken: at, refreshToken: rt };
   }
-}
+}

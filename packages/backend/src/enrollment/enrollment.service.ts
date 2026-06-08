@@ -1,5 +1,5 @@
 import { Injectable, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../course/prisma/prisma.service';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
 import { isTimeOverlapping } from '../common/utils/time.util';
 import { Grade, CourseCategory } from '@prisma/client';

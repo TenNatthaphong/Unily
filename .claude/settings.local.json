@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npx prisma:*)",
       "Bash(npx tsc:*)",
-      "Bash(node -e \"const d=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''courses.json'',''utf8''\\)\\); d.filter\\(c=>c.category===''REQUIRED_COURSE''\\).forEach\\(c=>console.log\\(c.courseCode, c.nameEn\\)\\)\")"
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''fs''\\).readFileSync\\(''courses.json'',''utf8''\\)\\); d.filter\\(c=>c.category===''REQUIRED_COURSE''\\).forEach\\(c=>console.log\\(c.courseCode, c.nameEn\\)\\)\")",
+      "Bash(xargs -I {} basename {})"
     ]
   }
 }

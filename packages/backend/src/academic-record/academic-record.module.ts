@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AcademicRecordService } from './academic-record.service';
 import { AcademicRecordController } from './academic-record.controller';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../course/prisma/prisma.module';
 
 @Module({
     providers: [AcademicRecordService],

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../course/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import csvParser = require('csv-parser');
 import { Readable } from 'stream';

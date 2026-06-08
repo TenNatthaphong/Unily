@@ -3,7 +3,7 @@ import { SystemConfigController, AdminSemesterConfigController, AdminAuditLogCon
 import { AdminStatsController } from './admin-stats.controller';
 import { AdminSystemController } from './admin-system.controller';
 import { SystemConfigModule as MainModule } from './system-config.module';
-import { PrismaModule } from '../prisma/prisma.module';
+import { PrismaModule } from '../course/prisma/prisma.module';
 import { SectionModule } from '../section/section.module';
 
 @Module({

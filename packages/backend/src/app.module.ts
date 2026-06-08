@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CourseModule } from './course/course.module';
-import { PrismaModule } from './prisma/prisma.module'; 
+import { PrismaModule } from './course/prisma/prisma.module'; 
 import { CurriculumModule } from './curriculum/curriculum.module';
 import { CurriculumItemModule } from './curriculum-item/curriculum-item.module';
 import { SectionModule } from './section/section.module';
